@@ -146,6 +146,7 @@ export function renderConfig(watch, __DEV__) {
       Mdx(),
       babelESBuildJsx({
         hmr: Boolean(__DEV__),
+        setup: true
       }),
     ],
   }

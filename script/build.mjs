@@ -61,7 +61,7 @@ async function render(vnode, url, clientMeta) {
 buildClient(false, tempPath).then((appMeta) => {
   buildAPP().then(async ({ App, ExposeRoutes }) => {
     const node = ExposeRoutes()
-    const routes = await getRoutes(node)
+    const routes = await getRoutes(node())
     for (const url of routes) {
       const html = await render(h(App), url, appMeta)
       const urls = url.slice(1).split('/')

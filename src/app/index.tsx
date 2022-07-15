@@ -63,13 +63,11 @@ export const ExposeRoutes = FC(() => {
 })
 
 export const App = FC(() => {
-  return () => {
-    return (
-      <Layout>
-        <ExposeRoutes />
-      </Layout>
-    )
-  }
+  return (
+    <Layout>
+      <ExposeRoutes />
+    </Layout>
+  )
 })
 
 export const app = () => {

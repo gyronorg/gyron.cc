@@ -41,7 +41,7 @@ setup scope 区域在组件渲染的流程中只会被执行一次，只有在�
 
 如果你够仔细，那么你会发现 App 组件和 HelloWorld 组件不太一样，App 组件返回了一个函数用来渲染页面，为什么可以参考前面一篇教程，里面解释的很详细。
 
-[为什么组件要返回一个函数](/docs/useReactive#组件更新)
+[为什么组件要返回一个函数](/docs/reactive#组件更新)
 
 在`有状态组件`的`setup`函数中使用解构的时候需要特殊注意，props 是不会得到更新，如果要访问 props 需要使用“props.xxxxx”。
 
@@ -96,6 +96,55 @@ const HelloWorld = FC<HelloWorldProps>(() => {
   return ({ message }) => <div onClick={update}>I Am {message}</div>
 })
 ```
+
+### 自动转换
+
+现在我们也提供一种选项，但是这个是基于`@gyron/babel-plugin-jsx`插件才能生效。
+你只需要在插件选项中传递`setup`为`true`，那么插件会自动识别这两种不同的模式，然后将所有无状态组件转换为有状态组件，完全就不需要关注这个组件的返回值是函数还是`JSX.Element`了。
+
+```js line=8
+import esbuild from 'esbuild'
+import { babelESBuildJsx } from '@gyron/babel-plugin-jsx'
+
+esbuild.build({
+  // ...
+  plugins: [
+    babelESBuildJsx({
+      setup: true,
+    }),
+  ],
+})
+```
+
+```tsx line=18
+import { FC } from '@gyron/runtime'
+
+const App = FC<{ msg: string }>((props) => {
+  const count = useValue(0)
+  function onClick() {
+    count.value++
+  }
+  return (
+    <div onClick={onClick}>
+      {props.msg} - {count.value}
+    </div>
+  )
+})
+
+// ↓ ↓ ↓ ↓ ↓
+const App = FC<{ msg: string }>((props) => {
+  // ...
+  return (props) => (
+    <div onClick={onClick}>
+      {props.msg} - {count.value}
+    </div>
+  )
+})
+```
+
+在配置完插件后使用 FC 定义一个组件，然后插件就会自动识别转换成箭头下方的所示代码。
+
+如果你需要在 render 区域定义一些方法或者变量之类的对象，那么组件可以返回一个函数。这个时候插件将什么都不会处理。
 
 ### 参数(Props)
 

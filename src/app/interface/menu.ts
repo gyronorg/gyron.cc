@@ -1,5 +1,10 @@
 import { Navigations } from '@/components/guidance'
-import { AsyncComponentFunction, ComponentSetupFunction } from '@gyron/runtime'
+import { MdxHelper } from '@/components/helper'
+import {
+  AsyncComponentFunction,
+  ComponentSetupFunction,
+  VNode,
+} from '@gyron/runtime'
 
 export type ContentMenu = Pick<MenuView, 'anchor' | 'component' | 'meta'>
 
@@ -7,7 +12,7 @@ export interface MenuView {
   path: string
   name: string
   anchor: Navigations
-  component: ComponentSetupFunction | AsyncComponentFunction
+  component: (props: { fallback: VNode; components: typeof MdxHelper }) => VNode
   meta: {
     page: string
     title: string

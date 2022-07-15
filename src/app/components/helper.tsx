@@ -132,52 +132,50 @@ const Pre = FC(({ children }) => {
     }
   }
 
-  return () => {
-    return (
-      <div
-        class={classnames('relative group', {
-          'mt-12': Boolean(meta?.filename),
-        })}
-      >
-        {meta && meta.filename && (
-          <span class="absolute -top-[24px] bg-[#1e293b] dark:bg-[#00000080] text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
-            {meta.filename}
-          </span>
+  return (
+    <div
+      class={classnames('relative group', {
+        'mt-12': Boolean(meta?.filename),
+      })}
+    >
+      {meta && meta.filename && (
+        <span class="absolute -top-[24px] bg-[#1e293b] dark:bg-[#00000080] text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
+          {meta.filename}
+        </span>
+      )}
+      <button
+        aria-label="Copy"
+        class={classnames(
+          'w-4 h-4 text-slate-100 absolute right-5 top-4 cursor-pointer opacity-20 group-hover:opacity-100 transition-opacity select-none'
         )}
-        <button
-          aria-label="Copy"
+        onClick={() => copy(meta?.content)}
+        onMouseleave={() => (copyState.copying = false)}
+        onMousedown={() => (copyState.mouse = true)}
+        onMouseup={() => (copyState.mouse = false)}
+      >
+        <CopyIcon
+          class={classnames({
+            'translate-y-[1px] translate-x-[1px]': copyState.mouse,
+          })}
+        />
+        <div
           class={classnames(
-            'w-4 h-4 text-slate-100 absolute right-5 top-4 cursor-pointer opacity-20 group-hover:opacity-100 transition-opacity select-none'
+            'opacity-0 bg-neutral-800 text-neutral-100 w-16 text-xs p-1 text-center left-1/2 -translate-x-1/2 absolute mt-2 rounded',
+            {
+              'opacity-100': copyState.copying,
+            }
           )}
-          onClick={() => copy(meta?.content)}
-          onMouseleave={() => (copyState.copying = false)}
-          onMousedown={() => (copyState.mouse = true)}
-          onMouseup={() => (copyState.mouse = false)}
         >
-          <CopyIcon
-            class={classnames({
-              'translate-y-[1px] translate-x-[1px]': copyState.mouse,
-            })}
-          />
-          <div
-            class={classnames(
-              'opacity-0 bg-neutral-800 text-neutral-100 w-16 text-xs p-1 text-center left-1/2 -translate-x-1/2 absolute mt-2 rounded',
-              {
-                'opacity-100': copyState.copying,
-              }
-            )}
-          >
-            {copyState.copying
-              ? copyState.status
-                ? '拷贝成功'
-                : '拷贝失败'
-              : ''}
-          </div>
-        </button>
-        <pre>{code}</pre>
-      </div>
-    )
-  }
+          {copyState.copying
+            ? copyState.status
+              ? '拷贝成功'
+              : '拷贝失败'
+            : ''}
+        </div>
+      </button>
+      <pre>{code}</pre>
+    </div>
+  )
 })
 
 export const MdxHelper = {
