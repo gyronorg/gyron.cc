@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "jsx": "preserve",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "paths": {
-      "@/*": ["src/app/*"],
-      "@gyron/*": ["../*/src/index.ts"]
+      "@/*": ["src/app/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]

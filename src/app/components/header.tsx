@@ -117,7 +117,7 @@ export const Header = FC(() => {
             </ul>
             <div class="flex items-center border-l border-slate-200 ml-5 md:ml-6 pl-5 md:pl-6 dark:border-slate-800 space-x-5 md:space-x-6">
               <DarkToggle />
-              <a href="https://github.com/Linkontoask/gyron" target="_blank">
+              <a href="https://github.com/gyronorg/core" target="_blank">
                 <GithubIcon />
               </a>
             </div>
