@@ -1,0 +1,82 @@
+## 数据响应
+
+Gyron 的一大特点就是响应式更新，在修改数据后可以自动更新依赖数据的视图。为了解决在一个任务时的多次更新，Gyron 的更新使用了 Promise，也就是说，你修改了数据多次，视图只会在 microtask queue 更新一次。
+
+那什么是 microtask，为什么需要 microtask？
+
+网络上有相关的介绍文章，
+你可以前往 [https://html.spec.whatwg.org/multipage/webappapis.html#task-queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue)一探究竟。
+
+下面展示了如何获取到数据的变更，以及变更后可以处理哪些事情。
+
+先来一个简单的用法。
+
+```javascript
+import { useReactive, useEffect } from '@gyron/reactivity'
+const original = useReactive({
+  count: 0,
+})
+useEffect(() => {
+  console.log(original.count)
+  // 第一次打印 0
+  // 第二次打印 1
+})
+original.count = 1
+```
+
+这其实就是响应的核心例子，内部到底发生了什么？想深入了解，来 [Discord](https://discord.gg/fETVZtD) 一起讨论吧。
+
+## 响应式
+
+接下来我们再看一个例子。
+
+```jsx
+import { useValue } from '@gyron/runtime'
+export const App = () => {
+  const list = useValue([0])
+  return () => (
+    <div>
+      {list.map((item) => (
+        <div onClick={() => list.value.push(list.value.length)}>{item}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+接下来讲解其中的依赖收集和组件更新。
+
+### 依赖收集
+
+在需要使用的地方我们可以用`<App />`这种写法，然后会转换成`h(App)`，接下来就会进入 patch 过程。（其中省略了很多无关的过程）
+
+patch 会先调用 App 这个函数，然后把当前 useEffect（SchedulerJob）作为 list 的更新后需要执行的任务，当 list 发生变更时，便会调用 list 的所有 effects，然后进入到组件的更新过程。
+
+### 组件更新
+
+我们创建了一个 App 组件，并且组件的渲染函数的返回值是一组 div 元素，每个 div 元素绑定了一个点击事件，当用户点击一个时，元素就会在最后新增一行。
+
+如果 App 组件没有返回一个函数，而是直接返回一组 div 元素，那么会发生 list 的状态不正确。那是因为 App 组件在更新时使用了 App 整个函数语句，也就是重新运行了一次 App 函数。
+为了保证组件内部的状态正确性，我们使用了闭包的特性，返回一个函数作为渲染函数，在下次更新时只会使用返回的函数，这样就保证了函数内部的状态得到了持久。
+
+我们把返回一个函数的组件叫做`有状态组件`，直接返回元素的组件叫做`无状态组件`。
+
+因为响应式内部是依赖 [Proxy](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy) 特性，所以对于数组的变更也是直接支持，但是会触发不止一次更新前的检查。
+
+比如拿上一个例子说明问题，当我们每点击一次，就会往 list 数组压入一个数字，这在内部会发生两次 set。
+
+- 第一次 set 是改变了 list 的第二个元素值，将`[0]`变更成了`[0, 1]`。
+- 第二次则是改变了 list 的 length 属性，将 length 从`1`变更成了`2`。
+
+正是因为如此，我们在更新时使用了一个叫做 uuid 的值，它保存了当前组件的 id，当组件发生变更时会将任务推送到一个栈（queue），
+因为更新发生在 microtask 中，而两次 set 会同步进行，在第二次 set 的时候会删除前面同一个 uuid 值的更新任务，保证了组件在一个任务队列里面只发生一次更新。
+
+### 图解
+
+文字描述可能不太直观，下面用图的形式复述上述代码的依赖收集和更新。
+
+收集过程图解
+![track](/assets/image/track.png)
+
+更新过程图解
+![update](/assets/image/update.png)

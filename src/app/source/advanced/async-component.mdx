@@ -1,0 +1,46 @@
+## 异步组件
+
+有的时候我们的组件是等待某些动作完成之后才进行渲染。尤其是在 SSR 的渲染过程中，通过用户的数据进行预渲染的时候，还有就是通过现代打包工具进行代码分割的时候，异步组件就可以发挥重要的功能。
+
+### FCA
+
+FCA 是内置的异步组件包装器，通过 FCA 函数就可以在内部使用异步语法，比如：
+
+```jsx
+import { FCA } from '@gyron/runtime'
+
+const App = FCA(() => {
+  return getUserInfo().then((data) => <div>{data.name}</div>)
+})
+```
+
+App 函数就是异步组件，它通过 getUserInfo 方法查找到用户的信息后进行展示。
+
+再举一个例子：
+
+```jsx filename=index.jsx
+const App = FCA(() => {
+  return import('./dashboard').then(({ Dashboard }) => <Dashboard />)
+})
+```
+
+```jsx filename=dashboard.jsx
+import { FC } from '@gyron/runtime'
+
+export const Dashboard = FC(() => {
+  return <div>Dashboard</div>
+})
+```
+
+index.jsx 文件里的 App 组件就是一个异步组件，它负责异步导入 dashboard.jsx 里的组件，
+再通过比如 webpack 的`optimization.splitChunks`或者 esbuild 的`splitting`属性，在最终的入口文件中分离 dashboard.jsx 文件中的这部分。
+
+### fallback
+
+异步组件有一个自己的参数，就是`fallback`。它会在异步结束之前渲染，主要是用做一个提示告诉用户数据或资源正在加载。
+
+```jsx
+import { createInstance, App } from './index'
+
+createInstance(<App fallback={<span>loading...</span>} />)
+```

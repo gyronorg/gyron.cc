@@ -1,0 +1,134 @@
+## createInstance
+
+创建应用，并通过应用上的`render`方法渲染成实际的 DOM 节点。
+
+**参数**
+
+- `root`: VNode - 一个 VNode 节点，可以通过 h 函数创建。
+- `isHydrate`: boolean - 用于服务端渲染参数，为 Truthy 则代表使用“水合”方法让界面变得可响应。
+
+**返回值**
+
+一个应用对象，也是 javascript 中的 plain object。
+
+**类型声明**
+
+```ts d
+declare function createInstance(root: VNode, isHydrate?: boolean): Instance
+```
+
+**示例**
+
+```javascript
+import { h, createInstance } from '@gyron/runtime'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+createInstance(h(App)).render('#root')
+```
+
+## createSSRInstance
+
+创建服务端应用。服务端组件的 isSSR 的值始终为 true。
+
+**参数**
+
+- `root`: VNode - 一个 VNode 节点，可以通过 h 函数创建。
+
+**返回值**
+
+一个服务端应用对象。更多用法可以参考[SSR](/docs/ssr)
+
+**类型声明**
+
+```ts d
+declare function createSSRInstance(vnode: VNode): Instance
+```
+
+**示例**
+
+```javascript
+import { h, createSSRInstance, renderToString } from '@gyron/runtime'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+const { root } = createSSRInstance(h(App))
+
+renderToString(root).then((html) => {
+  console.log(html)
+  // <div>hello world</div>
+})
+```
+
+## render
+
+将实例对象渲染到真实的 DOM 节点。
+
+**参数**
+
+- `containerOrSelector`: string | HTMLElement - 匹配的选择器字符串或者一个 HTMLElement 类型的节点。
+
+**返回值**
+
+一个应用对象，其中的 container 值就是真实的 DOM 节点。
+
+**类型声明**
+
+```ts d
+function render(containerOrSelector: string | HTMLElement): Instance
+```
+
+**示例**
+
+```javascript
+import { h, createInstance } from '@gyron/runtime'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+createInstance(h(App)).render('#root')
+```
+
+## use
+
+应用插件到实例上，其中插件必须使用 createPlugin 方法创建，同一个插件只会被安装一次。
+
+**参数**
+
+- `plugin`: Plugin - 插件对象。
+
+**返回值**
+
+一个应用对象，其中的 plugins 会包含本次安装的插件集合。
+
+**类型声明**
+
+```ts d
+function use(plugin: Plugin) => Instance
+```
+
+**示例**
+
+```javascript
+import { createInstance, createPlugin } from '@gyron/runtime'
+
+const customPluginData = /* any */ null
+const plugin = createPlugin({
+  name: 'custom',
+  extra: custom,
+  install: (instance) => {
+    const context = instance.root.context
+    context.set('TypeRouter', customPluginData)
+  },
+})
+createInstance(/* VNode */).use(plugin)
+```
+
+## destory
+
+销毁应用，内部会直接销毁真实的 DOM 节点，而组件上的生命周期勾子不会被调用。

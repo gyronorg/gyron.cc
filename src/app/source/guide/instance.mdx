@@ -1,0 +1,99 @@
+## 应用实例
+
+和大多数软件开发一样，我们有一个程序入口，可以通过`createInstance`方法创建一个应用实例。
+
+然后通过实例的`render`方法挂载到真实的`DOM`节点中。在一个页面中可以存在多个应用实例，比如可以在单元格中使用 Gyron 的渲染能力或者组件来复用代码。
+
+## 基本用法
+
+下面代码是`createInstance`最简单的用法，我们创建了一个 div 元素，设置了 div 元素的内容，并且挂载到名为`root`的 dom 节点上。
+
+```typescript
+import { createInstance, h } from '@gyron/runtime'
+
+createInstance(h('div', 'Gyron')).render('#root')
+```
+
+### 根节点
+
+`Gyron`只允许有一个根节点，因为需要在根节点中存放一些上下文信息，便于在组件运行时获取全局（插件 ）信息。
+
+如果不想在`DOM`节点中生成唯一根节点，可以使用`createFragment`方法创建一个虚拟的节点。
+
+```typescript
+import { createInstance, createFragment } from '@gyron/runtime'
+
+createInstance(createFragment(['hello ', 'Gyron'])).render('#root')
+// <div id="root">hello Gyron</div>
+```
+
+### 插件
+
+我们设计了一款很简单但是能满足开发的扩展模式，可以通过`createPlugin`方法创建一个应用插件，里面必须包含一个`install`方法，便于将插件数据保存在节点上下文中。
+
+然后使用实例的`use`方法安装插件。
+
+```typescript
+import { createInstance, createPlugin } from '@gyron/runtime'
+
+const customPluginData = /* createRouter */ null
+const plugin = createPlugin({
+  name: 'custom',
+  extra: custom,
+  install: (instance) => {
+    const context = instance.root.context
+    context.set('TypeRouter', customPluginData)
+  },
+})
+createInstance(/* VNode */).use(plugin)
+```
+
+后面在组件中就可以通过 useRootContext 方法得到 customPluginData。
+
+```jsx line=6
+import { useRootContext } from '@gyron/runtime'
+
+const App = () => {
+  const context = useRootContext()
+
+  context.get('TypeRouter')
+
+  return () => <div></div>
+}
+```
+
+### 用户接口
+
+开发者可以根据接口进行开发，而不需要对照着文档。
+
+这里只列举一些常用的用户接口，可以在下载后根据`index.d.ts`文件提示进行更多的操作。
+
+```typescript
+// 插件
+interface Plugin<E = any> {
+  type: typeof TypePlugin
+  extra: E
+  name: string | symbol
+  install: (instance: Instance) => void
+}
+
+// 应用实例
+interface Instance {
+  container: Element | null
+  use: (plugin: Plugin) => Instance
+  render: (containerOrSelector: string | HTMLElement) => Instance
+  destory: () => Instance
+  readonly plugins: Set<Plugin>
+  get root(): VNode
+}
+```
+
+### 生命周期
+
+应用程序是有自己的生命周期，用户可以在自己的应用中使用生命周期勾子，更合理的管理自己的组件。
+
+生命周期概念在市场上已经很常见，但在开发一款简单的应用未必能用到，暂时不用掌握。在构建一个复杂的应用程序时，生命周期勾子就展现了它的优势。比如在优化页面渲染时可以使用`onBeforeUpdate`方法，它接受一个回调函数，并且必须返回一个 Boolean 值，如果返回一个`Falsy`，渲染程序则会阻止当前组件以及子组件的更新。
+
+每个生命周期勾子都可以注册多次，`Gyron`会按照注册顺序顺序调用，但是`onBeforeUpdate`除外，这个勾子在组件中只允许注册一次。
+
+![Do生命周期图](/assets/image/lifecycle-md.png)

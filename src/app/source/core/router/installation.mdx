@@ -1,0 +1,58 @@
+## 安装
+
+如何安装取决于你使用的什么平台。如果你使用了现代的打包工具，请使用包管理器 `yarn` 或者 `npm` 进行安装，如果你使用了浏览器的 `type="module"` 功能那么可以直接引用 CDN 资源。
+
+使用包管理的方式：
+
+```bash
+yarn add -D @gyron/router
+# or
+npm install --save-dev @gyron/router
+```
+
+使用浏览器模块化的方式：
+
+```html
+<script type="module">
+  import { Routes, Route } from 'https://cdn.skypack.dev/@gyron/router'
+</script>
+```
+
+### 使用 Router
+
+如果你是第一次搭建 Gyron 应用，可以参考[创建一个新的 Gyron 应用](/docs/tutorial#创建一个新的%20Gyron%20应用)
+
+在安装完成之后，在项目需要使用 Router 的地方使用 import 语法导入 Routes、Route 等组件。示例如下：
+
+```jsx
+import { Route, Routes } from '@gyron/router'
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="" strict element={<div>Home</div>}></Route>
+      <Route path="about" element={<div>About</div>}></Route>
+    </Routes>
+  )
+}
+```
+
+**在 script 标签中使用**
+
+```html
+<script type="module">
+  import { h } from 'https://cdn.skypack.dev/@gyron/runtime'
+  import { Routes, Route } from 'https://cdn.skypack.dev/@gyron/router'
+
+  function App() {
+    return h(Routes, null, [
+      h(Route, { path: '', strict: true, element: h('div', 'Home') }),
+      h(Route, { path: 'about', element: h('div', 'About') }),
+    ])
+  }
+</script>
+```
+
+这和上面那个示例是等价的。
+
+如果你想在浏览器中使用 JSX 的语法，请参考[JSX](/core/jsx/getting-started)

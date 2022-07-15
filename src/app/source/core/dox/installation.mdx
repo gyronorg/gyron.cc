@@ -1,0 +1,46 @@
+## 安装
+
+如何安装取决于你使用的什么平台。如果你使用了现代的打包工具，请使用包管理器 `yarn` 或者 `npm` 进行安装，如果你使用了浏览器的 `type="module"` 功能那么可以直接引用 CDN 资源。
+
+使用包管理的方式：
+
+```bash
+yarn add -D @gyron/dox
+# or
+npm install --save-dev @gyron/dox
+```
+
+使用浏览器模块化的方式：
+
+```html
+<script type="module">
+  import { createStore } from 'https://cdn.skypack.dev/@gyron/dox'
+</script>
+```
+
+### 使用 Store
+
+安装完成后就可以创建一个 store，然后使用`Instance`的`use`方法应用到整个项目上。如果使用[插件](/docs/instance#插件)？
+
+```jsx
+import { createInstance } from '@gyron/runtime'
+import { createStore } from '@gyron/dox'
+
+function counterReducer(state = { value: 0 }, action) {
+  switch (action.type) {
+    case 'counter/incremented':
+      return { value: state.value + 1 }
+    case 'counter/decremented':
+      return { value: state.value - 1 }
+    default:
+      return state
+  }
+}
+const store = createStore({
+  reducer: counterReducer,
+})
+createInstance(/* ... */).use(store)
+
+store.extra.dispatch({ type: 'counter/incremented' })
+// {value: 1}
+```

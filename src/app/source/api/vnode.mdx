@@ -1,0 +1,302 @@
+## createVNode
+
+创建一个 VNode 节点，返回值为一个普通的对象。可以直接运行在浏览器，主要用来在非编译环境下编写应用。
+
+> 它与`h`函数不同，他并不会合并自动合并 props 和 children。
+
+**参数**
+
+- `tag`: 任意类型，可以传递 string tag 或者 component。
+- `props`: VNodeProps - 节点属性，如果 tag 是函数则会作为函数的参数。
+- `children`: Children | Children[] - 子节点。可以是 VNode 节点或者字符串。
+
+**类型声明**
+
+```ts d
+declare function createVNode(
+  tag: unknown,
+  props?: Partial<VNodeProps>,
+  children?: Children | Children[]
+): VNode
+```
+
+**示例**
+
+```javascript
+import { createVNode } from '@gyron/runtime'
+
+const App = createVNode(() => {
+  return createVNode('div', null, 'hello world')
+})
+```
+
+## createComponent
+
+同上，创建一个组件。
+
+**参数**
+
+- `componentFunction`: 组件函数。
+- `props`: VNodeProps - 节点属性，如果 tag 是函数则会作为函数的参数。
+- `children`: Children | Children[] - 子节点。可以是 VNode 节点或者字符串。
+
+**类型声明**
+
+```ts d
+declare function createComponent(
+  componentFunction: ComponentSetupFunction,
+  props?: Partial<VNodeProps>,
+  children?: Children | Children[]
+): VNode<ComponentSetupFunction>
+```
+
+**示例**
+
+```javascript
+import { createComponent, h } from '@gyron/runtime'
+
+const App = createComponent(() => {
+  return h('div', null, 'hello world')
+})
+```
+
+## createFragment
+
+同上，创建一个无父节点的元素集。
+
+**参数**
+
+- `children`: Children[] - 子节点。可以是 VNode 节点或者字符串。
+
+**类型声明**
+
+```ts d
+declare function createFragment(children: Children[]): VNode<typeof Fragment>
+```
+
+**示例**
+
+```javascript
+import { createFragment, h } from '@gyron/runtime'
+
+const App = h(() => {
+  return createFragment(['hello', 'world'])
+})
+```
+
+## createText
+
+同上，创建一个文本元素。
+
+**参数**
+
+- `children`: string | number | boolean | null | undefined - 文本内容。
+
+**类型声明**
+
+```ts d
+declare function createText(children: TextContent): VNode<typeof Text>
+```
+
+**示例**
+
+```javascript
+import { createText, h } from '@gyron/runtime'
+
+const App = h(() => {
+  return createText('hello world')
+})
+```
+
+## createElement
+
+同上，创建一个元素。
+
+**参数**
+
+- `tag`: 标签名称。
+- `props`: VNodeProps - 节点属性，在内部会使用`setAttribute`方法应用到元素上。
+- `children`: Children | Children[] - 子节点。可以是 VNode 节点或者字符串。
+
+**类型声明**
+
+```ts d
+declare function createElement(
+  tag: string,
+  props?: Partial<VNodeProps>,
+  children?: Children | Children[]
+): VNode
+```
+
+**示例**
+
+```javascript
+import { createElement, h } from '@gyron/runtime'
+
+const App = h(() => {
+  return createElement('div', { class: 'container' }, 'hello world')
+})
+```
+
+## createComment
+
+同上，创建一个注释元素。
+
+**参数**
+
+- `children`: string - 注释节点的内容。
+
+**类型声明**
+
+```ts d
+declare function createComment(children?: string): VNode<typeof Comment>
+```
+
+**示例**
+
+```javascript
+import { createComment, h } from '@gyron/runtime'
+
+const App = h(() => {
+  return createComment('async anchor')
+})
+```
+
+## cloneVNode
+
+克隆 VNode 节点，避免节点地址相同而放弃此次更新。
+
+**参数**
+
+- `vnode`: VNode | VNode[] - 需要克隆的节点。
+
+**类型声明**
+
+```ts d
+declare function cloneVNode(vnode: VNode | VNode[]): VNode | VNode[]
+```
+
+**示例**
+
+```javascript
+import { createComment, cloneVNode, h } from '@gyron/runtime'
+
+const App = h(() => {
+  return createComment('async anchor')
+})
+
+App !== cloneVNode(App) // true
+```
+
+## mergeVNode
+
+合并 props 到目标节点上。
+
+**参数**
+
+- `vnode`: VNode | VNode[] - 需要合并的节点。
+- `props`: VNodeProps - 要拷贝进节点的属性。
+
+**类型声明**
+
+```ts d
+declare function mergeVNode(
+  vnode: VNode | VNode[],
+  props: Partial<VNodeProps>
+): VNode<VNodeType> | VNode<VNodeType>[]
+```
+
+**示例**
+
+```javascript
+import { createComment, mergeVNode, h } from '@gyron/runtime'
+
+const Child = h(() => {
+  return createComment('async anchor')
+})
+
+const App = mergeVNode(Child, { class: 'container' })
+App.props.class === 'container' // true
+```
+
+## isVNode
+
+判断是否为 VNode 节点，避免与普通节点混淆。
+
+**参数**
+
+- `n`: 需要检查的对象。
+
+**类型声明**
+
+```ts d
+declare function isVNode(n: any): n is VNode
+```
+
+**示例**
+
+```javascript
+import { isVNode, h } from '@gyron/runtime'
+
+const App = h(() => {
+  return h('div', 'async anchor')
+})
+
+isVNode(App) // true
+```
+
+## isVNodeText
+
+同上，判断节点是否为文本节点。
+
+**示例**
+
+```javascript
+import { isVNodeText, createText } from '@gyron/runtime'
+
+const node = createText('hello world')
+
+isVNodeText(node) // true
+```
+
+## isVNodeComment
+
+同上，判断节点是否为注释节点。
+
+**示例**
+
+```javascript
+import { isVNodeComment, createComment } from '@gyron/runtime'
+
+const node = createComment()
+
+isVNodeComment(node) // true
+```
+
+## isVNodeElement
+
+同上，判断节点是否为元素节点。
+
+**示例**
+
+```javascript
+import { isVNodeElement, createElement } from '@gyron/runtime'
+
+const node = createElement('div', {}, 'hello world')
+
+isVNodeElement(node) // true
+```
+
+## isVNodeFragment
+
+同上，判断节点是否为 Fragment 节点。
+
+**示例**
+
+```javascript
+import { isVNodeFragment, createFragment } from '@gyron/runtime'
+
+const node = createFragment(['hello', 'world'])
+
+isVNodeFragment(node) // true
+```

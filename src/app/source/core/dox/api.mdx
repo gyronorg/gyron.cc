@@ -1,0 +1,187 @@
+> 次文档中描述的类型需要使用 npm 下载之后查看，在这里只描述出参数的种类和返回值。如果你有时间和精力欢迎加入我们完善文档。
+
+## createStore
+
+创建一个 store plugin，接受参数和 redux 的`configureStore`一样，支持`reducer`、`middleware`、`devTools`、`preloadedState`、`enhancers`。
+
+**类型声明**
+
+```ts d
+declare function createStore<
+  S extends object,
+  A extends Action = AnyAction,
+  M extends Middlewares<S> = [ThunkMiddlewareFor<S>]
+>(options: ConfigureStoreOptions<S, A, M>): Plugin<EnhancedStore<S, A, M>>
+```
+
+**示例**
+
+```jsx
+import { createStore } from '@gyron/dox'
+
+export default createStore({
+  reducer: {},
+})
+```
+
+## useSelector
+
+获取 store 中的 state，支持传入字符串或者一个函数，函数的参数是当前 state。
+
+**类型声明**
+
+```ts d
+declare function useSelector(sliceName?: string | ((state: any) => any)): any
+```
+
+**示例**
+
+```jsx
+import { useSelector } from '@gyron/dox'
+
+const App = () => {
+  const state = useSelector()
+  return <div>{state.value}</div>
+}
+```
+
+## useStore
+
+获取 store 对象。
+
+**类型声明**
+
+```ts d
+declare function useStore(): StorePlugin<any>
+```
+
+**示例**
+
+```jsx
+import { useStore } from '@gyron/dox'
+
+const App = () => {
+  const { state } = useStore()
+  return <div>{state.name}</div>
+}
+```
+
+## useDispatch
+
+返回一个 dispatch，通过这个 dispatch 触发 state 的变更。
+
+**类型声明**
+
+```ts d
+declare function useDispatch(): (
+  action: Partial<{
+    payload: any
+    type: any
+  }>
+) => void
+```
+
+**示例**
+
+```jsx
+import { useDispatch } from '@gyron/dox'
+
+const App = () => {
+  const dispatch = useDispatch()
+  dispatch({ type: 'counter/increment' })
+  return <div>{state.name}</div>
+}
+```
+
+## createAction
+
+创建一个动作触发器，同 redux 的`createAction`。更多信息请参考[createAction](https://redux-toolkit.js.org/api/createAction)。
+
+**类型声明**
+
+```ts d
+declare function createAction<P = void, T extends string = string>(
+  type: T
+): PayloadActionCreator<P, T>
+```
+
+**示例**
+
+```jsx
+import { createAction } from '@gyron/dox'
+
+const increment = createAction('counter/increment')
+increment()
+// { type: 'counter/increment' }
+```
+
+## createReducer
+
+简化创建 reducer 的函数。更多信息请参考[createReducer](https://redux-toolkit.js.org/api/createReducer)。
+
+**类型声明**
+
+```ts d
+declare function createReducer<S extends NotFunction<any>>(
+  initialState: S | (() => S),
+  builderCallback: (builder: ActionReducerMapBuilder<S>) => void
+): ReducerWithInitialState<S>
+```
+
+**示例**
+
+```jsx
+import { createAction, createReducer } from '@gyron/dox'
+
+const increment = createAction('counter/increment')
+
+const initialState = { value: 0 }
+
+const counterReducer = createReducer(initialState, (builder) => {
+  builder.addCase(increment, (state, action) => {
+    state.value++
+  })
+})
+```
+
+## createSlice
+
+创建一个模块片段。更多信息请参考[createSlice](https://redux-toolkit.js.org/api/createSlice)。
+
+**类型声明**
+
+```ts d
+declare function createSlice<
+  State,
+  CaseReducers extends SliceCaseReducers<State>,
+  Name extends string = string
+>(
+  options: CreateSliceOptions<State, CaseReducers, Name>
+): Slice<State, CaseReducers, Name>
+```
+
+**示例**
+
+```jsx
+import { createSlice } from '@gyron/dox'
+
+const counter = createSlice({
+  name: 'counter',
+  initialState: {
+    count: 0,
+  },
+  reducers: {
+    increment(state) {
+      state.count++
+    },
+  },
+})
+```
+
+## createAsyncThunk
+
+更多信息请参考[createAsyncThunk](https://redux-toolkit.js.org/api/createAsyncThunk)。
+
+## createEntityAdapter
+
+更多信息请参考[createEntityAdapter](https://redux-toolkit.js.org/api/createEntityAdapter)。

@@ -1,0 +1,21 @@
+## Hello World
+
+此页面是展示如何使用 Gyron JSX 语法创建一个 Hello World 节点，以及最终节点的内容。
+
+```jsx
+const App = <h1>Hello World</h1>
+// ↓ ↓ ↓ ↓ ↓
+import { jsx } from '@gyron/jsx-runtime'
+const App = jsx('h1', {
+  children: 'Hello World',
+})
+```
+
+上述的转换过程是通过其它平台的能力，比如 babel。在这里[JSX](/core/jsx/getting-started)可以看到代码转换的具体信息。
+
+如果你需要知道项目如何初始化，可以来这里[（初始化）](/docs/tutorial#创建一个新的%20Gyron%20应用)阅读更多信息。
+
+扩展阅读：
+
+- 代码在使用`babel-plugin-jsx`转换的过程中会涉及到 hmr 辅助代码的生成，如果你感兴趣可以去[babel-plugin-jsx](/core/jsx/getting-started#babel-plugin-jsx)了解更多。
+- 不使用 babel-plugin-jsx 插件也可以使用 JSX 语法，详情参见[https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime](https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime)。

@@ -1,0 +1,68 @@
+## 列表渲染
+
+当我们有一个场景需要展示一个订单列表，用户可以选择过滤掉某些订单便于快速操作，我们可以通过内联 map 和 filter 来完成这个功能。
+
+```jsx
+const App = ({ orders }) => {
+  return (
+    <ul>
+      {orders
+        .filter((order) => order.price > 2000)
+        .map((order) => (
+          <li>{order.name}</li>
+        ))}
+    </ul>
+  )
+}
+```
+
+我们通过 filter 先筛选出价格大于 2000 的订单然后通过 map 渲染它们。这是一个比较常见的用法，也可以在 map 中使用条件判断来完成这些事情。
+
+```jsx
+const App = ({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => {
+        if (order.price > 2000) {
+          return <li style={{ color: 'red' }}>{order.name}</li>
+        }
+        return <li>{order.name}</li>
+      })}
+    </ul>
+  )
+}
+```
+
+我们可以通过条件判断，让订单金额大于 2000 的文字更醒目。上面代码还可以简化成这样
+
+```jsx
+const App = ({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li style={{ color: order.price > 2000 ? 'red' : 'inherit' }}>
+          {order.name}
+        </li>
+      ))}
+    </ul>
+  )
+}
+```
+
+### Key
+
+> 有 Key 值的渲染可能会存在问题，如果有相关线索，请提交 [issues](https://github.com/Linkontoask/gyron/issues) 给我们
+
+在循环渲染中如果存在 key 值，那么循环中将会使用 key 作为比对标准，最小化的更新 dom 节点。
+
+```jsx line=5
+const App = ({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li key={order.id}>{order.name}</li>
+      ))}
+    </ul>
+  )
+}
+```

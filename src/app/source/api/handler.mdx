@@ -1,0 +1,85 @@
+## registerErrorHandler
+
+在组件中注册自己的错误异常处理。
+
+**参数**
+
+- `handler`: Function - 回调函数，组件渲染或者更新发生错误后会触发回调。
+
+**类型声明**
+
+```ts d
+declare function registerErrorHandler(handler: BoundariesHandler): void
+```
+
+**示例**
+
+```javascript
+import { registerErrorHandler, h } from '@gyron/runtime'
+
+const App = h(() => {
+  registerErrorHandler(({ message }) => {
+    message // Uncaught exceptions
+  })
+  throw new Error('Uncaught exceptions')
+})
+```
+
+## registerWarnHandler
+
+在组件中注册自己的警告边界行为。
+
+**参数**
+
+- `handler`: Function - 回调函数，组件渲染或者更新发生警告后会触发回调。
+
+**类型声明**
+
+```ts d
+declare function registerWarnHandler(handler: BoundariesHandler): void
+```
+
+**示例**
+
+```javascript
+import { registerWarnHandler, useInject, h } from '@gyron/runtime'
+
+const App = h(() => {
+  registerWarnHandler(({ message }) => {
+    message // Contextual information not obtained ...
+  })
+  useInject()('a')
+  return h('div', 'hello world')
+})
+```
+
+## manualErrorHandler
+
+在组件中自定义处理异常行为，通常在异步或者回调函数中非常有用。
+
+**参数**
+
+- `error`: Error | unknown - 错误信息，可以自定义错误信息然后使用`ErrorBoundary`中的 fallback 自定义 UI。
+- `component`: Component - 当前组件，可以在参数中或者 getCurrentComponent 方法中获取到。
+
+**类型声明**
+
+```ts d
+declare function manualErrorHandler(
+  error: Error | unknown,
+  component: Component
+): any
+```
+
+**示例**
+
+```javascript
+import { manualErrorHandler, h } from '@gyron/runtime'
+
+const App = h(() => {
+  Promise.reject('Error: Uncaught exceptions').catch((e) => {
+    manualErrorHandler(e, component)
+  })
+  return h('div', 'hello world')
+})
+```

@@ -1,0 +1,111 @@
+## h
+
+创建一个 VNode 节点，返回值为一个普通的对象。可以直接运行在浏览器，主要用来在非编译环境下编写应用。
+
+**参数**
+
+- `type`: VNodeType - 要创建的节点类型，可以是标签名或者一个函数。
+- `props`: string | VNodeProps - 可以是字符串或者对象，如果是字符串则会当作`children`。
+- `children`: Children | Children[] - 子节点。可以是 VNode 节点或者字符串。
+
+**返回值**
+
+一个 VNode 节点。
+
+**类型声明**
+
+```ts d
+declare function h(
+  type: VNodeType,
+  props?: string | VNodeProps,
+  children?: Children | Children[]
+): VNode
+```
+
+**示例**
+
+```javascript
+import { h } from '@gyron/runtime'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+```
+
+## nextRender
+
+等待数据渲染完成，在下一个刻度中可以获取到更新后的 DOM 节点。
+
+**参数**
+
+- `fn`: Noop - 回调函数，渲染完成后触发。
+
+**返回值**
+
+返回一个 Promise。
+
+**类型声明**
+
+```ts d
+declare function nextRender(fn?: Noop): Promise<unknown>
+```
+
+**示例**
+
+```javascript
+import { h, useValue, nextRender, useRef, onAfterMount } from '@gyron/runtime'
+
+const App = h(() => {
+  const count = useValue(0)
+  const ref = useRef()
+
+  onAfterMount(() => {
+    count.value++
+    nextRender().then(() => {
+      console.log(ref.current.innerText) // 1
+    })
+    console.log(ref.current.innerText) // 0
+  })
+  return () => h('div', { ref }, count.value)
+})
+```
+
+## createPlugin
+
+自定义插件，创建完成后需要使用`Instance`的`use`方法调用。必须包含`install`方法，`install`方法会被`use`函数调用。
+
+**参数**
+
+- `option`: PluginOption - 插件配置，其中 install 是必选项。
+
+**返回值**
+
+返回一个插件对象。
+
+**类型声明**
+
+```ts d
+declare function createPlugin<E>(option: PluginOption<E>): Plugin<E>
+```
+
+**示例**
+
+```javascript
+import { useReactive, createPlugin } from '@gyron/runtime'
+
+const store = useReactive({})
+
+const storePlugin = createPlugin({
+  name: 'storePlugin',
+  install: (instance, isSSR) => {
+    const rootContent = instance.root.context
+    rootContent.set('storePlugin', store)
+  },
+})
+
+function useStore() {
+  const context = useRootContext()
+  const store = context.get(TypeRouter)
+  return store
+}
+```

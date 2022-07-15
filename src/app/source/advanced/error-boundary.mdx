@@ -1,0 +1,84 @@
+## 错误边界
+
+错误边界是指可能在组件内发生的未知错误，有可能会影响其它组件的渲染和行为，为了解决这一个问题，
+我们可以在组件内使用`registerErrorHandler`或者`registerWarnHandler`勾子，如果可能发生异常的组件比较多，这时候可以使用 ErrorBoundary 内置组件替代这两个勾子的功能。
+
+ErrorBoundary 是帮助开发者在发生未捕获的异常时自定义渲染行为，它不仅可以捕获自身代码异常，还有可以捕获子级组件的异常。
+
+```tsx
+import {
+  registerErrorHandler,
+  registerWarnHandler,
+  BoundariesHandlerParams,
+} from '@gyron/runtime'
+
+const App = () => {
+  registerWarnHandler((params: BoundariesHandlerParams) => {
+    // ...
+  })
+  registerErrorHandler((params: BoundariesHandlerParams) => {
+    // ...
+  })
+  return <div></div>
+}
+```
+
+### 手动处理
+
+当错误发生在组件以外的区域，比如用户事件、异步函数，我们可以使用`manualErrorHandler`函数，前提是在上层组件中注册过`<ErrorBoundary />`组件
+
+```jsx
+import { ErrorBoundary, createInstance } from '@gyron/runtime'
+import Unstable from './unstable'
+
+createInstance(
+  <ErrorBoundary fallback={<div>Error</div>}>
+    <Unstable />
+  </ErrorBoundary>
+)
+```
+
+```jsx filename=unstable.jsx
+import { manualErrorHandler, getCurrentComponent } from '@gyron/runtime'
+
+export default () => {
+  const component = getCurrentComponent()
+  Promise.resolve()
+    .then(() => {
+      throw new Error('Asynchronous exceptions')
+    })
+    .catch((error) => {
+      manualErrorHandler(error, component)
+    })
+  return <div>Unstable</div>
+}
+```
+
+当渲染 Unstable 组件时，异步代码结束后会抛出异常，这个时候界面会展示一个 Error 字符串。
+
+### 降级处理
+
+```tsx
+import {
+  ErrorBoundary,
+  BoundariesHandlerParams,
+  createInstance,
+  FC,
+} from '@gyron/runtime'
+
+const FallbackUI = FC<BoundariesHandlerParams>(({ type, message, stack }) => {
+  return (
+    <div>
+      <h2>{type}</h2>
+      <p>{message}</p>
+      <pre>{stack}</pre>
+    </div>
+  )
+})
+
+createInstance(
+  <ErrorBoundary fallback={<FallbackUI />}>{/* Unstable */}</ErrorBoundary>
+)
+```
+
+当 ErrorBoundary 下层组件发生错误或手动抛出错误后，界面将会降级渲染。会展示一些友好的错误信息给用户，让然你可以自定义行为，也可以接入在线的错误跟踪平台。

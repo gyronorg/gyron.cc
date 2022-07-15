@@ -1,0 +1,327 @@
+## getCurrentComponent
+
+获取当前组件对象，但是请勿随意更改或者删除其中的值，可能会发生预期之外的错误。
+
+**返回值**
+
+返回组件对象。
+
+**类型声明**
+
+```ts d
+declare function getCurrentComponent(): Component
+```
+
+**示例**
+
+```javascript
+import { h, getCurrentComponent } from '@gyron/runtime'
+
+const App = h(() => {
+  const component = getCurrentComponent()
+  return () => h('div', 'hello world')
+})
+```
+
+## defineProps
+
+获取当前组件的 props，是为了解决 setup 函数中 props 不是最新的问题。
+
+**返回值**
+
+组件的 props，并且包含 children 对象。
+
+**类型声明**
+
+```ts d
+declare function defineProps<T extends Data>(): T & ComponentDefaultProps
+```
+
+**示例**
+
+```javascript
+import { h, defineProps } from '@gyron/runtime'
+
+const App = h(() => {
+  const props = defineProps()
+  return () => h('div', props.message)
+})
+```
+
+## forceUpdate
+
+在使用某些非响应式数据时想要更新，就可以使用此函数强制更新当前组件。
+这种方式不是推荐的，你可以使用 useValue 或者 useReactive 函数创建响应式数据。
+
+**类型声明**
+
+```ts d
+declare function forceUpdate(component: Component): void
+```
+
+**示例**
+
+```javascript
+import { h, forceUpdate } from '@gyron/runtime'
+
+const App = h(({ component }) => {
+  let message = 0
+  setTimeout(() => {
+    message = 1
+    forceUpdate(component)
+  })
+  return () => h('div', message)
+})
+```
+
+## useRef
+
+创建一个 ref 对象，可以绑定到 vnode 节点上，如果绑定的节点是一个普通节点，其值就为 Node，如果是组件，其值就是组件暴露的对象。
+
+**返回值**
+
+`{ current: any }`用户可以用 current 访问绑定的 ref 对象。
+
+**类型声明**
+
+```ts d
+declare function useRef<T = any>(): UserRef<T>
+```
+
+**示例**
+
+```javascript
+import { h, useRef } from '@gyron/runtime'
+
+const App = h(() => {
+  const ref = useRef()
+  return () =>
+    h('div', {
+      ref,
+    })
+})
+```
+
+## exposeComponent
+
+暴露组件中的数据给父组件使用。
+
+**类型声明**
+
+```ts d
+declare function exposeComponent(exposed: Record<string | number, any>): void
+```
+
+**示例**
+
+```javascript
+import { h, useValue, useRef, exposeComponent } from '@gyron/runtime'
+
+const Child = h(() => {
+  const name = useValue('foo')
+
+  exposeComponent({ name })
+
+  return h('div', null, name.value)
+})
+
+const App = h(() => {
+  const ref = useRef()
+
+  ref.current // {name: {value: 'foo'}}
+
+  return () =>
+    h(Child, {
+      ref,
+    })
+})
+```
+
+## onBeforeMount
+
+生命周期勾子，组件挂载之前调用。
+
+**类型声明**
+
+```ts d
+declare function onBeforeMount(callback: LifecycleCallback): void
+```
+
+**示例**
+
+```javascript
+import { h, onBeforeMount } from '@gyron/runtime'
+
+const App = h(() => {
+  onBeforeMount((component) => {
+    component // self
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+## onAfterMount
+
+生命周期勾子，组件挂载之后调用。
+
+**类型声明**
+
+```ts d
+declare function onAfterMount(callback: LifecycleCallback): void
+```
+
+**示例**
+
+```javascript
+import { h, onAfterMount } from '@gyron/runtime'
+
+const App = h(() => {
+  onAfterMount((component) => {
+    component.$el // HTMLDivElement
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+## onBeforeUpdate
+
+生命周期勾子，组件更新之前调用。可以返回 Falsy 组织自身和子组件的更新。
+
+**类型声明**
+
+```ts d
+declare function onBeforeUpdate(callback: LifecycleCallback<boolean>): void
+```
+
+**示例**
+
+```javascript
+import { h, onBeforeUpdate } from '@gyron/runtime'
+
+const App = h(() => {
+  onBeforeUpdate((component) => {
+    return false // 当发生变更也不会更新视图
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+## onAfterUpdate
+
+生命周期勾子，组件更新之后调用。
+
+**类型声明**
+
+```ts d
+declare function onAfterUpdate(callback: LifecycleCallback): void
+```
+
+**示例**
+
+```javascript
+import { h, onAfterUpdate } from '@gyron/runtime'
+
+const App = h(() => {
+  onAfterUpdate((component) => {
+    component.$el // DOM元素已经更新
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+## onDestroyed
+
+生命周期勾子，组件销毁之后调用。
+
+**类型声明**
+
+```ts d
+declare function onDestroyed(callback: LifecycleCallback): void
+```
+
+**示例**
+
+```javascript
+import { h, onDestroyed } from '@gyron/runtime'
+
+const App = h(() => {
+  const timer = setInterval(() => {
+    console.log(Date.now())
+  }, 1000)
+  onDestroyed((component) => {
+    clearInterval(timer)
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+## FC
+
+在 typescript 中帮助开发者进行类型推导。
+
+**返回值**
+
+返回组件本身。
+
+**类型声明**
+
+```ts d
+declare function FC<Props extends Data = object>(
+  componentFunction: ComponentSetupFunction<Props, false>
+): ComponentSetupFunction<Props, false>
+```
+
+**示例**
+
+```ts d
+import { FC } from '@gyron/runtime'
+
+interface Props {
+  count: number
+}
+
+const Child = FC<Props>(() => {
+  return ({ count }) => <span>{count}</span>
+})
+
+export const App = FC(() => {
+  return <Child count={1} />
+})
+```
+
+## FCA
+
+异步组件的包裹函数，提供 fallback 回退方案，支持打包工具异步导入等场景。
+
+**类型声明**
+
+```ts d
+declare function FCA<Props extends Data = object>(
+  componentAsyncFunction: AsyncComponentFunction<Props>
+): {
+  (props: AsyncProps<Props>):
+    | Promise<VNode<VNodeType> | VNode<typeof Comment>>
+    | ((props: AsyncProps<Props>) => VNode)
+  __loader: (
+    props: AsyncProps<Props>
+  ) => Promise<VNode<VNodeType> | VNode<typeof Comment>>
+}
+```
+
+**示例**
+
+```ts d
+import { FCA } from '@gyron/runtime'
+
+interface Props {
+  count: number
+}
+
+const Child = FCA<Props>(() => {
+  return () => import('./Son')
+})
+
+export const App = FC(() => {
+  return <Child fallback={<span>loading...</span>} count={1} />
+})
+```

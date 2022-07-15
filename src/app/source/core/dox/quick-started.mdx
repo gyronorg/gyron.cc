@@ -1,0 +1,105 @@
+## 快速使用
+
+> 在开始使用之前我们需要了解`redux`状态库相关知识，我们的`dox`完全基于`redux`，如果你还不清楚`redux`相关知识，那就需要前往[https://redux.js.org/](https://redux.js.org/)进行学习。
+
+`Dox`是`redux`的`Gyron`状态库，在不破坏 immutable 的同时，让其数据更改变得可响应。
+在内部使用了一个响应式变量作为 state 的副本，只需要在修改时同步 state 到这个响应式变量上。这个响应式变量无法在外部进行修改，只能通过 dispatch 修改，这样保证了数据的稳定性。
+
+### 创建 Store
+
+可以使用`createStore`创建一个 store plugin，然后将其导出
+
+```js filename=store.js
+import { createStore } from '@gyron/dox'
+
+export default createStore({
+  reducer: {},
+})
+```
+
+### 在组件中使用 State
+
+创建完一个 store 之后就可以根据实际场景在 reducer 中添加全局状态(State)。
+
+```js filename=login.js line=3
+createStore({
+  reducer: (state = { value: 0 }) => {
+    return state
+  },
+})
+```
+
+接着就可以在应用中任何地方使用这个 State。
+
+```js
+import { useSelector } from '@gyron/dox'
+
+const App = () => {
+  const state = useSelector()
+  return <div>{state.value}</div>
+}
+```
+
+### 创建一个模块
+
+在简单的数据场景中上面已经可以满足了，但是在开发的时候会遇到一些比较复杂的场景，比如自定义中间件、根据页面分离 state，我们可以使用`createSlice`方法创建一个 state 片段。
+
+```js filename=counter.js
+import { createSlice } from '@gyron/dox'
+
+const counter = createSlice({
+  name: 'counter',
+  initialState: {
+    count: 0,
+  },
+  reducers: {
+    increment(state) {
+      state.count++
+    },
+  },
+})
+
+export const { increment } = counter.actions
+
+export const counter = counter.reducer
+```
+
+此时可以这样应用上述这个模块。
+
+```js line=5
+import { counter } from './counter'
+
+createStore({
+  reducer: {
+    counter,
+  },
+})
+```
+
+### 更新 Store
+
+state 在外部是无法进行更新的，如果强制更新会导致异常，如果需要更新需要通过 dispatch 方法。
+
+```js
+import { createStore } from '@gyron/dox'
+
+const store = createStore({
+  reducer: (state = { value: 0 }, action) => {
+    switch (action.type) {
+      case 'counter/incremented':
+        return { value: state.value + 1 }
+      case 'counter/decremented':
+        return { value: state.value - 1 }
+      default:
+        return state
+    }
+    return state
+  },
+})
+
+const state = store.extra.getState()
+// 错误的更新
+state.value = 1
+// 正确的更新
+store.extra.dispatch({ type: 'counter/incremented' })
+```

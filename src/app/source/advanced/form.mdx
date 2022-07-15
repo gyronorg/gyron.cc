@@ -1,0 +1,100 @@
+## 表单
+
+当你在制作后台管理系统时，就会接触到很多表单输入选项。Gyron 的表单数据绑定和默认表单数据提交是不同的行为。
+
+在 HTML 表单中的提交数据由 DOM 元素属性和值提供，在 Gyron 中不同的是你需要自定义数据的绑定，通常这样做可以更灵活的掌控自己的数据变化。
+
+### 基本例子
+
+我们用两种不同用法对比他们的优缺点。
+
+```HTML
+<form>
+  <label>
+    名字:
+    <input type="text" name="name" />
+  </label>
+  <input type="submit" value="提交" />
+</form>
+```
+
+这种写法好处就是不需要过多的处理，当用户输入完成后点击提交按钮即可，缺点也很明显，没办法对输入的值进行修改。
+
+```jsx line=9
+import { useReactive } from '@gyron/runtime'
+
+const Form = () => {
+  const state = useReactive({
+    name: '',
+  })
+
+  const handleSubmit = (e) => {
+    // 自定义提交行为
+    e.preventDefault()
+  }
+
+  return () => (
+    <form onSubmit={handleSubmit}>
+      <label>
+        名字:
+        <input
+          type="text"
+          name="name"
+          value={state.name}
+          onChange={(e) => (state.name = e.target.value)}
+        />
+      </label>
+      <input type="submit" value="提交" />
+    </form>
+  )
+}
+```
+
+### 受控组件
+
+还需要注意的就是某些控件的值不是 value，比如`<input type="checkbox" checked />`的 value 就是 checked，在绑定值的时候请使用 checked。
+
+有一个特殊的例子就是`select`标签，它的 value 是根据 option 的 checked 的状态来决定的，这在我们内部做了兼容处理，所以只需要关心 value 的值即可。
+
+```jsx
+import { useValue } from '@gyron/runtime'
+
+const App = () => {
+  const selected = useValue(['bar'])
+
+  const handleChange = (e) => {
+    const value = Array.from(e.target.selectedOptions).map(
+      (select) => select.value
+    )
+    selected.value = value
+  }
+
+  return () => (
+    <select multiple={true} value={selected.value} onChange={handleChange}>
+      <option value="foo">foo</option>
+      <option value="bar">bar</option>
+    </select>
+  )
+}
+```
+
+上面的例子就是一个简单的多选例子，在发生变更的时候通过 selectedOptions 来更新绑定的值，如果绑定的值发生变更也会更新 select 的状态。
+
+如果你想管理输入状态或者需要组合输入的状态管理可以使用 onInput 或者使用`onCompositionstart/onCompositionend`事件。
+
+**注意：如果依赖的值没有发生变更，可以使用 update 进行更新操作**
+
+```jsx line=8
+import { useValue } from '@gyron/runtime'
+
+const App = ({ component }) => {
+  const code = useValue('')
+
+  const handleInput = (e) => {
+    code.value = e.target.value.toLocaleUpperCase()
+    component.update()
+  }
+
+  return () => <input value={code.value} onInput={handleInput} />
+}
+```

@@ -1,0 +1,157 @@
+## JSX 介绍
+
+jsx 是 javascript 的语法扩展，因为其特性足够好并且学习成本低，Gyron 不再自己创造自己的语法，而是适配现有的 jsx 语法糖。
+
+核心库中有四个关于 jsx 的库，他们的作用都是把 jsx 语法转换成运行时的代码，只是运行在不同平台上而已。
+
+## babel-plugin-jsx
+
+babel-plugin-jsx 是将 jsx 语法转换成 Gyron 方法的 babel 插件，他和其它类型库一样，都是使用 babel 提供的 visitor 访问者将 JSXElement 等 jsx token 转换成`h()`可执行函数。
+
+babel-plugin-jsx 还可以在开发环境时生成 hmr 辅助代码，在开发大型项目时收益非常大。
+
+### 安装
+
+通过包管理平台`yarn`进行安装。
+
+```bash
+yarn add -D @gyron/babel-plugin-jsx
+```
+
+### 使用
+
+你可以在任何接入 babel 的平台上使用，比如在 webpack 插件`babel-loader`中使用。
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.m?js$/,
+      exclude: /(node_modules|bower_components)/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env'],
+          plugins: ['@gyron/babel-plugin-jsx'],
+        },
+      },
+    },
+  ]
+}
+```
+
+也可以在`node > 14`版本中使用 esm 语法转换 jsx 代码。
+
+```js filename=babel.config.mjs
+import babelJsx from '@gyron/babel-plugin-jsx'
+
+export default {
+  plugins: [babelJsx],
+}
+```
+
+### 参数
+
+babel-plugin-jsx 接受两个参数以帮助用户转换出更贴切的代码。
+
+- `hmr` 是否生成热更新辅助代码。
+- `setup` 是否自动将[无状态组件](/docs/component#有状态组件%20和%20无状态组件)转换成[有状态组件](/docs/component#有状态组件%20和%20无状态组件)。
+
+### 热更新
+
+babel-plugin-jsx 会自动寻找 Gyron 中的组件，并且在组件函数上附加一些`runtime helper`代码帮助 Gyron 进行热更新，如果只接入 babel-plugin-jsx 热更新功能还不会生效，还需要知道如何进行`rerender`。通常我们的做法是识别代码中的`comment`节点然后插入`rerender helper`代码进行更新。具体可以参考`vite-plugin-jsx`的实现。
+Gyron 会自动寻找组件之间的依赖关系并且在开发环境中对依赖的组件进行更新。
+
+```jsx
+const App = () => {
+  return <div>App</div>
+}
+// ↓ ↓ ↓ ↓ ↓
+const App = () => {
+  return h('div', null, ['App'])
+}
+App.__hmr_id = 'xxaanncc'
+```
+
+### 插件
+
+我们提供了下面两种平台的开箱即用的插件，方便开发者集成。
+
+这两种插件都集成在`babel-plugin-jsx`包中，它们以不同的方式导出。并且都支持传入参数控制代码转换。
+
+- #### esbuild
+
+```js
+import esbuild from 'esbuild'
+import { babelESBuildJsx } from '@gyron/babel-plugin-jsx'
+
+esbuild.build({
+  // ...
+  plugins: [
+    babelESBuildJsx({
+      hmr: true,
+      setup: true,
+    }),
+  ],
+})
+```
+
+- #### vite
+
+```js line=6
+import { defineConfig } from 'vite'
+import { babelViteJsx } from '@gyron/babel-plugin-jsx'
+
+export default () => {
+  return defineConfig({
+    plugins: [
+      babelViteJsx({
+        hmr: true,
+        setup: true,
+      }),
+    ],
+  })
+}
+```
+
+## jsx-runtime
+
+jsx-runtime 是支持现代的 jsx 构建器，一般用于 babel-plugin-transform-react-jsx 插件。
+
+通过`yarn`安装
+
+```bash
+yarn add -D @gyron/jsx-runtime
+```
+
+**使用**
+
+在使用的时候需要注意如果指定了`pragma`需要导入相关的包。
+
+```jsx
+/** @jsx reactCreateElement */
+import { reactCreateElement } from '@gyron/jsx-runtime'
+
+// 然后就可以在代码中使用 jsx 语法了
+const App = () => {
+  return <div>Hello World</div>
+}
+```
+
+这里有一个 vite 的简单用法。
+
+> 注意一点就是 vite 不会在一开始就加载 jsx-runtime 代码，所以第一次加载界面会白屏，只要刷新一下界面即可。
+
+```js line=6,7,8
+import { defineConfig } from 'vite'
+
+export default ({ mode }) => {
+  return defineConfig({
+    esbuild: {
+      jsxInject: `import { reactCreateElement, Fragment } from '@gyron/jsx-runtime'`,
+      jsxFactory: 'reactCreateElement',
+      jsxFragment: 'Fragment',
+    },
+  })
+}
+```

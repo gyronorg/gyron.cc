@@ -1,0 +1,132 @@
+# Gyron
+
+> 注意：可能当前版本不适合运行在正式环境中，请注意控制台提示。
+
+`Gyron`是一款灵活的 MVVM 框架，压缩后可减少到 6.9KB ，相比于其它框架，体积上面它有更大的优势。
+
+`Gyron`的视图更新尽可能最小，用户可以在生命周期钩子中告诉`Gyron`，此次数据更新不需要自动渲染。
+
+## 在线体验
+
+如果你想使用`Gyron`进行开发但是电脑上没有相关环境，可以使用自带浏览器访问我们的在线体验地址，在里面可以编写任何的用户代码，并且可以得到实时反馈。
+
+去 [codepen](https://codepen.io/linkontoask/embed/ExQNxGR?default-tab=js%2Cresult&editable=true)，或者[codesandbox](https://codesandbox.io/s/gyron-ckwixo?file=/src/index.tsx)直接在线体验。
+
+也可以下载一个 [index.html](https://github.com/Linkontoask/gyron/blob/master/packages/runtime/example/index.html)，用文本编辑器进行编辑或者使用命令行 `npm install serve -g` ，安装一个静态站点服务。
+然后使用命令行 `serve` 启动一个临时 web 服务访问。（我们目前只提供`esm`规范的模块，所以请检查你的浏览器是否支持`type="module"`属性）
+
+## 在网站中使用 Gyron
+
+我们可以使用各种 CDN 服务来访问我们的代码，在你的页面中添加一个`script`标签，并且加上`type="module"`属性，然后再通过 esm 模块的形式导入`createInstance`方法，创建一个 Gyron 应用实例。
+
+```html
+<div id="root"></div>
+
+<script type="module">
+  import { createInstance, h } from 'https://cdn.skypack.dev/@gyron/runtime'
+  createInstance(h('button', 'Like')).render('#root')
+</script>
+```
+
+在大多数情况下，JSX 语法更接近原始语法，学习成本不高，所以我们推荐使用 JSX 构建我们的应用。
+
+你可以通过[在线编译器](https://codesandbox.io/s/gyron-ckwixo?file=/src/index.tsx)试用 JSX。
+
+上述代码通过 JSX 表示如下
+
+```jsx
+import { createInstance } from '@gyron/runtime'
+createInstance(<button>Like</button>)
+```
+
+## 创建一个新的 Gyron 应用
+
+接下来教程会带着大家如何从 0 搭建一个开发环境，并启动 HelloWorld 项目。
+
+### 通过 CLI
+
+首先，我们需要全局安装`@gyron/cli`，然后运行`gyron create <instance-name>`。
+
+或者使用`npx @gyron/cli create <instance-name>`，然后根据提示进行下一步。
+
+完成之后，我们根据提示，进入到对应目录下执行安装依赖命令`npm install`。安装完依赖后就可以使用`npm run start`启动项目，运行完成后打开我们的浏览器输入[http://localhost:3000](http://localhost:3000)就可以看到我们的应用。
+
+将上面描述转换为命令如下：
+
+```bash
+# 全局安装 CLI
+npm install @gyron/cli -g
+# 创建项目
+gyron create <instance-name>
+# 进入项目
+cd <instance-name>
+# 安装依赖
+npm install
+# 运行
+npm run start
+```
+
+### 从 0 开始
+
+创建一个前端应用通常由这些工具链完成：
+
+- 包管理器。比如`yarn`、`npm`、`pnpm`。
+- 打包器。比如`webpack`、`vite`、`esbuild`。
+- 编译器。比如`babel`、`tsc`。
+
+在阅读后面教程时，会有一个前置条件，您的电脑中需要安装 node 和 npm。并且 node 的版本必须大于 14。
+
+先使用包管理器初始化一个项目，详情参阅[npm init](https://docs.npmjs.com/cli/v8/commands/npm-init)。
+
+接着安装相关依赖
+
+```bash
+npm add @gyron/runtime @gyron/babel-plugin-jsx vite -D
+```
+
+然后在 package.json 文件中编写一个启动脚本和构建脚本。
+
+```json filename=package.json
+{
+  "scripts": {
+    "build": "vite build",
+    "start": "vite"
+  }
+}
+```
+
+安装后在项目根目录中创建一个`vite.config.js`文件，并写入下面的内容。
+
+```javascript filename=vite.config.js
+import { babelViteJsx } from '@gyron/babel-plugin-jsx'
+import { defineConfig } from 'vite'
+
+export default ({ mode }) => {
+  return defineConfig({
+    define: {
+      __DEV__: mode === 'development',
+    },
+    plugins: [babelViteJsx({ hmr: mode === 'development', setup: true })],
+  })
+}
+```
+
+完成后在根目录再创建一个 index.html 入口文件。并指定一个根节点文件，通常都叫 index.jsx。
+
+```html filename=index.html
+<div id="root"></div>
+<script type="module" src="./src/index.jsx"></script>
+```
+
+```jsx filename=src/index.jsx
+import { createInstance } from '@gyron/runtime'
+createInstance(<button>Like</button>).render('#root')
+```
+
+最后再运行脚本`npm run start`，再打开浏览器输入[http://localhost:3000](http://localhost:3000)地址，就可以看到一个按钮，至此，就完成了一个项目从 0 到 1 的过程。
+
+到这里也只是完成了项目的基本结构，还可以引入[eslint](https://eslint.org/docs/user-guide/getting-started)、[prettier](https://prettier.io/docs/en/install.html)、[typescript](https://www.typescriptlang.org/)这些优秀的库，在多人协作时尤其有用。
+
+文档名词解释：
+
+- `Gyron` 框架名称。在 npm 中是 `@gyron/runtime`，所以在安装的时候请运行 `npm install @gyron/runtime`

@@ -1,0 +1,276 @@
+## 组件
+
+组件是构建页面元素的重要部分，它允许您创建可重用的元素和模块，与 web component 类似，可以做的事情有很多，这部分值得你的探索。
+
+## 函数
+
+函数是一个 javascript 的重要功能，函数可以是一组用来控制任务执行和中断的逻辑块。
+
+将函数用作组件是一个非常贴近开发者思维的作法，它不仅简单，还便于代码复用。
+
+下面介绍一个简单的例子。
+
+```jsx
+const HelloWorld = () => {
+  return <div>Hello World</div>
+}
+```
+
+HelloWorld 就是我们的函数组件，用来渲染一个 div 元素，显示的内容就是 Hello world。
+
+如果你想将这个组件用在不同的地方，那么你只需要导入这个组件然后像写元素一样使用即可。
+
+```jsx line=7
+const HelloWorld = () => {
+  return <div>Hello World</div>
+}
+const App = () => {
+  return (
+    <div class="container">
+      <HelloWorld />
+    </div>
+  )
+}
+```
+
+### Setup 和 Render
+
+函数组件分为两个区域，一个是 setup scope，另外一个是 render scope。
+setup scope 区域在组件渲染的流程中只会被执行一次，只有在销毁组件后再次渲染才会被执行。
+顾名思义，render scope 就是负责组件更新，只要组件依赖的数据发生变更或者使用`forceUpdate`强制更新时执行。
+
+如果你够仔细，那么你会发现 App 组件和 HelloWorld 组件不太一样，App 组件返回了一个函数用来渲染页面，为什么可以参考前面一篇教程，里面解释的很详细。
+
+[为什么组件要返回一个函数](/docs/useReactive#组件更新)
+
+在`有状态组件`的`setup`函数中使用解构的时候需要特殊注意，props 是不会得到更新，如果要访问 props 需要使用“props.xxxxx”。
+
+```jsx line=4,5,6,7
+import { useValue } from '@gyron/runtime'
+
+const HelloWorld = () => {
+  const count = useValue(0)
+  function update() {
+    count.value++
+  }
+  return () => {
+    return <div onClick={update}>counter {count.value}</div>
+  }
+}
+```
+
+上述高亮行部分就是 setup 区域。
+
+```jsx line=9
+import { useValue } from '@gyron/runtime'
+
+const HelloWorld = () => {
+  const count = useValue(0)
+  function update() {
+    count.value++
+  }
+  return () => {
+    return <div onClick={update}>counter {count.value}</div>
+  }
+}
+```
+
+上述高亮行部分就是 render 区域。
+
+```jsx
+import { FC } from '@gyron/runtime'
+
+interface HelloWorldProps {
+  message: string
+  update: () => void
+}
+
+const HelloWorld = FC<HelloWorldProps>(() => {
+  // bad
+  // ({ message }) => {}
+
+  // good
+  // () => {
+  //   const props = defineProps()
+  // }
+  return ({ message }) => <div onClick={update}>I Am {message}</div>
+})
+```
+
+### 参数(Props)
+
+有的时候我们想让组件变得更通用，可能需要传递数据到组件之后有不同的反馈，这就是 Props 的作用。
+
+使用的方式也和函数一样，但是注意，有几个内部的参数名已经被占用：
+
+- children （用来向组件传递子组件/元素）
+- isSSR （当前环境是否处于 SSR 中，可以用这个参数编写更通用的代码）
+
+一个常用例子。
+
+```jsx
+const HelloWorld = ({ message }) => {
+  return <div>I Am {message}</div>
+}
+const App1 = <HelloWorld message="Legend" />
+const App2 = <HelloWorld message="Legend 2" />
+```
+
+我们向 HelloWorld 组件传递了一个 message 参数，在第一个场景下会展示`I Am Legend`，在第二个场景下会展示`I Am Legend 2`。
+
+数据在组件中往往都是单向流动的，但是有些场景需要在子组件中改变父组件的数据，我们推荐传递一个 update 函数给子组件，然后子组件调用 update 函数更新数据。
+
+```jsx
+import { useValue } from '@gyron/runtime'
+
+const HelloWorld = ({ message, update }) => {
+  return <div onClick={update}>I Am {message}</div>
+}
+const App = () => {
+  const name = useValue('Legend')
+  return () => (
+    <div class="container">
+      <HelloWorld
+        message={name.value}
+        update={() => (name.value = 'Legend 2')}
+      />
+    </div>
+  )
+}
+```
+
+### TypesSript
+
+Gyron 是完全支持 TypesSript 类型系统的，但是要接入 JSX，还需要用一个包裹函数 FC，它完全不改变组件的行为，只是提供了一个类型提示，在编写组件和使用组件的时候可以提示用户。
+
+```jsx
+import { FC } from '@gyron/runtime'
+
+interface HelloWorldProps {
+  message: string
+  update: () => void
+}
+
+const HelloWorld = FC<HelloWorldProps>(({ message, update }) => {
+  return <div onClick={update}>I Am {message}</div>
+})
+```
+
+### Ref
+
+有的时候我们需要自定义渲染，或者想接入第三方框架。我们可以使用`useRef`方法创建一个对象，它会暴露一个`current`属性，然后在对应的组件或元素上使用 ref 进行绑定。
+
+```jsx line=4,11
+import { useRef, onAfterMount } from '@gyron/runtime'
+
+const App = () => {
+  const ref = useRef()
+
+  onAfterMount(() => {
+    console.log(ref.current)
+    // HTMLDivElement
+  })
+
+  return () => <div ref={useRef}></div>
+}
+```
+
+### 生命周期钩子
+
+已经阅读过这篇文章，只是想确定生命周期执行的顺序，可以去查看[实例](/docs/instance#生命周期)这篇教程后面的生命周期图。
+
+在制作一款复杂的应用时，往往需要更多的逻辑完善应用。比如，我们在请求后端数据时或者当组件销毁时需要一些自定义处理，就可以使用生命周期钩子帮助你完成这些功能。
+
+```jsx line=4
+import { onAfterMount } from '@gyron/runtime'
+
+const HelloWorld = ({ message }) => {
+  onAfterMount(({ $el }) => {
+    // 在组件渲染完成之后将文字颜色改变成蓝色
+    $el.style.color = 'blue'
+  })
+  return () => <div>I Am {message}</div>
+}
+```
+
+或者在组件销毁时删除组件内的定时器。
+
+```jsx line=9
+import { onDestroyed } from '@gyron/runtime'
+
+const HelloWorld = ({ message }) => {
+  const timer = setInterval(() => {
+    console.log(Date.now())
+  }, 1000)
+  onDestroyed(() => {
+    // 移除定时器
+    clearInterval(timer)
+  })
+  return () => <div>I Am {message}</div>
+}
+```
+
+当组件销毁时，就会移除`timer`定时器。
+
+再或者我们用 Gyron 完成一些高频 dom 操作，比如，改变元素的位置，但不需要及时更新 dom。通常在以前的编程模式中会直接改变 dom 元素的位置，但这会造成代码的臃肿和不可维护，如果使用 Gyron，那么这些问题可以迎刃而解。
+
+```jsx line=10
+import { useReactive, onBeforeUpdate } from '@gyron/runtime'
+
+const HelloWorld = ({ message }) => {
+  const state = useReactive({
+    allowUpdate: false,
+    x: 0,
+    y: 0,
+  })
+  onBeforeUpdate(() => {
+    return state.allowUpdate
+  })
+  return () => (
+    <div
+      style={{
+        position: 'absolute',
+        left: position.x + 'px',
+        top: position.y + 'px',
+      }}
+    >
+      I Am {message}
+    </div>
+  )
+}
+```
+
+我们可以通过改变`state.allowUpdate`的值来告诉 Gyron，此次数据变更是否需要自动更新。这样，即使`state.x`或者`state.y`发生变更也是可控的。
+
+### 有状态组件 和 无状态组件
+
+在阅读完 Setup 和 Render 一栏后就应该有一个大概的认知，在 Gyron 中为什么会有`无状态`组件和`有状态`组件。
+
+`有状态`组件是指一个组件拥有内部数据，在下次更新时这些数据不被刷新。当一个组件的返回值是一个函数时，并且函数的返回值是一个节点时，那么我们就称之为`有状态`组件。
+
+```jsx line=4
+import { useValue } from '@gyron/runtime'
+
+const HelloWorld = () => {
+  const count = useValue(0)
+  return () => <div>{count}</div>
+}
+```
+
+有些情况下只想封装一些 UI 组件，他们的所有状态全部来自父组件，也就是说自己内部不需要管理这些状态，只需要管理好 UI 表现和响应用户事件。`无状态`组件具有更好的迁移特性。
+
+当组件直接返回一个节点时，那这个组件就是`无状态`组件。`无状态`组件无法拥有内部状态，在每一次更新都会重新执行一次函数，如果需要保留组件内部的状态，请使用`有状态`组件。
+
+```jsx line=4
+import { useValue } from '@gyron/runtime'
+
+const HelloWorld = ({ count }) => {
+  return <div>{count}</div>
+}
+```
+
+## 异步组件
+
+异步组件可以用在页面的懒加载上面，以减少首页需要加载的资源。
+
+异步组件还可以做一些其它的事情，高级教程中会详细介绍。[异步组件](/docs/async-component)

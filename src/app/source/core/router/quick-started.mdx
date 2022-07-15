@@ -1,0 +1,527 @@
+## 快速使用
+
+阅读完上一篇文档后知道如何安装 Router，这篇文档将告诉你如何快速搭建各个不同应用场景的代码。
+
+### 声明式路由
+
+在开始写代码之前需要知道路由的一些基本知识。Routes 是路由的承载，只有在 Routes 下声明 Route 才会被路由规则匹配，如果需要使用 Layout 等场景可以使用 [Outlet](<#嵌套渲染(Outlet)>) 组件。
+
+```jsx
+import { createInstance } from '@gyron/runtime'
+import { createBrowserRouter, Route, Routes } from '@gyron/router'
+
+const router = createBrowserRouter()
+
+createInstance(
+  <Routes>
+    <Route path="" strict element={<Welcome />}></Route>
+    <Route path="user" element={<User />}>
+      <Route path=":id">
+        <Route path="member" element={<Member />}></Route>
+        <Route path="setting" element={<Setting />}></Route>
+      </Route>
+    </Route>
+    <Route path="*" element={<Mismatch />}></Route>
+  </Routes>
+)
+  .use(router)
+  .render(document.getElementById('root'))
+```
+
+上述代码中声明了一个默认页面、用户页面和 404 页面，在用户页面下又可以根据用户的 ID 和路由后缀匹配到不同的组件中。
+比如我访问`/user/admin/member`，Routes 会渲染出下面的等效代码。
+
+```jsx
+<User>
+  <Member />
+</User>
+```
+
+并且可以在 Member 组件中通过`useParams`勾子访问到用户 ID。
+
+```jsx filename=member.jsx
+import { useParams } from '@gyron/router'
+
+const Member = () => {
+  const params = useParams()
+  return () => <div>{params.id}</div> //<div>admin</div>
+}
+```
+
+当我们访问到一个未匹配的路由时，比如`/teams/gyron`，Routes 会渲染出下面的等效代码。
+
+```jsx
+<Mismatch />
+```
+
+Routes 很聪明，如果你把`*`路由放在最前面，Routes 也可以正确处理。
+
+```jsx
+<Routes>
+  <Route path="*" element={<Mismatch />}></Route>
+  <Route path="" strict element={<Welcome />}></Route>
+</Routes>
+```
+
+Route 中还存在一种优先级的情况，比如使用直接匹配的路由会比正则模式匹配的路由[优先级](#路由规则)更高。
+
+```jsx
+<Routes>
+  <Route path=":id" element={<User />}></Route>
+  <Route path="admin" strict element={<Admin />}></Route>
+</Routes>
+```
+
+访问`/admin`将会匹配到`<Admin />`而不是`<User />`。
+
+### 配置型路由
+
+在编写应用的时候往往会遇到很复杂的情况，有的路由需要经过复杂的权限校验，有的路由是异步加载，而实现上述场景，声明式路由可能不太直观，阅读起来很麻烦。
+
+这个时候配置型路由就可以发挥作用，它就是一个 plain object 型的数组，在 Router 中对应的类型 是`Array<RouteRecordConfig>`。
+
+```jsx
+import { useRoutes } from '@gyron/router'
+
+const App = () => {
+  return useRoutes([
+    {
+      path: '',
+      strict: true,
+      element: <Welcome />,
+    },
+    {
+      path: 'user',
+      element: <User />,
+      children: [
+        {
+          path: ':id',
+          children: [
+            {
+              path: 'member',
+              element: <Member />,
+            },
+            {
+              path: 'setting',
+              element: <Setting />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '*',
+      element: <Mismatch />,
+    },
+  ])
+}
+```
+
+上面就是配置型路由的写法，它和这个文档中第一个例子是等效的。你会发现，这样配置起来很麻烦，是的，他不适合这种静态场景。
+
+如果遇到的是需要经过权限校验或者后端控制的路由界面，那么配置型路由将得心应手。
+
+```jsx line=23
+import { useValue } from '@gyron/runtime'
+import { useRoutes } from '@gyron/router'
+
+const routes = [
+  {
+    path: '',
+    strict: true,
+    element: <Welcome />,
+  },
+  {
+    path: '*',
+    element: <Mismatch />,
+  },
+]
+
+const getPermissionList = () => {
+  const list = useValue([])
+  // 处理 list ...
+  return list
+}
+
+const App = () => {
+  const list = getPermissionList()
+  return () => {
+    return useRoutes(
+      routes.concat(
+        list.value.map((route) => {
+          return {
+            path: route.path,
+            element: route.element,
+          }
+        })
+      )
+    )
+  }
+}
+```
+
+### 导航
+
+Router 提供了`Link`组件用于界面导航，它阻止了浏览器的默认行为，变更为使用`useRouter`提供的`push`或者`replace`。
+
+```jsx
+import { Link } from '@gyron/router'
+
+const Navigation = () => {
+  return () => {
+    return (
+      <div>
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+      </div>
+    )
+  }
+}
+```
+
+Link 组件还提供了跳转模式，传入`replace`就可以替换当前 history state。
+
+```jsx
+<Link to="/" replace>
+  Home
+</Link>
+```
+
+路由指示器可以很醒目的告诉用户当前所在的位置，Link 组件提供了`activeClassName`和`activeStyle`这两个参数，只需要在使用的时候加上即可。
+
+```jsx
+<Link to="/" activeClassName="active-link" activeStyle={{ color: 'green' }}>
+  Home
+</Link>
+```
+
+## 路由规则
+
+在开发 Router 的时候嵌套路由是最基本也是最关键的功能，它可以减少用户编写复杂还不好理解的组件，完全可以把这部分交给 Router，让其和 url 关联起来。
+
+路由大致上分为三种：
+
+- 普通路由
+- 正则路由
+- 默认路由
+- 重定向路由
+- "Not Found"路由
+
+这些路由可能会被同时匹配，为了解决同时匹配的问题也为了符合编码习惯，我们加上了匹配优先级的概念在里面。
+
+他们的优先级如下：`(普通路由 | 默认路由 | 重定向路由)` > `正则路由` > `"Not Found"路由`。
+
+举一个例子，有如下路由代码
+
+```jsx
+<Routes>
+  <Route path="user" element={<User />}>
+    <Route index element={<span>默认路由</span>}></Route>
+    <Route path="admin" element={<span>普通路由</span>}></Route>
+    <Route path=":id" element={<span>正则路由</span>}></Route>
+    <Route path="*" element={<span>"Not Found"路由</span>}></Route>
+    <Redirect path="tenant" redirect="admin"></Redirect>
+  </Route>
+</Routes>
+```
+
+> 以上只是示范匹配优先级，实际在使用时应该考虑代码可维护性避免出现上述情况。
+
+| 路由                  | 呈现                 |
+| :-------------------- | :------------------- |
+| /user                 | 默认路由             |
+| /user/admin           | 普通路由             |
+| /user/tenant          | 重定向路由(普通路由) |
+| /user/member          | 正则路由             |
+| /user/visitor/setting | "\*"路由             |
+
+### 嵌套路由
+
+路由在嵌套的时候子级路由会以一定的规则去继承父路由，如果子路由使用`/`开头则不会去继承。
+
+```jsx
+const App = () => {
+  return (
+    <Routes>
+      <Route path="invoices" element={<Invoices />}>
+        <Route path=":invoiceId" element={<Invoice />} />
+        <Route path="sent" element={<SentInvoices />} />
+      </Route>
+    </Routes>
+  )
+}
+```
+
+上述代码描述了三个路由，它们分别是：
+
+- `/invoices`
+- `/invoices/sent`
+- `/invoices/:invoiceId`
+
+用户访问路由以及对应的组件树如下：
+
+| 路由             | 呈现                    |
+| :--------------- | :---------------------- |
+| /invoices/sent   | Invoices > SentInvoices |
+| /invoices/AABBCC | Invoices > Invoice      |
+
+那么，`Invoices`组件应该如何定义呢？我们提供了一个`<Outlet />`组件，用来呈现匹配的子路由。
+
+```jsx filename=invoices.jsx
+import { Outlet } from '@gyron/router'
+
+const Invoices = () => {
+  return () => {
+    return (
+      <div>
+        <h1>Invoices</h1>
+        <div>
+          <Outlet />
+        </div>
+      </div>
+    )
+  }
+}
+```
+
+这时 DOM 树会呈现成如下:
+
+```jsx
+<div>
+  <h1>Invoices</h1>
+  <div>
+    <SentInvoices />
+  </div>
+</div>
+```
+
+有的时候在定义路由的时候需要编写一些顶级元素，比如一些顶部的跳转链接，我们可以利用 Route 的匹配机制和`<Outlet />`来创造一个顶级的 Layout 组件。
+
+```jsx filename=layout.jsx
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = () => {
+  return () => (
+    <div>
+      <div>
+        <Link to="/docs">文档</Link>
+        <Link to="/helper">帮助</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+```
+
+```jsx filename=app.jsx
+import { Layout } from './layout'
+
+const Docs = () => {
+  // ...
+}
+
+const Helper = () => {
+  // ...
+}
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="" element={<Layout />}>
+        <Route path="docs" element={<Docs />}></Route>
+        <Route path="helper" element={<Helper />}></Route>
+      </Route>
+    </Routes>
+  )
+}
+```
+
+我们在顶层编写了一个"\*"的匹配 Route，并且不给予`strict`属性。在访问`/docs`或者`/helper`时，这样所有路由它都将被匹配，也就达到了布局功能。
+
+### 嵌套渲染(Outlet)
+
+在匹配到嵌套的路由树之后，我们需要知道子路由渲染的位置，就用上一个例子作为基础，用`<Outlet />`来渲染子路由。
+
+```jsx line=11
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = () => {
+  return () => (
+    <div>
+      <div>
+        <Link to="/docs">文档</Link>
+        <Link to="/helper">帮助</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+```
+
+当用户访问了`/docs`，`<Outlet />`组件就会渲染出`<Docs />`，并且`<Outlet />`组件还会向下传递更深的匹配路由。
+
+### 默认路由
+
+在常见的系统中用户登陆后一般都会有一个默认页面欢迎用户，或者在所有 tab 页关闭后展示一些快速操作页面，这时默认页面刚好符合业务场景。
+
+```jsx
+const App = () => {
+  return (
+    <Routes>
+      <Route path="dashboard" element={<Dashboard />}>
+        <Route index element={<Welcome />}></Route>
+        <Route path="invoices" element={<Invoices />}></Route>
+      </Route>
+    </Routes>
+  )
+}
+```
+
+用户访问路由以及对应的组件树如下：
+
+| 路由                | 呈现                |
+| :------------------ | :------------------ |
+| /dashboard          | Dashboard > Welcome |
+| /dashboard/invoices | Invoices > Invoices |
+
+### 重定向
+
+url 重定向，也称为 url 转发，是一种当实际资源，如单个页面、表单或者整个 Web 应用被迁移到新的 url 下的时候，保持（原有）链接可用的技术。
+
+在 Router 中也实现了前端路由重定向，它的含义和 HTTP 的重定向 301 状态码一样。
+
+```jsx
+import { Redirect } from '@gyron/router'
+
+const App = () => {
+  return (
+    <Routes>
+      <Redirect path="oldPath" redirect="newPath"></Redirect>
+    </Routes>
+  )
+}
+```
+
+Redirect 和 Route 一样，也遵循路由嵌套规则。当匹配到`oldPath`的时候 Routes 会重定向到`newPath`。也可以将 redirect 的值改为`/newPath`，这时他就会从头开始寻找匹配的路由。
+
+### "Not Found"
+
+实际应用中用户可能会访问到没有权限或者已经迁移的路由界面，于是应然而生出一个"Not Found"路由。
+
+```jsx
+<Routes>
+  <Route path="" strict element={<Welcome />}></Route>
+  <Route path="*" element={<Mismatch />}></Route>
+</Routes>
+```
+
+当用户访问到未匹配的路由时就会匹配"Not Found"路由，这相当于正则表达式中的`.*`。
+
+### 生命周期
+
+在每一个路由中都可以使用 Router 提供的生命周期函数，它们分别在不同的时期触发。
+
+- `onBeforeRouteEach` 路由发生变更之前触发，第三个参数`next`可以改变路由跳转的目标。
+- `onAfterRouteEach` 路由发生变更之后触发，可以在这里面做一些清理的工作。
+- `onBeforeRouteUpdate` 路由发生变更之前触发，和第一个有所不同的是只有当路由变更之后当前组件还被匹配的路由包裹才会触发。
+- `onAfterRouteUpdate` 路由发生变更之后触发，和`onBeforeRouteUpdate`一样，路由变更之后组件未被销毁时触发。
+
+在使用`onBeforeRouteEach`和`onAfterRouteEach`时要注意，当路由跳转之后当前组件被销毁了，这两个事件还会被触发一次。如果想销毁之后不被触发，请使用`onBeforeRouteUpdate`或者`onAfterRouteUpdate`事件。
+
+#### onBeforeRouteEach
+
+它接受一个函数，在执行函数时会携带三个参数，分别是`from` `to` `next`，最后一个参数是一个函数，在注册`onBeforeRouteEach`之后必须调用`next`函数，因为路由跳转是异步的，`next`函数相当于 resolve。
+
+```jsx line=5
+import { onBeforeRouteEach } from '@gyron/router'
+
+const App = () => {
+  onBeforeRouteEach((from, to, next) => {
+    next()
+  })
+  return () => <div></div>
+}
+```
+
+#### onAfterRouteEach
+
+当路由发生变更之后触发，可以在`nextRender`之后拿到真实的 DOM 数据。
+
+```jsx line=8
+import { useRef, nextRender } from '@gyron/runtime'
+import { onAfterRouteEach } from '@gyron/router'
+
+const App = () => {
+  const ref = useRef()
+  onAfterRouteEach((from, to) => {
+    nextRender().then(() => {
+      ref.current // div
+    })
+  })
+  return () => <div ref={ref}></div>
+}
+```
+
+## 勾子
+
+Router 提供了一些勾子函数，使用他们可以很方便的获取到想要的信息。
+
+> 注意：有一些勾子是在任何情况下都可以使用，有一些只能在 setup 函数顶层作用域中使用，可以参考下方的列表。
+
+只能在 setup 函数顶层作用域中使用的勾子，未在下方列表中列出的勾子可以在任何地方使用。
+
+- useRouter
+- useRoute
+- useRoutes
+- useParams
+- useOutlet
+- useMatch
+
+### useRouter
+
+使用 useRouter 获取 Router 对象，Router 对象中包含了路由相关的所有信息。Router 的类型说明参考[useRouter](/core/router/api#useRouter)
+
+```jsx
+import { useRouter } from '@gyron/router'
+
+const App = () => {
+  const router = useRouter()
+  const login = () => {
+    router.push('/login')
+  }
+  return () => <button onClick={login}>Login</button>
+}
+```
+
+### useParams
+
+还可以将"正则路由"搭配`useParams`方法获取到路由信息。
+
+```jsx filename=index.jsx line=5
+const App = () => {
+  return (
+    <Routes>
+      <Route path="user" element={<User />}>
+        <Route path=":id" element={<UserDetail />}></Route>
+      </Route>
+    </Routes>
+  )
+}
+```
+
+```jsx filename=user-detail.jsx line=5
+import { useParams } from '@gyron/router'
+
+export const UserDetail = () => {
+  const params = useParams()
+  return <span>{params.id}</span>
+}
+```
+
+Routes 匹配到`<UserDetail />`组件后，将会返回当前路由上的用户 ID。这是一个很简单的例子，你还可以探索更有挑战性的场景。
+
+你还可以参阅[API](/core/router/api)文档了解更多。

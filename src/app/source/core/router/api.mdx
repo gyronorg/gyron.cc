@@ -1,0 +1,525 @@
+> 次文档中描述的类型需要使用 npm 下载之后查看，在这里只描述出参数的种类和返回值。如果你有时间和精力欢迎加入我们完善文档。
+
+## createRouter
+
+创建一个 Router，然后通过`use`方式使用。
+
+**返回值**
+
+返回`Plugin<RouterBase>`类型对象。
+
+**类型声明**
+
+```ts d
+declare function createRouter(option: Partial<RouterOption>): Plugin<RouterBase>
+```
+
+**示例**
+
+```jsx
+import { createBrowserHistory } from 'history'
+import { createInstance } from '@gyron/runtime'
+import { createRouter, Route, Routes } from '@gyron/router'
+
+const router = createRouter({
+  history: createBrowserHistory(),
+})
+
+createInstance(
+  <Routes>
+    <Route path="" strict element={<Welcome />}></Route>
+    <Route path="user" element={<User />}>
+      <Route path=":id">
+        <Route path="member" element={<Member />}></Route>
+        <Route path="setting" element={<Setting />}></Route>
+      </Route>
+    </Route>
+    <Route path="*" element={<Mismatch />}></Route>
+  </Routes>
+)
+  .use(router)
+  .render(document.getElementById('root'))
+```
+
+## createBrowserRouter
+
+创建 history 模式的 Router，其作用就是合并了`createRouter`和`createBrowserHistory`。
+
+**示例**
+
+```jsx
+import { createBrowserHistory } from 'history'
+import { createRouter } from '@gyron/router'
+
+const router = createRouter({
+  history: createBrowserHistory(),
+})
+```
+
+## createHashRouter
+
+创建 hash 模式的 Router，其作用就是合并了`createRouter`和`createHashHistory`。
+
+**示例**
+
+```jsx
+import { createHashHistory } from 'history'
+import { createRouter } from '@gyron/router'
+
+const router = createRouter({
+  history: createHashHistory(),
+})
+```
+
+## createMemoryRouter
+
+创建 memory 模式的 Router，使用此模式可以在服务端环境下创建 Router。其作用就是合并了`createRouter`和`createMemoryRouter`。
+
+**示例**
+
+```jsx
+import { createMemoryRouter } from 'history'
+import { createRouter } from '@gyron/router'
+
+const router = createRouter({
+  history: createMemoryRouter(),
+})
+```
+
+## Routes
+
+Router 路由的入口，用于管理和收集 Route 组件。更多信息可以参阅[声明式路由](quick-started#声明式路由)
+
+**类型声明**
+
+```ts d
+declare const Routes: ComponentSetupFunction<object, false>
+```
+
+**示例**
+
+```jsx
+import { Routes, Route } from '@gyron/router'
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<span>Home</span>} />
+    </Routes>
+  )
+}
+```
+
+## Route
+
+声明式路由的承载容器。更多信息可以参阅[声明式路由](quick-started#声明式路由)
+
+**类型声明**
+
+```ts d
+declare const Route: ComponentSetupFunction<
+  Partial<
+    Omit<RouteRecord, 'extra'> & Omit<RouteRecordExtra, keyof RouteTransfer>
+  >,
+  false
+>
+```
+
+**示例**
+
+```jsx
+import { Routes, Route } from '@gyron/router'
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<span>Home</span>} />
+    </Routes>
+  )
+}
+```
+
+## Link
+
+导航组件，实际会渲染成一个 a 标签。更多信息可以参阅[导航](quick-started#导航)
+
+**类型声明**
+
+```ts d
+declare const Link: ComponentSetupFunction<LinkProps, false>
+```
+
+**示例**
+
+```jsx
+import { Link } from '@gyron/router'
+
+const Navigation = () => {
+  return () => {
+    return (
+      <div>
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+      </div>
+    )
+  }
+}
+```
+
+## Outlet
+
+嵌套路由的承载容器。更多信息可以参阅[嵌套渲染(Outlet)](<quick-started#嵌套渲染(Outlet)>)
+
+**类型声明**
+
+```ts d
+declare const Outlet: ComponentSetupFunction<object, false>
+```
+
+**示例**
+
+```jsx
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = () => {
+  return () => (
+    <div>
+      <div>
+        <Link to="/docs">文档</Link>
+        <Link to="/helper">帮助</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+```
+
+## Redirect
+
+重定向路由，一般用来解决路由更替后连接地址未更新的问题。更多信息可以参阅[重定向](quick-started#重定向)
+
+**类型声明**
+
+```ts d
+declare const Redirect: ComponentSetupFunction<RedirectProps, false>
+```
+
+**示例**
+
+```jsx
+import { Redirect } from '@gyron/router'
+
+const App = () => {
+  return (
+    <Routes>
+      <Redirect path="oldPath" redirect="newPath"></Redirect>
+    </Routes>
+  )
+}
+```
+
+## useRouter
+
+在组件中获取 Router 对象的方法。
+
+**类型声明**
+
+```ts d
+declare function useRouter(): RouterBase
+```
+
+**示例**
+
+```jsx
+import { useRouter } from '@gyron/router'
+
+const App = () => {
+  const router = useRouter()
+  const login = () => {
+    router.push('/login')
+  }
+  return () => <button onClick={login}>Login</button>
+}
+```
+
+## useRoutes
+
+配置路由方法，接受一个`RouteRecordConfig`类型的数组。
+
+**类型声明**
+
+```ts d
+declare function useRoutes(routes: RouteRecordConfig[]): VNode<VNodeType>
+```
+
+**示例**
+
+```jsx
+import { useRoutes } from '@gyron/router'
+
+const App = () => {
+  return useRoutes([
+    {
+      path: '',
+      strict: true,
+      element: <Welcome />,
+    },
+    {
+      path: 'user',
+      element: <User />,
+      children: [
+        {
+          path: ':id',
+          children: [
+            {
+              path: 'member',
+              element: <Member />,
+            },
+            {
+              path: 'setting',
+              element: <Setting />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '*',
+      element: <Mismatch />,
+    },
+  ])
+}
+```
+
+## useRoute
+
+获取当前匹配的路由。
+
+**类型声明**
+
+```ts d
+declare function useRoute(): Primitive<RouteRecord>
+```
+
+**示例**
+
+```jsx
+import { useRoute } from '@gyron/router'
+
+const Dashboard = () => {
+  const route = useRoute()
+  route.value // RouteRecord
+  return <div>Dashboard</div>
+}
+```
+
+## useHref
+
+格式化路由 path，支持传入`Path`参数，将其转换成一个 string。
+
+**类型声明**
+
+```ts d
+declare function useHref(to: To): string
+```
+
+**示例**
+
+```jsx
+import { useHref } from '@gyron/router'
+
+const path = useHref({
+  pathname: '/user',
+  search: '?id=admin',
+})
+// /user?id=admin
+```
+
+## useParsePath
+
+将 string path 转换成 object path。
+
+**类型声明**
+
+```ts d
+declare function useParsePath(path: string): Partial<history.Path>
+```
+
+**示例**
+
+```jsx
+import { useParsePath } from '@gyron/router'
+
+const path = useParsePath('/user?id=admin')
+/**
+ * {
+ *   pathname: '/user',
+ *   search: '?id=admin',
+ * }
+ */
+```
+
+## useParams
+
+获取当前路由上正则匹配的参数。
+
+**类型声明**
+
+```ts d
+declare function useParams(): TypeParamsRaw
+```
+
+**示例**
+
+```jsx
+import { useParams } from '@gyron/router'
+
+const Dashboard = () => {
+  const params = useParams()
+  return <div>Dashboard</div>
+}
+```
+
+## useOutlet
+
+获取当前路径下匹配的嵌套路由。
+
+**类型声明**
+
+```ts d
+declare function useOutlet(): TypeOutletRaw
+```
+
+**示例**
+
+```jsx
+import { useOutlet } from '@gyron/router'
+
+const Dashboard = () => {
+  const outlet = useOutlet()
+  /**
+   * {
+   *   matches: RouteRecord[];
+   *   depth: number;
+   * }
+   */
+}
+```
+
+## useMatch
+
+判断传入的 path string 是否被匹配。
+
+**类型声明**
+
+```ts d
+declare function useMatch(path: string): boolean
+```
+
+**示例**
+
+```jsx
+import { useMatch } from '@gyron/router'
+
+const Dashboard = () => {
+  const matched = useMatch('/dashboard')
+}
+```
+
+## onBeforeRouteEach
+
+路由发生变更之前触发，第三个参数`next`可以改变路由跳转的目标。
+
+**类型声明**
+
+```ts d
+declare function onBeforeRouteEach(listener: RouterHookBeforeEach): void
+```
+
+**示例**
+
+```jsx
+import { onBeforeRouteEach } from '@gyron/router'
+
+const App = () => {
+  onBeforeRouteEach((from, to, next) => {
+    next()
+  })
+  return () => <div></div>
+}
+```
+
+## onBeforeRouteUpdate
+
+路由发生变更之前触发，和第一个有所不同的是只有当路由变更之后当前组件还被匹配的路由包裹才会触发。
+
+**类型声明**
+
+```ts d
+declare function onBeforeRouteUpdate(listener: RouterHookBeforeUpdate): void
+```
+
+**示例**
+
+```jsx
+import { onBeforeRouteUpdate } from '@gyron/router'
+
+const App = () => {
+  onBeforeRouteUpdate((from, to) => {
+    // ...
+  })
+  return () => <div></div>
+}
+```
+
+## onAfterRouteEach
+
+路由发生变更之后触发，可以在这里面做一些清理的工作。
+
+**类型声明**
+
+```ts d
+declare function onAfterRouteEach(listener: RouterHookAfterEach): void
+```
+
+**示例**
+
+```jsx
+import { useRef, nextRender } from '@gyron/runtime'
+import { onAfterRouteEach } from '@gyron/router'
+
+const App = () => {
+  const ref = useRef()
+  onAfterRouteEach((from, to) => {
+    nextRender().then(() => {
+      ref.current // div
+    })
+  })
+  return () => <div ref={ref}></div>
+}
+```
+
+## onAfterRouteUpdate
+
+路由发生变更之后触发，和`onBeforeRouteUpdate`一样，路由变更之后组件未被销毁时触发。
+
+**类型声明**
+
+```ts d
+declare function onAfterRouteUpdate(listener: RouterHookAfterUpdate): void
+```
+
+**示例**
+
+```jsx
+import { onAfterRouteUpdate } from '@gyron/router'
+
+const App = () => {
+  onAfterRouteUpdate((from, to) => {
+    // ...
+  })
+  return () => <div></div>
+}
+```

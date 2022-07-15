@@ -1,0 +1,157 @@
+## 核心理念
+
+> 次文档主要讨论的是 Router 背后的理念，以及实现原理，初次接触可能会比较晦涩难懂，但是当你很熟练使用之后再来阅读会有一种茅塞顿开的感觉。如果你只想知道如何使用可以前往[快速使用](/core/router/quick-started)
+
+Router 的诞生是作者参考了社区优秀的开源案例，再结合 Gyron 框架的特性开发完成的一款路由管理器。
+
+现在看到的 Router 其实是第二个主要版本，第一个版本使用的 Gyron 的 provide 和 inject 特性开发。在第一个版本中 Route 是一个承载容器，在运行时匹配，可以在任何地方使用，不一定在`<Routes />`下。
+但是它有一个致命的缺点，运行时匹配路由就会有匹配回退(匹配优先级)的概念，当你匹配到一个重定向路由后就需要回退至 redirect 路由上后再进行匹配，或者匹配到"\*"和普通路由时需要抉择时，就会出现重复匹配和状态紊乱的问题。
+而何时清理这个状态变成了一个未知，所以第二个版本完全抛弃了第一个版本的运行时的机制，转而投向收集 Route，然后处理匹配回退等工作。
+
+现在这个版本是通过`<Routes />`组件收集 Route(Routes.children / Route.children)，然后通过 url 匹配这个路由树，最后再进行渲染。
+
+它不仅仅只是映射 url 到组件，而是一套完整的用户解决方案。可以搭配不同的组件适配不同的应用场景。其核心概念可以概括为下面三种：
+
+- 历史堆栈
+- 映射 url 到组件
+- 匹配 url 然后渲染组件
+
+### 名词解释
+
+在阅读后续文档之前，我们需要先了解一些名词而不至于在看到后不知所措。
+
+- `URL` 这个和我们浏览器中的看到的 url 一样，只是内部的 url 是一个被管理起来的数据。
+- `History` 接口允许操作浏览器的曾经在标签页或者框架里访问的会话历史记录。
+- `History Stack` 记录用户导航时的状态。
+- `Route` 定义 url 映射的组件。可以通过 Route 声明一套完整的路由规则。
+- `Index Route` 默认路由，在完全匹配后显示的路由。通常用于嵌套路由中作为某个路由的默认展示界面。
+- `Outlet` 渲染匹配的嵌套路由。
+- `Relative Path` 相对路径，在匹配时会自动继承父路由的 path。
+- `Absolute Path` 绝对路径，以`/`开头，在匹配时直接参与匹配。
+- `RouteRecord` 格式化之后的 Route 数据。
+- `Match Route Tree` 匹配完后的路由树，一般情况下树只有一个节点，但是当你在同级路由下匹配上了两个路由，那么两个都将渲染（只有[普通路由](quick-started#路由规则)才会出现）。
+
+## 历史堆栈
+
+Router 使用了`history`这个库，它提供了一个 Window History 的上层包装，比如事件监听和 state 管理。
+
+当用户访问主动访问某一个路由时是不会触发 Router 的监听，必须通过 history 对象上的 pushState 方法或者其它类似的改变 state 的方法才可以触发 Router 的监听。所以只有使用 useRouter 或者 Link 组件才能避免浏览器整页刷新（还可以使用 window 上的 history 对象上的方法，后面将不再区分这两者之前的区别）。
+
+假如用户在页面上点击下方表格中的链接，此时浏览器堆栈列表中将会如表格所示。（加粗 state 代表当前 state）
+
+| 动作                  | 堆栈                                  |
+| :-------------------- | :------------------------------------ |
+| 点击 `/user`          | **`/user`**                           |
+| 点击 `/admin`         | `/user` **`/admin`**                  |
+| 点击 `/admin/setting` | `/user` `/admin` **`/admin/setting`** |
+| 点击浏览器返回按钮    | `/user` **`/admin`** `/admin/setting` |
+| 点击 `/user`          | `/user` `/admin` **`/user`**          |
+
+浏览器的历史堆栈是当前 history 集合快照，当用户返回后又重新访问一个新的路由会覆盖之前的快照。也就是上述第五步，你会发现`/admin/setting`在浏览器的历史堆栈中被删除了。
+
+> Router 实现的一个基本准则是 state 的变更不会触发服务端请求，并且允许本地监听并修改 state。
+
+### 跳转
+
+Router 提供了五种不同的跳转形式。还提供了`beforeEach`和`afterEach`勾子，它们在用户导航之前和导航之后执行，是一个`Function Set`对象。
+
+- `push` 向当前浏览器会话的历史堆栈中添加一个状态(state)。
+- `replace` 替换浏览器会话的历史堆栈中当前状态(state)。
+- `back` 和`history.back`一样，将会话历史记录中向后移动一页。如果没有上一页，则此方法不执行任何操作。
+- `forward` 和`history.forward`一样，将会话历史向前移动一页。它与使用 delta 参数为 1 时调用 history.go(delta)的效果相同。
+- `go` 和`history.go`一样，从会话历史记录中加载特定页面。
+
+### 状态
+
+用户在使用`push`和`replace`时可以向其中传递 state，它们会被推送到当前 history 堆栈上。
+
+> 在使用 state 时候请注意不要使用`back` `current` `forward`名，因为它被 Router 作为内置属性，用来处理生命周期里面的`from`和`go`。
+
+```jsx
+import { useRouter } from '@gyron/router'
+
+export const UserDetail = () => {
+  const router = useRouter()
+  useRouter.push('/login', { reson: 'Invaldate Access Token' })
+}
+```
+
+### 哈希模式
+
+现代浏览器都支持的 history 模式，但是单页应用通常在刷新之后会变成空白，原因是刷新之后浏览器请求的 url 无法被正确处理，比如在 nginx 必须将其它路由重定向到 index.html。
+如果使用的哈希模式在不需要服务器的配合下完全可以使用前端路由。
+
+```jsx
+import { createHashRouter } from '@gyron/router'
+
+createHashRouter()
+```
+
+## 匹配
+
+Router 另外一个核心就是匹配规则。在匹配之前会格式化声明的路由，将其转变为`RouteRecord`。然后内部通过递归寻找匹配的路由，将其组建成一个`Match Route Tree`，然后再通过`<Routes />`渲染出来。
+
+Router 还保留着`<Redirect />`路由，它和"Not Found"路由保留着一些区别。前者可以用声明式写法管理多个重定向，而"Not Found"路由需要在 element 组件中实现等效的代码。
+
+```jsx
+import { useRoutes } from '@gyron/router'
+
+const App = () => {
+  return useRoutes([
+    {
+      path: '',
+      strict: true,
+      element: <Welcome />,
+    },
+    {
+      path: 'user',
+      element: <User />,
+      children: [
+        {
+          path: ':id',
+          children: [
+            {
+              path: 'member',
+              element: <Member />,
+            },
+            {
+              path: 'setting',
+              element: <Setting />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '*',
+      element: <Mismatch />,
+    },
+  ])
+}
+```
+
+上面通过 useRoutes 方法配置的路由和 Route 是等效的。关于路由声明和路由配置可以参考上一篇文章[声明式路由](quick-started#声明式路由)。
+
+## 渲染
+
+找到`Match Route Tree`后，然后就会通过`<Routes />`渲染出来。在渲染的过程中可以使用`<Outlet />`组建渲染嵌套的匹配路由。
+
+> 需要注意的一点就是，我们不会删除用户的任何路由规则，就算它们的配置是相同。如果遇到相同的匹配规则我们会以`Fragment`节点渲染出所有匹配的路由。
+
+```jsx line=11
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = () => {
+  return () => (
+    <div>
+      <div>
+        <Link to="/docs">文档</Link>
+        <Link to="/helper">帮助</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+```

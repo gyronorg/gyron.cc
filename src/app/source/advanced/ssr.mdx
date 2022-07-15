@@ -1,0 +1,121 @@
+## Server-Side Rendering (SSR)
+
+服务端渲染可以提高产品的搜索排名，吸引用户，还可以减少数据传输，让页面更早的接触用户，减少可交互时间。
+
+### 什么是 SSR？
+
+通常我们在构建应用程序时使用的 CSR（Client Side Render），在使用 CSR 的时候，浏览器在加载页面时请求的资源基本上只有 HTML、CSS、JS 等静态资源，用户数据在等待 JS 加载完成之后通过 AJAX 加载渲染，而大多数搜索引擎是不会去等待 JS 加载，而是根据 HTML 语义去抓取数据，然后进行排名展示。
+如果我们使用 SSR，HTML 内容是服务器进行渲染，也就是说搜索引擎抓取数据时可以知道我们的页面内容，用户在搜索时可以搜索到我们的网页内容，提高产品的竞争力和影响力。
+
+### 如何编写通用组件
+
+在 Gyron 中编写通用组件时，只需要关注组件参数中的 `isSSR` ，它是一个布尔值，如果值为真则代表当前环境是在服务端，反之是在客户端。
+
+举一个简单的例子
+
+```jsx line=4
+const App = ({ isSSR }) => {
+  // ...
+  if (!isSSR) {
+    document.title = '欢迎'
+  }
+}
+```
+
+在服务端渲染中高亮部分将不会执行，因为 isSSR 的值为真。这时候客户端加载到这个组件，isSSR 的值为假，那么页面标题将会更改成“欢迎”。
+
+### 那么服务端渲染完后，客户端怎么响应用户的操作呢？
+
+这里有一个前提，我们渲染之前的 VNode 数据是不变的，也就是说 VNode 在客户端和服务端是同一份。那么，客户端可以加载一份 hydrate 代码，让静态 HTML 变得可响应。
+
+我们先创建一个简单的例子。首先，目录结构如下：
+
+```
+⊢- src
+⊢--- index.html
+⊢--- server
+⊢------ index.js
+⊢--- client
+⊢------ index.js
+⊢--- app
+⊢------ index.js
+```
+
+server 文件夹下存放服务端渲染的代码，通常都有类似于 express 的 node 服务。client 文件夹下存放 hydrate 代码，让服务端渲染出来的静态资源变得可响应。
+
+```jsx filename=app/index.js
+import { useValue } from '@gyron/runtime'
+
+const App = () => {
+  const count = useValue(0)
+  return () => <div onClick={() => count.value++}>Counter {count.value}</div>
+}
+
+export default App
+```
+
+app/index.js 文件中导出一个应用实例，等待 server 和 client 的调用。
+
+```jsx filename=server/index.js
+import { createSSRInstance } from '@gyron/runtime'
+import { renderToString } from '@gyron/dom-server'
+import express from 'express'
+import App from '../app/index'
+import template from '../index.html'
+
+const app = express()
+
+app.get('*', async (req, res) => {
+  const { root } = createSSRInstance(<App />)
+  const html = await renderToString(root)
+  res.send(template.replace('<!--ssr-outlet-->', html))
+})
+
+app.listen(3000, () => {
+  console.log('listen to http://localhost:3000')
+})
+```
+
+我们监听了本地 3000 端口，然后任何请求都会被转入到\*路由中，然后创建一个 SSRInstance 应用，服务端渲染完成之后返回给客户端。
+这个时候已经完成了服务端渲染的大部分功能，但是你会发现，点击 Counter 计数器并不会增加，因为这个时候还未加载 hudrate 代码，也就是 client/index.js 部分。
+
+```jsx filename=client/index.js
+import { createInstance } from '@gyron/runtime'
+import App from '../app/index'
+
+createInstance(<App />).render('#app')
+```
+
+我们继续完善 server/index.js 部分，让客户端可以加载到 client/index.js 文件中的内容。
+
+```jsx filename=server/index.js
+import path from 'path'
+// ...
+app.use('/js', express.static(path.join(__dirname, 'client')))
+// ...
+```
+
+```html filename=index.html line=10
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Gyron</title>
+  </head>
+  <body>
+    <div id="app"><!--ssr-outlet--></div>
+    <script async type="module" src="/js/index.js"></script>
+  </body>
+</html>
+```
+
+最终 index.html 内容如上，在高亮那一行就是加载了 hydrate 代码，让客户端变得可响应。
+
+### SSR 项目搭建
+
+这里介绍一个快速搭建的办法，访问 [https://github.com/Linkontoask/gyron/tree/master/packages/docs](https://github.com/Linkontoask/gyron/tree/master/packages/docs) 下载其中的代码，然后修改 app 中的 app.ts。
+
+将上述代码修改到下载的目录中后用命令`yarn start`启动项目。
+
+启动项目后访问 [http://localhost:3000](http://localhost:3000) 页面，看到 Counter 0 后点击一次，然后 0 会变成 1。

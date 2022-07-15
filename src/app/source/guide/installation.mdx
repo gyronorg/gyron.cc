@@ -1,0 +1,45 @@
+## 安装
+
+`Gyron`是一款精简版的响应式框架，类似于 Vue 和 React。基于成熟的社区环境，集成了适配`Gyron`的路由管理器和状态管理器
+
+`Gyron`提供 SSR 支持，此文档就是使用`Gyron`的 SSR 功能开发的上层应用。
+
+### 安装方式
+
+在不同的场景可以使用不同的安装方式，他们可以更好的配合我们的项目。
+
+- 使用 [CDN](#CDN) 形式引用。
+- 使用 [CLI](tutorial#通过%20CLI) 快速生成模板。
+- [npm](#npm) 形式引用。
+- 下载后使用。[参考](#下载后使用)
+
+### CDN
+
+社区中有一些免费的 CDN 服务提供商，下面展示一些比较常用的。
+
+- [https://unpkg.com/@gyron/runtime](https://unpkg.com/@gyron/runtime)
+- [https://cdn.jsdelivr.net/npm/@gyron/runtime](https://cdn.jsdelivr.net/npm/@gyron/runtime)
+- [https://cdn.skypack.dev/@gyron/runtime](https://cdn.skypack.dev/@gyron/runtime)
+
+### NPM
+
+推荐使用这种方式引用，可以很方便使用社区资源，并且可以支持更多不同版本的浏览器。
+
+```bash
+npm install @gyron/runtime -D
+```
+
+### 下载后使用
+
+虽然可以下载后使用我们的框架，但那是不推荐的，因为往往会有一些 bug 得不到及时修复。
+
+通过 cdn 服务下载后保存为 gyron.js，然后再通过 script 标签导入。
+
+```html
+<div id="root"></div>
+
+<script type="module">
+  import { createInstance, h } from './gyron.js'
+  createInstance(h('button', 'Like')).render('#root')
+</script>
+```

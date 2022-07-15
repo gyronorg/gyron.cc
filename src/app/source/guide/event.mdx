@@ -1,0 +1,57 @@
+## 事件处理
+
+Gyron 和 javascript 事件处理保持一致，只是在写法上面会有一点区别。
+
+在传统模式中 onclick 只能绑定一次，而在 Gyron 中使用的 addEventListener 将方法绑定到元素身上，并且根据先后顺序依次触发。
+
+传统模式的写法
+
+```html
+<button onclick="myClick()">click me</button>
+```
+
+在 Gyron 中有所不同，用 on 开头的属性名称都被转为 javascript 事件。
+
+```jsx
+const button = <button onClick={myClick}>click me</button>
+```
+
+### 阻止默认行为
+
+有的时候我们需要阻止浏览器的默认行为，比如 a 标签的跳转、滚动条滚动等，我们可以使用`preventDefault`方法。绑定的事件值就是 addEventListener 中的第二个参数，行为也将和其保持一致。
+
+```jsx line=2
+const myClick = (e) => {
+  e.preventDefault()
+  pv(e.target).then(() => {
+    location.href = e.target.href
+  })
+}
+
+const a = (
+  <a href="https://github.com/Linkontoask/gyron/issues" onClick={myClick}>
+    Github Gyron
+  </a>
+)
+```
+
+当我们点击 Github Gyron 链接后记录用户的点击，然后再进行跳转。
+
+### 参数传递
+
+在编写可复用代码时，通常会将一些函数封装出去，根据函数参数的变化从而得到不同的结果。比如，在循环中需要传递当前 item 中的值到事件当中。
+
+```jsx line=8
+const App = ({ orders }) => {
+  const onPay = (id) => {
+    pay(id)
+  }
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li onClick={() => onPay(order.id)}>{order.name}</li>
+      ))}
+    </ul>
+  )
+}
+```
