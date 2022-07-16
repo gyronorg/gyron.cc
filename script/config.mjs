@@ -122,7 +122,7 @@ function Alias() {
 function Mdx() {
   return mdx({
     jsxImportSource: '@gyron',
-    pragma: 'reactCreateElement',
+    pragma: 'h',
     pragmaFrag: 'Fragment',
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeMetaAsAttributes, [rehypeHighlight, {}]],

@@ -81,6 +81,8 @@ App.__hmr_id = 'xxaanncc'
 
 - #### esbuild
 
+[esbuild](https://esbuild.github.io/) 是一款极快的构建捆绑工具，相比于同类产品可以快 10 到 100 倍。
+
 ```js
 import esbuild from 'esbuild'
 import { babelESBuildJsx } from '@gyron/babel-plugin-jsx'
@@ -97,6 +99,8 @@ esbuild.build({
 ```
 
 - #### vite
+
+[vite](https://cn.vitejs.dev/) 是下一代的前端工具链，可以为开发提供极速响应。
 
 ```js line=6
 import { defineConfig } from 'vite'
@@ -129,8 +133,8 @@ yarn add -D @gyron/jsx-runtime
 在使用的时候需要注意如果指定了`pragma`需要导入相关的包。
 
 ```jsx
-/** @jsx reactCreateElement */
-import { reactCreateElement } from '@gyron/jsx-runtime'
+/** @jsx h */
+import { h } from '@gyron/jsx-runtime'
 
 // 然后就可以在代码中使用 jsx 语法了
 const App = () => {
@@ -138,7 +142,7 @@ const App = () => {
 }
 ```
 
-这里有一个 vite 的简单用法。
+这里有一个`@gyron/jsx-runtime`搭配 vite 的简单用法。
 
 > 注意一点就是 vite 不会在一开始就加载 jsx-runtime 代码，所以第一次加载界面会白屏，只要刷新一下界面即可。
 
@@ -148,8 +152,8 @@ import { defineConfig } from 'vite'
 export default ({ mode }) => {
   return defineConfig({
     esbuild: {
-      jsxInject: `import { reactCreateElement, Fragment } from '@gyron/jsx-runtime'`,
-      jsxFactory: 'reactCreateElement',
+      jsxInject: `import { h, Fragment } from '@gyron/jsx-runtime'`,
+      jsxFactory: 'h',
       jsxFragment: 'Fragment',
     },
   })
