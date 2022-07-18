@@ -67,7 +67,7 @@ export const MdxContainer = FC<MdxContainerProps>(({ children, menu }) => {
           {state.value.prev && (
             <Link
               to={state.value.prev.path}
-              class="group flex items-center cursor-pointer hover:text-slate-900 dark:hover:text-white no-underline"
+              className="group flex items-center cursor-pointer hover:text-slate-900 dark:hover:text-white no-underline"
             >
               {<ArrowLeftBoldIcon />}
               {prevName.value}
@@ -76,7 +76,7 @@ export const MdxContainer = FC<MdxContainerProps>(({ children, menu }) => {
           {state.value.next && (
             <Link
               to={state.value.next.path}
-              class="group ml-auto flex items-center cursor-pointer hover:text-slate-900 dark:hover:text-white no-underline"
+              className="group ml-auto flex items-center cursor-pointer hover:text-slate-900 dark:hover:text-white no-underline"
             >
               {nextName.value}
               {<ArrowRightBoldIcon />}

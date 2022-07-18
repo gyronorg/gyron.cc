@@ -45,7 +45,7 @@ export const Header = FC(() => {
         <Link
           to="/"
           activeClassName="nav-active-link"
-          class={classnames(
+          className={classnames(
             'hidden md:block overflow-hidden w-0 h-0 md:w-auto md:h-auto items-center',
             {
               'text-primary-400 dark:text-slate-200': router.path !== '/',

@@ -9,7 +9,7 @@ export const Mismatch = FC(() => {
       </h1>
       <h2 class="mt-2 text-lg text-slate-700 dark:text-slate-400 sm:mt-0">
         走丢了吗？
-        <Link to="/" replace={true} class="underline">
+        <Link to="/" replace={true} className="underline">
           点我回到主页
         </Link>
       </h2>
