@@ -73,6 +73,9 @@ export const App = FC(() => {
 export const app = () => {
   return createSSRInstance(<App />).use(
     createBrowserRouter({
+      beforeEach: (from, to, next) => {
+        next()
+      },
       afterEach: (from, to) => {
         if (to.meta) {
           document.title = `Gyron | ${to.meta.title}`

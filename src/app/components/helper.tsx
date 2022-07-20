@@ -25,15 +25,15 @@ export const A = FC<{ href: string }>(({ href, children }) => {
   return <Link to={href}>{children}</Link>
 })
 
-export const H1 = FC(() => {
-  return ({ children }) => (
+export const H1 = FC(({ children }) => {
+  return (
     <h1 class="inline-block text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">
       {children}
     </h1>
   )
 })
 
-export const H2 = FC(() => {
+export const H2 = FC(({ children }) => {
   const ref = useRef<HTMLElement>()
 
   onAfterMount(() => {
@@ -45,7 +45,7 @@ export const H2 = FC(() => {
     })
   })
 
-  return ({ children }) => (
+  return (
     <h2
       class="group flex items-center whitespace-pre-wrap -ml-4 pl-4 relative guidance"
       id={children[0]}
@@ -64,7 +64,7 @@ export const H2 = FC(() => {
   )
 })
 
-export const H3 = FC(() => {
+export const H3 = FC(({ children }) => {
   const ref = useRef<HTMLElement>()
 
   onAfterMount(() => {
@@ -76,7 +76,7 @@ export const H3 = FC(() => {
     })
   })
 
-  return ({ children }) => (
+  return (
     <h3
       class="group flex items-center whitespace-pre-wrap -ml-4 pl-4 relative guidance"
       id={children[0]}

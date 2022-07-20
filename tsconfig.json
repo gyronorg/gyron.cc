@@ -5,9 +5,11 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["src/app/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "files": ["global.d.ts"]
 }
