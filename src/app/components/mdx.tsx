@@ -93,7 +93,7 @@ export const MdxContainer = FC<MdxContainerProps>(({ children, menu }) => {
             </p>
           </div>
           <a
-            href={`https://github.com/Linkontoask/gyron/blob/master/packages/docs/src/app/source/${menu.meta.page}.mdx`}
+            href={`https://github.com/gyronorg/docs/tree/master/src/app/source/${menu.meta.page}.mdx`}
             target="_blank"
             class="hover:text-slate-900 dark:hover:text-slate-400"
           >

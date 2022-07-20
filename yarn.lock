@@ -433,9 +433,9 @@
     "@gyron/runtime" "^0.0.9"
     "@gyron/shared" "^0.0.9"
 
-"@gyron/rehype-highlight@^0.0.9":
+"@gyron/rehype-highlight@^0.0.8":
   version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@gyron/rehype-highlight/-/rehype-highlight-0.0.8.tgz#ebf6bbeb78df2d1bbeacf528026a29a4574ad2c6"
+  resolved "https://registry.npmmirror.com/@gyron/rehype-highlight/-/rehype-highlight-0.0.8.tgz#ebf6bbeb78df2d1bbeacf528026a29a4574ad2c6"
   integrity sha512-uatpEv/7KpS1eVnyzioMv/fqEYSJW3R1TaEI0Xc9dpqM1IZSYMqPPia6SHyoVdZfDUzu407/ltTr2SVxaDrFfg==
 
 "@gyron/router@^0.0.9":

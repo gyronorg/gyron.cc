@@ -14,6 +14,15 @@
 **类型声明**
 
 ```ts d
+interface Instance {
+  container: Element | null
+  use: (plugin: Plugin) => Instance
+  render: (containerOrSelector: string | HTMLElement) => Instance
+  destroy: () => Instance
+  readonly plugins: Set<Plugin>
+  get root(): VNode
+}
+
 declare function createInstance(root: VNode, isHydrate?: boolean): Instance
 ```
 
@@ -79,7 +88,10 @@ renderToString(root).then((html) => {
 **类型声明**
 
 ```ts d
-function render(containerOrSelector: string | HTMLElement): Instance
+interface Instance {
+  // ...
+  render: (containerOrSelector: string | HTMLElement) => Instance
+}
 ```
 
 **示例**
@@ -109,7 +121,10 @@ createInstance(h(App)).render('#root')
 **类型声明**
 
 ```ts d
-function use(plugin: Plugin) => Instance
+interface Instance {
+  // ...
+  use: (plugin: Plugin) => Instance
+}
 ```
 
 **示例**
@@ -131,4 +146,27 @@ createInstance(/* VNode */).use(plugin)
 
 ## destory
 
-销毁应用，内部会直接销毁真实的 DOM 节点，而组件上的生命周期勾子不会被调用。
+销毁应用，所有组件的实例都会被销毁，并且组件的生命周期勾子都会执行。
+
+**类型声明**
+
+```ts d
+interface Instance {
+  // ...
+  destroy: () => Instance
+}
+```
+
+**示例**
+
+```javascript line=9
+import { createInstance, h } from '@gyron/runtime'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+const app = createInstance(h(App))
+
+app.destroy()
+```
