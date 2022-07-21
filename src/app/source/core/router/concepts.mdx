@@ -65,7 +65,7 @@ Router 提供了五种不同的跳转形式。还提供了`beforeEach`和`afterE
 
 用户在使用`push`和`replace`时可以向其中传递 state，它们会被推送到当前 history 堆栈上。
 
-> 在使用 state 时候请注意不要使用`back` `current` `forward`名，因为它被 Router 作为内置属性，用来处理生命周期里面的`from`和`go`。
+> 在使用 state 时候请注意不要使用`back` `current` `forward`名，因为它被 Router 作为内置属性，用来处理生命周期里面的`from`和`to`。
 
 ```jsx
 import { useRouter } from '@gyron/router'
@@ -75,6 +75,12 @@ export const UserDetail = () => {
   useRouter.push('/login', { reson: 'Invaldate Access Token' })
 }
 ```
+
+我们内置了三个状态在`history.state.usr`上，你可以根据需要酌情使用。
+
+- `back` 路由堆栈中的前面一个，如果第一次访问没有当前这个状态。
+- `current` 当前路由，等同于`location.pathname + location.search`。
+- `forward` 路由堆栈中的后面一个，如果`index < stack.length`时才有效。（index 是当前路由位置，stack 是堆栈中路由数量）
 
 ### 哈希模式
 
