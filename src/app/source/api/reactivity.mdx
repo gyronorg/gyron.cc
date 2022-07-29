@@ -20,7 +20,7 @@ declare function useReactive<T extends object>(target: T, readonly?: boolean): T
 **示例**
 
 ```javascript
-import { useReactive } from '@gyron/runtime'
+import { useReactive } from 'gyron'
 
 const original = {
   x: 0,
@@ -43,7 +43,7 @@ declare function isResponsive(target: any): boolean
 **示例**
 
 ```javascript
-import { isResponsive } from '@gyron/runtime'
+import { isResponsive } from 'gyron'
 
 isResponsive({}) // false
 isResponsive(useReactive({})) // true
@@ -70,7 +70,7 @@ declare function useValue<T = any>(value: T): Primitive<T>
 **示例**
 
 ```javascript
-import { useValue } from '@gyron/runtime'
+import { useValue } from 'gyron'
 
 const original = useValue(0)
 original.value === 0 // true
@@ -108,7 +108,7 @@ declare function useComputed<T>(
 **示例**
 
 ```javascript
-import { useValue, useComputed } from '@gyron/runtime'
+import { useValue, useComputed } from 'gyron'
 
 const original = useValue(0)
 const observed = useComputed(() => {
@@ -127,7 +127,7 @@ observed.value === 11 // true
 **示例**
 
 ```javascript
-import { useValue, useMemo } from '@gyron/runtime'
+import { useValue, useMemo } from 'gyron'
 
 const original = useValue(0)
 const memo = useMemo(() => {
@@ -161,7 +161,7 @@ declare function useEffect<T = any>(
 **示例**
 
 ```ts d
-import { useValue, useComputed } from '@gyron/runtime'
+import { useValue, useComputed } from 'gyron'
 
 const original = useValue(0)
 let dummy: number
@@ -182,7 +182,7 @@ dummy === original.value // false
 **示例**
 
 ```ts d
-import { useValue, pauseTrack, enableTrack } from '@gyron/runtime'
+import { useValue, pauseTrack, enableTrack } from 'gyron'
 
 const original = useValue(0)
 pauseTrack()
@@ -197,7 +197,7 @@ enableTrack()
 **示例**
 
 ```ts d
-import { useValue, pauseTrack, enableTrack } from '@gyron/runtime'
+import { useValue, pauseTrack, enableTrack } from 'gyron'
 
 const original = useValue(0)
 pauseTrack()
@@ -212,7 +212,7 @@ enableTrack()
 **示例**
 
 ```ts d
-import { useValue, useEffect, cleanupTrackEffect } from '@gyron/runtime'
+import { useValue, useEffect, cleanupTrackEffect } from 'gyron'
 
 const original = useValue(0)
 let dummy: number
@@ -277,7 +277,7 @@ declare function toRaw<T>(observed: T): T
 **示例**
 
 ```javascript
-import { useValue } from '@gyron/runtime'
+import { useValue } from 'gyron'
 
 const original = useValue(0)
 let dummy: number

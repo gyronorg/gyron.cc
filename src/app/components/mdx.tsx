@@ -2,7 +2,7 @@ import { Guidance } from '@/components/guidance'
 import { ROUTE_MENUS, CORE_ROUTE_MENUS } from '@/pages'
 import { useRouter, Link } from '@gyron/router'
 import { resolve } from '@gyron/shared'
-import { useMemo, defineProps, FC } from '@gyron/runtime'
+import { useMemo, defineProps, FC } from 'gyron'
 import { ArrowLeftBoldIcon, ArrowRightBoldIcon } from './icons'
 import { ContentMenu, MenuView } from '@/interface/menu'
 

@@ -22,7 +22,7 @@
 <div id="root"></div>
 
 <script type="module">
-  import { createInstance, h } from 'https://cdn.skypack.dev/@gyron/runtime'
+  import { createInstance, h } from 'https://cdn.skypack.dev/gyron'
   createInstance(h('button', 'Like')).render('#root')
 </script>
 ```
@@ -34,7 +34,7 @@
 上述代码通过 JSX 表示如下
 
 ```jsx
-import { createInstance } from '@gyron/runtime'
+import { createInstance } from 'gyron'
 createInstance(<button>Like</button>)
 ```
 
@@ -80,7 +80,7 @@ npm run start
 接着安装相关依赖
 
 ```bash
-npm install @gyron/runtime @gyron/babel-plugin-jsx vite -D
+npm install gyron @gyron/babel-plugin-jsx vite -D
 ```
 
 然后在 package.json 文件中编写一个启动脚本和构建脚本。
@@ -118,7 +118,7 @@ export default ({ mode }) => {
 ```
 
 ```jsx filename=src/index.jsx
-import { createInstance } from '@gyron/runtime'
+import { createInstance } from 'gyron'
 createInstance(<button>Like</button>).render('#root')
 ```
 
@@ -128,4 +128,4 @@ createInstance(<button>Like</button>).render('#root')
 
 文档名词解释：
 
-- `Gyron` 框架名称。在 npm 中是 `@gyron/runtime`，所以在安装的时候请运行 `npm install @gyron/runtime`
+- `Gyron` 框架名称。在 npm 中是 `gyron`，所以在安装的时候请运行 `npm install gyron`

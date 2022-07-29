@@ -9,7 +9,7 @@ import {
   onDestroyed,
   useValue,
   useReactive,
-} from '@gyron/runtime'
+} from 'gyron'
 import { ArrowRightIcon } from './icons'
 import { Skeleton } from './skeleton'
 import classnames from 'classnames'

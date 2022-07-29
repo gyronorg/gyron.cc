@@ -1,4 +1,4 @@
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 import { useRouter } from '@gyron/router'
 import { Header } from '@/components/header'
 import classnames from 'classnames'

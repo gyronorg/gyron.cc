@@ -1,6 +1,6 @@
 import { Menu } from '@/interface/menu'
 import { useRouter, useHref, useRoute } from '@gyron/router'
-import { defineProps, FC } from '@gyron/runtime'
+import { defineProps, FC } from 'gyron'
 import classnames from 'classnames'
 
 interface DocsLinkProps {

@@ -1,5 +1,5 @@
 import { NavigationBar } from '@/components/guidance'
-import { VNode, FCA } from '@gyron/runtime'
+import { VNode, FCA } from 'gyron'
 
 export async function invokeWithGetMdxAnchor(
   mdx: () => Promise<typeof import('*.mdx')>

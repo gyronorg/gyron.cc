@@ -10,6 +10,5 @@
       "@/*": ["src/app/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "files": ["global.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "global.d.ts"]
 }

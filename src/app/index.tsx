@@ -1,5 +1,5 @@
 import { createBrowserRouter, Route, Routes } from '@gyron/router'
-import { createSSRInstance, FC } from '@gyron/runtime'
+import { createSSRInstance, FC } from 'gyron'
 import { MdxHelper } from './components/helper'
 import { MdxContainer, ParentPath } from './components/mdx'
 import { Mismatch } from './components/mismatch'

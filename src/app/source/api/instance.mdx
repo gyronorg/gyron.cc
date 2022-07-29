@@ -29,7 +29,7 @@ declare function createInstance(root: VNode, isHydrate?: boolean): Instance
 **示例**
 
 ```javascript
-import { h, createInstance } from '@gyron/runtime'
+import { h, createInstance } from 'gyron'
 
 const App = h(() => {
   return h('div', 'hello world')
@@ -59,7 +59,7 @@ declare function createSSRInstance(vnode: VNode): Instance
 **示例**
 
 ```javascript
-import { h, createSSRInstance, renderToString } from '@gyron/runtime'
+import { h, createSSRInstance, renderToString } from 'gyron'
 
 const App = h(() => {
   return h('div', 'hello world')
@@ -97,7 +97,7 @@ interface Instance {
 **示例**
 
 ```javascript
-import { h, createInstance } from '@gyron/runtime'
+import { h, createInstance } from 'gyron'
 
 const App = h(() => {
   return h('div', 'hello world')
@@ -130,7 +130,7 @@ interface Instance {
 **示例**
 
 ```javascript
-import { createInstance, createPlugin } from '@gyron/runtime'
+import { createInstance, createPlugin } from 'gyron'
 
 const customPluginData = /* any */ null
 const plugin = createPlugin({
@@ -160,7 +160,7 @@ interface Instance {
 **示例**
 
 ```javascript line=9
-import { createInstance, h } from '@gyron/runtime'
+import { createInstance, h } from 'gyron'
 
 const App = h(() => {
   return h('div', 'hello world')

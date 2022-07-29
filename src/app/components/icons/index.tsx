@@ -1,4 +1,4 @@
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 import classnames from 'classnames'
 
 interface IconProps {

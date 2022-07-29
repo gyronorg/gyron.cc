@@ -25,7 +25,7 @@ declare function h(
 **示例**
 
 ```javascript
-import { h } from '@gyron/runtime'
+import { h } from 'gyron'
 
 const App = h(() => {
   return h('div', 'hello world')
@@ -53,7 +53,7 @@ declare function nextRender(fn?: Noop): Promise<unknown>
 **示例**
 
 ```javascript
-import { h, useValue, nextRender, useRef, onAfterMount } from '@gyron/runtime'
+import { h, useValue, nextRender, useRef, onAfterMount } from 'gyron'
 
 const App = h(() => {
   const count = useValue(0)
@@ -91,7 +91,7 @@ declare function createPlugin<E>(option: PluginOption<E>): Plugin<E>
 **示例**
 
 ```javascript
-import { useReactive, createPlugin } from '@gyron/runtime'
+import { useReactive, createPlugin } from 'gyron'
 
 const store = useReactive({})
 

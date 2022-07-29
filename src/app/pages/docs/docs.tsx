@@ -1,4 +1,4 @@
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 import { DocsContainer } from '@/components/container'
 import { DOCS_NAV } from './constant'
 

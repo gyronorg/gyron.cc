@@ -7,7 +7,7 @@
 FCA 是内置的异步组件包装器，通过 FCA 函数就可以在内部使用异步语法，比如：
 
 ```jsx
-import { FCA } from '@gyron/runtime'
+import { FCA } from 'gyron'
 
 const App = FCA(() => {
   return getUserInfo().then((data) => <div>{data.name}</div>)
@@ -25,7 +25,7 @@ const App = FCA(() => {
 ```
 
 ```jsx filename=dashboard.jsx
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 
 export const Dashboard = FC(() => {
   return <div>Dashboard</div>

@@ -15,7 +15,7 @@ declare function getCurrentComponent(): Component
 **示例**
 
 ```javascript
-import { h, getCurrentComponent } from '@gyron/runtime'
+import { h, getCurrentComponent } from 'gyron'
 
 const App = h(() => {
   const component = getCurrentComponent()
@@ -40,7 +40,7 @@ declare function defineProps<T extends Data>(): T & ComponentDefaultProps
 **示例**
 
 ```javascript
-import { h, defineProps } from '@gyron/runtime'
+import { h, defineProps } from 'gyron'
 
 const App = h(() => {
   const props = defineProps()
@@ -62,7 +62,7 @@ declare function forceUpdate(component: Component): void
 **示例**
 
 ```javascript
-import { h, forceUpdate } from '@gyron/runtime'
+import { h, forceUpdate } from 'gyron'
 
 const App = h(({ component }) => {
   let message = 0
@@ -91,7 +91,7 @@ declare function useRef<T = any>(): UserRef<T>
 **示例**
 
 ```javascript
-import { h, useRef } from '@gyron/runtime'
+import { h, useRef } from 'gyron'
 
 const App = h(() => {
   const ref = useRef()
@@ -115,7 +115,7 @@ declare function exposeComponent(exposed: Record<string | number, any>): void
 **示例**
 
 ```javascript
-import { h, useValue, useRef, exposeComponent } from '@gyron/runtime'
+import { h, useValue, useRef, exposeComponent } from 'gyron'
 
 const Child = h(() => {
   const name = useValue('foo')
@@ -150,7 +150,7 @@ declare function onBeforeMount(callback: LifecycleCallback): void
 **示例**
 
 ```javascript
-import { h, onBeforeMount } from '@gyron/runtime'
+import { h, onBeforeMount } from 'gyron'
 
 const App = h(() => {
   onBeforeMount((component) => {
@@ -173,7 +173,7 @@ declare function onAfterMount(callback: LifecycleCallback): void
 **示例**
 
 ```javascript
-import { h, onAfterMount } from '@gyron/runtime'
+import { h, onAfterMount } from 'gyron'
 
 const App = h(() => {
   onAfterMount((component) => {
@@ -196,7 +196,7 @@ declare function onBeforeUpdate(callback: LifecycleCallback<boolean>): void
 **示例**
 
 ```javascript
-import { h, onBeforeUpdate } from '@gyron/runtime'
+import { h, onBeforeUpdate } from 'gyron'
 
 const App = h(() => {
   onBeforeUpdate((component) => {
@@ -219,7 +219,7 @@ declare function onAfterUpdate(callback: LifecycleCallback): void
 **示例**
 
 ```javascript
-import { h, onAfterUpdate } from '@gyron/runtime'
+import { h, onAfterUpdate } from 'gyron'
 
 const App = h(() => {
   onAfterUpdate((component) => {
@@ -242,7 +242,7 @@ declare function onDestroyed(callback: LifecycleCallback): void
 **示例**
 
 ```javascript
-import { h, onDestroyed } from '@gyron/runtime'
+import { h, onDestroyed } from 'gyron'
 
 const App = h(() => {
   const timer = setInterval(() => {
@@ -274,7 +274,7 @@ declare function FC<Props extends Data = object>(
 **示例**
 
 ```ts d
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 
 interface Props {
   count: number
@@ -311,7 +311,7 @@ declare function FCA<Props extends Data = object>(
 **示例**
 
 ```ts d
-import { FCA } from '@gyron/runtime'
+import { FCA } from 'gyron'
 
 interface Props {
   count: number

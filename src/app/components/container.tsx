@@ -1,5 +1,5 @@
 import { Outlet } from '@gyron/router'
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 import { Menu } from '@/interface/menu'
 import { Nav } from './nav'
 import classnames from 'classnames'

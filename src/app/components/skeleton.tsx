@@ -1,4 +1,4 @@
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 
 export const Skeleton = FC<{
   length: number

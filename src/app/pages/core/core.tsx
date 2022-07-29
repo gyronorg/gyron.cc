@@ -1,5 +1,5 @@
 import { DocsContainer } from '@/components/container'
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 import { CORE_NAV } from './constant'
 
 export const CoreDocs = FC(() => {

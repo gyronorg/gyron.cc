@@ -34,13 +34,13 @@
     "tmp": "^0.2.1"
   },
   "dependencies": {
-    "@gyron/babel-plugin-jsx": "^0.0.9",
-    "@gyron/dom-server": "^0.0.9",
-    "@gyron/jsx-runtime": "^0.0.9",
-    "@gyron/router": "^0.0.9",
-    "@gyron/runtime": "^0.0.9",
-    "@gyron/shared": "^0.0.9",
-    "@gyron/sync": "^0.0.9"
+    "@gyron/babel-plugin-jsx": "^0.0.10-alpha.2",
+    "@gyron/dom-server": "^0.0.10-alpha.2",
+    "@gyron/jsx-runtime": "^0.0.10-alpha.2",
+    "@gyron/router": "^0.0.10-alpha.2",
+    "@gyron/shared": "^0.0.10-alpha.2",
+    "@gyron/sync": "^0.0.10-alpha.2",
+    "gyron": "^0.0.10-alpha.2"
   },
   "prettier": {
     "semi": false,

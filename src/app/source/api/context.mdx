@@ -15,7 +15,7 @@ declare function useRootContext(): VNodeContext
 **示例**
 
 ```javascript
-import { h, useRootContext } from '@gyron/runtime'
+import { h, useRootContext } from 'gyron'
 
 const Child = h(() => {
   const context = useRootContext()
@@ -51,7 +51,7 @@ declare function useComponentContext(): {
 **示例**
 
 ```javascript
-import { h, useComponentContext } from '@gyron/runtime'
+import { h, useComponentContext } from 'gyron'
 
 const Child = h(() => {
   const context = useComponentContext()
@@ -88,7 +88,7 @@ declare function useProvide<T = unknown>(): (
 **示例**
 
 ```javascript
-import { h, useProvide } from '@gyron/runtime'
+import { h, useProvide } from 'gyron'
 
 const App = h(() => {
   const provide = useProvide()
@@ -120,7 +120,7 @@ declare function provide(
 **示例**
 
 ```javascript
-import { h, provide, getCurrentComponent } from '@gyron/runtime'
+import { h, provide, getCurrentComponent } from 'gyron'
 
 const App = h(() => {
   const component = getCurrentComponent()
@@ -142,7 +142,7 @@ declare function useInject(): <T>(name: string | symbol) => T
 **示例**
 
 ```javascript
-import { h, useInject } from '@gyron/runtime'
+import { h, useInject } from 'gyron'
 
 const Child = h(() => {
   const inject = useInject()
@@ -180,7 +180,7 @@ declare function inject<T = unknown>(
 **示例**
 
 ```javascript
-import { h, provide, inject, getCurrentComponent } from '@gyron/runtime'
+import { h, provide, inject, getCurrentComponent } from 'gyron'
 
 const Child = h(() => {
   const component = getCurrentComponent()

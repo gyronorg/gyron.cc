@@ -23,7 +23,7 @@ declare function createVNode(
 **示例**
 
 ```javascript
-import { createVNode } from '@gyron/runtime'
+import { createVNode } from 'gyron'
 
 const App = createVNode(() => {
   return createVNode('div', null, 'hello world')
@@ -53,7 +53,7 @@ declare function createComponent(
 **示例**
 
 ```javascript
-import { createComponent, h } from '@gyron/runtime'
+import { createComponent, h } from 'gyron'
 
 const App = createComponent(() => {
   return h('div', null, 'hello world')
@@ -77,7 +77,7 @@ declare function createFragment(children: Children[]): VNode<typeof Fragment>
 **示例**
 
 ```javascript
-import { createFragment, h } from '@gyron/runtime'
+import { createFragment, h } from 'gyron'
 
 const App = h(() => {
   return createFragment(['hello', 'world'])
@@ -101,7 +101,7 @@ declare function createText(children: TextContent): VNode<typeof Text>
 **示例**
 
 ```javascript
-import { createText, h } from '@gyron/runtime'
+import { createText, h } from 'gyron'
 
 const App = h(() => {
   return createText('hello world')
@@ -131,7 +131,7 @@ declare function createElement(
 **示例**
 
 ```javascript
-import { createElement, h } from '@gyron/runtime'
+import { createElement, h } from 'gyron'
 
 const App = h(() => {
   return createElement('div', { class: 'container' }, 'hello world')
@@ -155,7 +155,7 @@ declare function createComment(children?: string): VNode<typeof Comment>
 **示例**
 
 ```javascript
-import { createComment, h } from '@gyron/runtime'
+import { createComment, h } from 'gyron'
 
 const App = h(() => {
   return createComment('async anchor')
@@ -179,7 +179,7 @@ declare function cloneVNode(vnode: VNode | VNode[]): VNode | VNode[]
 **示例**
 
 ```javascript
-import { createComment, cloneVNode, h } from '@gyron/runtime'
+import { createComment, cloneVNode, h } from 'gyron'
 
 const App = h(() => {
   return createComment('async anchor')
@@ -209,7 +209,7 @@ declare function mergeVNode(
 **示例**
 
 ```javascript
-import { createComment, mergeVNode, h } from '@gyron/runtime'
+import { createComment, mergeVNode, h } from 'gyron'
 
 const Child = h(() => {
   return createComment('async anchor')
@@ -236,7 +236,7 @@ declare function isVNode(n: any): n is VNode
 **示例**
 
 ```javascript
-import { isVNode, h } from '@gyron/runtime'
+import { isVNode, h } from 'gyron'
 
 const App = h(() => {
   return h('div', 'async anchor')
@@ -252,7 +252,7 @@ isVNode(App) // true
 **示例**
 
 ```javascript
-import { isVNodeText, createText } from '@gyron/runtime'
+import { isVNodeText, createText } from 'gyron'
 
 const node = createText('hello world')
 
@@ -266,7 +266,7 @@ isVNodeText(node) // true
 **示例**
 
 ```javascript
-import { isVNodeComment, createComment } from '@gyron/runtime'
+import { isVNodeComment, createComment } from 'gyron'
 
 const node = createComment()
 
@@ -280,7 +280,7 @@ isVNodeComment(node) // true
 **示例**
 
 ```javascript
-import { isVNodeElement, createElement } from '@gyron/runtime'
+import { isVNodeElement, createElement } from 'gyron'
 
 const node = createElement('div', {}, 'hello world')
 
@@ -294,7 +294,7 @@ isVNodeElement(node) // true
 **示例**
 
 ```javascript
-import { isVNodeFragment, createFragment } from '@gyron/runtime'
+import { isVNodeFragment, createFragment } from 'gyron'
 
 const node = createFragment(['hello', 'world'])
 

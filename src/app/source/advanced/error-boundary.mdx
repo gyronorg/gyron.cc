@@ -10,7 +10,7 @@ import {
   registerErrorHandler,
   registerWarnHandler,
   BoundariesHandlerParams,
-} from '@gyron/runtime'
+} from 'gyron'
 
 const App = () => {
   registerWarnHandler((params: BoundariesHandlerParams) => {
@@ -28,7 +28,7 @@ const App = () => {
 当错误发生在组件以外的区域，比如用户事件、异步函数，我们可以使用`manualErrorHandler`函数，前提是在上层组件中注册过`<ErrorBoundary />`组件
 
 ```jsx
-import { ErrorBoundary, createInstance } from '@gyron/runtime'
+import { ErrorBoundary, createInstance } from 'gyron'
 import Unstable from './unstable'
 
 createInstance(
@@ -39,7 +39,7 @@ createInstance(
 ```
 
 ```jsx filename=unstable.jsx
-import { manualErrorHandler, getCurrentComponent } from '@gyron/runtime'
+import { manualErrorHandler, getCurrentComponent } from 'gyron'
 
 export default () => {
   const component = getCurrentComponent()
@@ -64,7 +64,7 @@ import {
   BoundariesHandlerParams,
   createInstance,
   FC,
-} from '@gyron/runtime'
+} from 'gyron'
 
 const FallbackUI = FC<BoundariesHandlerParams>(({ type, message, stack }) => {
   return (

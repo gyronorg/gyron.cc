@@ -1,5 +1,5 @@
 import { Link } from '@gyron/router'
-import { FC } from '@gyron/runtime'
+import { FC } from 'gyron'
 
 export const Mismatch = FC(() => {
   return (

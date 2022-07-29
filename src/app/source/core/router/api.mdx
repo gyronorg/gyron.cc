@@ -18,7 +18,7 @@ declare function createRouter(option: Partial<RouterOption>): Plugin<RouterBase>
 
 ```jsx
 import { createBrowserHistory } from 'history'
-import { createInstance } from '@gyron/runtime'
+import { createInstance } from 'gyron'
 import { createRouter, Route, Routes } from '@gyron/router'
 
 const router = createRouter({
@@ -487,7 +487,7 @@ declare function onAfterRouteEach(listener: RouterHookAfterEach): void
 **示例**
 
 ```jsx
-import { useRef, nextRender } from '@gyron/runtime'
+import { useRef, nextRender } from 'gyron'
 import { onAfterRouteEach } from '@gyron/router'
 
 const App = () => {

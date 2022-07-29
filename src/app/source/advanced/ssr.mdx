@@ -44,7 +44,7 @@ const App = ({ isSSR }) => {
 server 文件夹下存放服务端渲染的代码，通常都有类似于 express 的 node 服务。client 文件夹下存放 hydrate 代码，让服务端渲染出来的静态资源变得可响应。
 
 ```jsx filename=app/index.js
-import { useValue } from '@gyron/runtime'
+import { useValue } from 'gyron'
 
 const App = () => {
   const count = useValue(0)
@@ -57,7 +57,7 @@ export default App
 app/index.js 文件中导出一个应用实例，等待 server 和 client 的调用。
 
 ```jsx filename=server/index.js
-import { createSSRInstance } from '@gyron/runtime'
+import { createSSRInstance } from 'gyron'
 import { renderToString } from '@gyron/dom-server'
 import express from 'express'
 import App from '../app/index'
@@ -80,7 +80,7 @@ app.listen(3000, () => {
 这个时候已经完成了服务端渲染的大部分功能，但是你会发现，点击 Counter 计数器并不会增加，因为这个时候还未加载 hudrate 代码，也就是 client/index.js 部分。
 
 ```jsx filename=client/index.js
-import { createInstance } from '@gyron/runtime'
+import { createInstance } from 'gyron'
 import App from '../app/index'
 
 createInstance(<App />).render('#app')

@@ -1,7 +1,7 @@
-import { FC, useValue } from '@gyron/runtime'
+import { FC, useValue } from 'gyron'
 import { DarkIcon, LightIcon, SystemIcon } from './icons'
 import classnames from 'classnames'
-import { onDestroyed } from '@gyron/runtime'
+import { onDestroyed } from 'gyron'
 
 const themeIcons = {
   light: LightIcon,

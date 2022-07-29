@@ -15,7 +15,7 @@ declare function registerErrorHandler(handler: BoundariesHandler): void
 **示例**
 
 ```javascript
-import { registerErrorHandler, h } from '@gyron/runtime'
+import { registerErrorHandler, h } from 'gyron'
 
 const App = h(() => {
   registerErrorHandler(({ message }) => {
@@ -42,7 +42,7 @@ declare function registerWarnHandler(handler: BoundariesHandler): void
 **示例**
 
 ```javascript
-import { registerWarnHandler, useInject, h } from '@gyron/runtime'
+import { registerWarnHandler, useInject, h } from 'gyron'
 
 const App = h(() => {
   registerWarnHandler(({ message }) => {
@@ -74,7 +74,7 @@ declare function manualErrorHandler(
 **示例**
 
 ```javascript
-import { manualErrorHandler, h } from '@gyron/runtime'
+import { manualErrorHandler, h } from 'gyron'
 
 const App = h(() => {
   Promise.reject('Error: Uncaught exceptions').catch((e) => {

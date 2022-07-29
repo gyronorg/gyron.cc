@@ -5,7 +5,7 @@ import {
   nextRender,
   onAfterMount,
   useReactive,
-} from '@gyron/runtime'
+} from 'gyron'
 import { omit } from '@gyron/shared'
 import { Link } from '@gyron/router'
 import { AnchorIcon, CopyIcon } from './icons'

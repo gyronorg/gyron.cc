@@ -9,7 +9,7 @@
 表单数据传递往往会遇到层级问题，中间可能会穿插多个 layout 组件进来，有的时候又会忘记将数据往下进行传递，我们可以通过 Provide 和 Inject 进行跨组件通讯。
 
 ```jsx filename=form.jsx line=9
-import { useReactive, useProvide } from '@gyron/runtime'
+import { useReactive, useProvide } from 'gyron'
 import { FormItem } from './formItem'
 
 const Form = () => {
@@ -36,7 +36,7 @@ const FormItem = () => {
 FormItem 在这里只是为了简单表明中间有一个层级，实际在使用过程中可能会遇到更多的组件嵌套。
 
 ```jsx filename=input.jsx line=4
-import { useInject } from '@gyron/runtime'
+import { useInject } from 'gyron'
 
 const Input = () => {
   const state = useInject()('form-data')

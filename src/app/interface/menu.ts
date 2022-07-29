@@ -4,7 +4,7 @@ import {
   AsyncComponentFunction,
   ComponentSetupFunction,
   VNode,
-} from '@gyron/runtime'
+} from 'gyron'
 
 export type ContentMenu = Pick<MenuView, 'anchor' | 'component' | 'meta'>
 

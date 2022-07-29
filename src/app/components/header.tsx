@@ -1,4 +1,4 @@
-import { FC, onAfterMount, useMemo, useValue } from '@gyron/runtime'
+import { FC, onAfterMount, useMemo, useValue } from 'gyron'
 import { Link, useRouter } from '@gyron/router'
 import { DarkToggle } from '@/components/dark'
 import { CloseIcon, GithubIcon, LogoIcon, MenuIcon } from '@/components/icons'
