@@ -26,19 +26,19 @@ export const Home = FC(() => {
         <div class="container mt-24 mx-auto">
           <ul class="flex justify-around space-x-6 sm:space-x-8 md:space-x-12 lg:space-x-16">
             <li>
-              <h3 class="text-lg">简单</h3>
+              <h2 class="text-lg">简单</h2>
               <p class="mt-4 opacity-80">
                 只需要了解JavaScript基本语法和jsx就可以完全构建一个可交互的应用程序。
               </p>
             </li>
             <li>
-              <h3 class="text-lg">组件</h3>
+              <h2 class="text-lg">组件</h2>
               <p class="mt-4 opacity-80">
                 以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。
               </p>
             </li>
             <li>
-              <h3 class="text-lg">小巧</h3>
+              <h2 class="text-lg">小巧</h2>
               <p class="mt-4 opacity-80">
                 核心代码仅6kb(gzip)左右，但是功能却十分完善。
               </p>
