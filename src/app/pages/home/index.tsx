@@ -68,14 +68,19 @@ export const Home = FC(() => {
           src="https://cpwebassets.codepen.io/assets/embed/ei.js"
         ></script>
       </div>
-      <footer class="pt-28 pb-10 border-slate-200 flex justify-center text-slate-500 dark:border-slate-200/5">
-        <div class="mb-6 sm:mb-0 sm:flex">
-          <p>
-            <span>Copyright © {new Date().getFullYear()} Link</span>
-            <span class="sm:border-l sm:border-slate-400 sm:ml-4 sm:pl-4 block sm:inline">
-              Produced with @gyron/docs
-            </span>
-          </p>
+      <footer class="pt-28 pb-10 border-slate-200 text-slate-500 dark:border-slate-200/5 text-center">
+        <div class="flex justify-center">
+          <div class="mb-6 sm:mb-0 sm:flex">
+            <p>
+              <span>Copyright © {new Date().getFullYear()} Link</span>
+              <span class="sm:border-l sm:border-slate-400 sm:ml-4 sm:pl-4 block sm:inline">
+                Produced with @gyron/docs
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="mt-4">
+          <a href="https://beian.miit.gov.cn/">湘ICP备2022014933号</a>
         </div>
       </footer>
     </div>

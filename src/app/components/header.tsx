@@ -5,7 +5,7 @@ import { CloseIcon, GithubIcon, LogoIcon, MenuIcon } from '@/components/icons'
 import { Nav } from './nav'
 import { DOCS_NAV, CORE_NAV } from '@/pages'
 import classnames from 'classnames'
-import docsearch from '@docsearch/js'
+// import docsearch from '@docsearch/js'
 
 export const Header = FC(() => {
   const router = useRouter()
@@ -24,12 +24,12 @@ export const Header = FC(() => {
   }
 
   onAfterMount(() => {
-    docsearch({
-      container: '#docsearch',
-      appId: '21FTFZSM25',
-      indexName: 'search',
-      apiKey: '34fb54ad8b121149927deeec2a1641f1',
-    })
+    // docsearch({
+    //   container: '#docsearch',
+    //   appId: '21FTFZSM25',
+    //   indexName: 'search',
+    //   apiKey: '34fb54ad8b121149927deeec2a1641f1',
+    // })
   })
 
   return (
@@ -120,7 +120,7 @@ export const Header = FC(() => {
               <GithubIcon />
             </a>
           </div>
-          <div
+          {/* <div
             class={classnames('w-14 sm:w-[199px] doc-light-search', {
               'doc-home-search': router.path === '/',
             })}
@@ -129,7 +129,7 @@ export const Header = FC(() => {
               id="docsearch"
               class="pointer-events-auto border-l border-slate-200 dark:border-slate-800 ml-5 md:ml-6 pl-5 md:pl-6"
             ></div>
-          </div>
+          </div> */}
         </nav>
       </div>
     </header>

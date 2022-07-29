@@ -318,6 +318,37 @@ const HelloWorld = ({ count }) => {
 }
 ```
 
+## 缓存组件
+
+缓存组件可以自动保持组件的状态，当组件不可见时，组件的状态会一直保留，当下次激活组件时，状态自动还原。
+
+```jsx
+import { memo, useValue } from '@gyron/runtime'
+
+const App = memo(() => {
+  const count = useValue(0)
+
+  function increment() {
+    count.value++
+  }
+
+  return () => <div onClick={increment}>Cache Component {count.value}</div>
+})
+```
+
+当缓存组件 Props 发生变更时，缓存组件会自动更新，当组件依赖的数据发生变更时组件也会自动更新。
+你可以使用 memo 方法对组件进行优化，请勿过度使用 memo 组件，因为这在内部使用了一个 Map 保存这些组件，如果缓存组件确定不再使用，你可以使用`clearCacheComponent`方法清空本地缓存并且断开组件的依赖关系。
+
+```jsx line=7
+import { clearCacheComponent, memo } from '@gyron/runtime'
+
+const App = memo(() => {
+  // ...
+})
+
+clearCacheComponent(App)
+```
+
 ## 异步组件
 
 异步组件可以用在页面的懒加载上面，以减少首页需要加载的资源。
