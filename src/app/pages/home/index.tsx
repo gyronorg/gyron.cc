@@ -46,28 +46,6 @@ export const Home = FC(() => {
           </ul>
         </div>
       </div>
-      <div class="max-w-6xl mx-auto mt-32">
-        <p
-          class="codepen"
-          data-preview="true"
-          data-height="500"
-          data-slug-hash="ExQNxGR"
-          data-user="linkontoask"
-        >
-          <span>
-            See the Pen
-            <a href="https://codepen.io/linkontoask/pen/ExQNxGR">
-              Gyron Hello World
-            </a>
-            by Link (<a href="https://codepen.io/linkontoask">@linkontoask</a>)
-            on <a href="https://codepen.io">CodePen</a>.
-          </span>
-        </p>
-        <script
-          async
-          src="https://cpwebassets.codepen.io/assets/embed/ei.js"
-        ></script>
-      </div>
       <footer class="pt-28 pb-10 border-slate-200 text-slate-500 dark:border-slate-200/5 text-center">
         <div class="flex justify-center">
           <div class="mb-6 sm:mb-0 sm:flex">
