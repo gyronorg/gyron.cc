@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { createSSRInstance, nextRender, h } from '@gyron/runtime'
+import gyron from 'gyron'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, generateNestedRoutes } from '@gyron/router'
 import { buildClient, buildAPP } from './base.mjs'
@@ -17,7 +17,7 @@ async function getRoutes(vnode) {
     if (route.path === '*') {
       routes.push('/404')
     } else {
-      routes.push(route.extra.fullPath)
+      routes.push(route.extra.regexpPath)
     }
     if (route.extra.children.length) {
       tp.push(...route.extra.children)
@@ -30,12 +30,12 @@ async function render(vnode, url, clientMeta) {
   const router = createMemoryRouter({
     isSSR: true,
   })
-  const { root } = createSSRInstance(vnode).use(router)
+  const { root } = gyron.createSSRInstance(vnode).use(router)
 
   await router.extra.replace(url)
 
   // waiting for the view to update
-  await nextRender()
+  await gyron.nextRender()
 
   const html = await renderToString(root)
 
@@ -62,8 +62,9 @@ buildClient(false, tempPath).then((appMeta) => {
   buildAPP().then(async ({ App, ExposeRoutes }) => {
     const node = ExposeRoutes()
     const routes = await getRoutes(node())
+    console.log(routes)
     for (const url of routes) {
-      const html = await render(h(App), url, appMeta)
+      const html = await render(gyron.h(App), url, appMeta)
       const urls = url.slice(1).split('/')
       const name = urls.pop()
       if (urls.length) {
