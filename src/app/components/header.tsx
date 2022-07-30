@@ -6,6 +6,7 @@ import { Nav } from './nav'
 import { DOCS_NAV, CORE_NAV } from '@/pages'
 import classnames from 'classnames'
 // import docsearch from '@docsearch/js'
+// import '@docsearch/css'
 
 export const Header = FC(() => {
   const router = useRouter()

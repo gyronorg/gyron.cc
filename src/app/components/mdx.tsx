@@ -57,7 +57,21 @@ export const MdxContainer = FC<MdxContainerProps>(({ children, menu }) => {
   })
 
   return (
-    <article class="relative z-20">
+    <article
+      class="relative z-20"
+      itemScope
+      itemType="http://schema.org/Article"
+    >
+      <span
+        hidden
+        itemScope
+        itemProp="author"
+        itemType="http://schema.org/Person"
+      >
+        <meta itemProp="name" content="Link" />
+        <meta itemProp="url" content="https://github.com/Linkontoask" />
+      </span>
+      <meta itemProp="image" content="/assets/image/logo-sm.png" />
       <Guidance navigations={menu.anchor} />
       <div class="prose prose-slate mt-8 dark:prose-invert max-w-none">
         {children}

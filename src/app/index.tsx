@@ -78,7 +78,14 @@ export const app = () => {
       },
       afterEach: (from, to) => {
         if (to.meta) {
-          document.title = `Gyron | ${to.meta.title}`
+          const title = `Gyron | ${to.meta.title}`
+          document.title = title
+          const og = document.querySelector(
+            'meta[property="og:title"]'
+          ) as HTMLMetaElement
+          if (og) {
+            og.content = title
+          }
         }
         if (from.path !== to.path) {
           for (const k in storeState.guidance) {

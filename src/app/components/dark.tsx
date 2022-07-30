@@ -11,6 +11,19 @@ const themeIcons = {
 
 type Theme = keyof typeof themeIcons
 
+function trigger(add?: boolean) {
+  const theme = document.querySelector(
+    'meta[name="theme-color"]'
+  ) as HTMLMetaElement
+  if (add) {
+    document.documentElement.classList.add('dark')
+    theme.content = '#0f172a'
+  } else {
+    document.documentElement.classList.remove('dark')
+    theme.content = '#f8fafc'
+  }
+}
+
 export const DarkToggle = FC(({ isSSR }) => {
   const theme = useValue<Theme>(
     (isSSR ? 'system' : localStorage.theme) || 'system'
@@ -26,18 +39,18 @@ export const DarkToggle = FC(({ isSSR }) => {
     theme.value = themeName
     if (themeName === 'system') {
       const mediaDark = window.matchMedia('(prefers-color-scheme: dark)')
-      document.documentElement.classList.remove('dark')
+      trigger()
       if (mediaDark.matches) {
-        document.documentElement.classList.add('dark')
+        trigger(true)
       }
       localStorage.removeItem('theme')
       document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT'
     } else {
       localStorage.theme = themeName
       document.cookie = `theme=${themeName}; max-age=31536000`
-      document.documentElement.classList.remove('dark')
+      trigger()
       if (themeName === 'dark') {
-        document.documentElement.classList.add('dark')
+        trigger(true)
       }
     }
   }
@@ -46,17 +59,17 @@ export const DarkToggle = FC(({ isSSR }) => {
     const mediaDark = window.matchMedia('(prefers-color-scheme: dark)')
     if (theme.value === 'system') {
       if (mediaDark.matches) {
-        document.documentElement.classList.add('dark')
+        trigger(true)
       } else {
-        document.documentElement.classList.remove('dark')
+        trigger()
       }
       mediaDark.addEventListener('change', (e) => {
         const themeName = e.matches ? 'dark' : 'light'
         theme.value = theme.value === 'system' ? 'system' : themeName
         if (themeName === 'dark') {
-          document.documentElement.classList.add('dark')
+          trigger(true)
         } else {
-          document.documentElement.classList.remove('dark')
+          trigger()
         }
       })
     } else {
@@ -64,9 +77,9 @@ export const DarkToggle = FC(({ isSSR }) => {
         localStorage.theme === 'dark' ||
         (!('theme' in localStorage) && mediaDark.matches)
       ) {
-        document.documentElement.classList.add('dark')
+        trigger(true)
       } else {
-        document.documentElement.classList.remove('dark')
+        trigger()
       }
     }
     const changeVisible = () => {

@@ -1,11 +1,5 @@
 import { storeState } from '@/store'
-import {
-  useRef,
-  FC,
-  nextRender,
-  onAfterMount,
-  useReactive,
-} from 'gyron'
+import { useRef, FC, nextRender, onAfterMount, useReactive } from 'gyron'
 import { omit } from '@gyron/shared'
 import { Link } from '@gyron/router'
 import { AnchorIcon, CopyIcon } from './icons'
@@ -25,9 +19,16 @@ export const A = FC<{ href: string }>(({ href, children }) => {
   return <Link to={href}>{children}</Link>
 })
 
+export const P = FC(({ children }) => {
+  return <p itemProp="description">{children}</p>
+})
+
 export const H1 = FC(({ children }) => {
   return (
-    <h1 class="inline-block text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">
+    <h1
+      class="inline-block text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200"
+      itemProp="headline name"
+    >
       {children}
     </h1>
   )
@@ -47,6 +48,7 @@ export const H2 = FC(({ children }) => {
 
   return (
     <h2
+      itemProp="headline name"
       class="group flex items-center whitespace-pre-wrap -ml-4 pl-4 relative guidance"
       id={children[0]}
       ref={ref}
@@ -180,6 +182,7 @@ const Pre = FC(({ children }) => {
 
 export const MdxHelper = {
   a: A,
+  p: P,
   h1: H1,
   h2: H2,
   h3: H3,

@@ -3,7 +3,6 @@ import { FC } from 'gyron'
 import { Menu } from '@/interface/menu'
 import { Nav } from './nav'
 import classnames from 'classnames'
-import '@docsearch/css'
 
 interface PageLayoutProps {
   menu: Menu
