@@ -43,7 +43,7 @@ async function render(vnode, url, clientMeta) {
     .readFileSync(path.join(process.cwd(), 'public/index.html'), {
       encoding: 'utf-8',
     })
-    .replace(
+    .replaceAll(
       'Gyron 文档',
       `Gyron | ${router.extra.currentRoute.meta?.title || '文档'}`
     )
