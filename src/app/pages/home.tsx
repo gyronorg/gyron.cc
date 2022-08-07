@@ -1,9 +1,14 @@
 import { Link } from '@gyron/router'
 import { FC } from 'gyron'
+import { Nav } from '@/components/nav'
+import { DOCS_NAV, CORE_NAV } from '@/pages'
 
 export const Home = FC(() => {
   return (
     <div class="py-8 max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
+      <div class="hidden">
+        <Nav menus={[...DOCS_NAV, ...CORE_NAV]} />
+      </div>
       <main>
         <div class="container mx-auto text-center my-20 md:mt-32 lg:mt-36 max-w-3xl text-slate-200 dark:text-slate-50">
           <h1 class="text-8xl font-bold">Gyron.js</h1>
