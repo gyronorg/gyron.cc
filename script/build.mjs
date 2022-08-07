@@ -77,6 +77,7 @@ buildClient(false, tempPath).then((appMeta) => {
         })
       }
     }
+    fs.copyFile('public/sitemap.xml', `${tempPath}/sitemap.xml`)
     fs.copySync('public/assets', `${tempPath}/assets`)
     fs.rmSync('dist/app', { recursive: true, force: true })
   })
