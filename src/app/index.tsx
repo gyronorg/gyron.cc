@@ -57,7 +57,11 @@ export const ExposeRoutes = FC(() => {
           />
         ))}
       </Route>
-      <Route path="*" meta={{ title: '404' }} element={<Mismatch />}></Route>
+      <Route
+        path="*"
+        meta={{ title: '404 未找到页面' }}
+        element={<Mismatch />}
+      ></Route>
     </Routes>
   )
 })
