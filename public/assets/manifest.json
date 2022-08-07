@@ -1,8 +1,8 @@
 {
-  "name": "Gyron",
-  "short_name": "Gyron",
+  "name": "Gyron.js",
+  "short_name": "Gyron.js",
   "background_color": "#27b79b",
-  "description": "Gyron is a minimalist version of the zero-dependency responsive framework.",
+  "description": "Gyron.js is a minimalist version of the zero-dependency responsive framework.",
   "lang": "zh_CN",
   "icons": [
     {

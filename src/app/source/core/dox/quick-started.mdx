@@ -2,7 +2,7 @@
 
 > 在开始使用之前我们需要了解`redux`状态库相关知识，我们的`dox`完全基于`redux`，如果你还不清楚`redux`相关知识，那就需要前往[https://redux.js.org/](https://redux.js.org/)进行学习。
 
-`Dox`是`redux`的`Gyron`状态库，在不破坏 immutable 的同时，让其数据更改变得可响应。
+`Dox`是`redux`的`Gyron.js`状态库，在不破坏 immutable 的同时，让其数据更改变得可响应。
 在内部使用了一个响应式变量作为 state 的副本，只需要在修改时同步 state 到这个响应式变量上。这个响应式变量无法在外部进行修改，只能通过 dispatch 修改，这样保证了数据的稳定性。
 
 ### 创建 Store

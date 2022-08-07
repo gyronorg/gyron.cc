@@ -41,8 +41,8 @@ app.get('*', async (req, res) => {
       template
         .replace('data-server-theme', `class="${theme || ''}"`)
         .replace(
-          'Gyron 文档',
-          `Gyron | ${router.extra.currentRoute.meta.title}`
+          'Gyron.js 文档',
+          `Gyron.js | ${router.extra.currentRoute.meta.title}`
         )
         .replace('<!--ssr-outlet-->', html)
         .replace(

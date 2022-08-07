@@ -1,12 +1,12 @@
 ## JSX 介绍
 
-jsx 是 javascript 的语法扩展，因为其特性足够好并且学习成本低，Gyron 不再自己创造自己的语法，而是适配现有的 jsx 语法糖。
+jsx 是 javascript 的语法扩展，因为其特性足够好并且学习成本低，Gyron.js 不再自己创造自己的语法，而是适配现有的 jsx 语法糖。
 
 核心库中有四个关于 jsx 的库，他们的作用都是把 jsx 语法转换成运行时的代码，只是运行在不同平台上而已。
 
 ## babel-plugin-jsx
 
-babel-plugin-jsx 是将 jsx 语法转换成 Gyron 方法的 babel 插件，他和其它类型库一样，都是使用 babel 提供的 visitor 访问者将 JSXElement 等 jsx token 转换成`h()`可执行函数。
+babel-plugin-jsx 是将 jsx 语法转换成 Gyron.js 方法的 babel 插件，他和其它类型库一样，都是使用 babel 提供的 visitor 访问者将 JSXElement 等 jsx token 转换成`h()`可执行函数。
 
 babel-plugin-jsx 还可以在开发环境时生成 hmr 辅助代码，在开发大型项目时收益非常大。
 
@@ -59,8 +59,8 @@ babel-plugin-jsx 接受两个参数以帮助用户转换出更贴切的代码。
 
 ### 热更新
 
-babel-plugin-jsx 会自动寻找 Gyron 中的组件，并且在组件函数上附加一些`runtime helper`代码帮助 Gyron 进行热更新，如果只接入 babel-plugin-jsx 热更新功能还不会生效，还需要知道如何进行`rerender`。通常我们的做法是识别代码中的`comment`节点然后插入`rerender helper`代码进行更新。具体可以参考`vite-plugin-jsx`的实现。
-Gyron 会自动寻找组件之间的依赖关系并且在开发环境中对依赖的组件进行更新。
+babel-plugin-jsx 会自动寻找 Gyron.js 中的组件，并且在组件函数上附加一些`runtime helper`代码帮助 Gyron.js 进行热更新，如果只接入 babel-plugin-jsx 热更新功能还不会生效，还需要知道如何进行`rerender`。通常我们的做法是识别代码中的`comment`节点然后插入`rerender helper`代码进行更新。具体可以参考`vite-plugin-jsx`的实现。
+Gyron.js 会自动寻找组件之间的依赖关系并且在开发环境中对依赖的组件进行更新。
 
 ```jsx
 const App = () => {

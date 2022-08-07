@@ -6,9 +6,13 @@ export const Home = FC(() => {
     <div class="py-8 max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
       <main>
         <div class="container mx-auto text-center my-20 md:mt-32 lg:mt-36 max-w-3xl text-slate-200 dark:text-slate-50">
-          <h1 class="text-8xl font-bold">Gyron</h1>
+          <h1 class="text-8xl font-bold">Gyron.js</h1>
           <p class="mt-4 opacity-80 text-base leading-8">
             一款简单零依赖的响应式框架
+          </p>
+          <p class="mt-4 opacity-80 text-base leading-8">
+            Gyron.js is a minimalist version of the zero-dependency responsive
+            framework
           </p>
           <div class="flex justify-between mt-12 w-80 mx-auto">
             <Link
@@ -41,7 +45,7 @@ export const Home = FC(() => {
               <li>
                 <h2 class="text-lg">小巧</h2>
                 <p class="mt-4 opacity-80">
-                  核心代码仅6kb(gzip)左右，但是功能却十分完善。
+                  核心代码仅8kb(gzip)左右，但是功能却十分完善。
                 </p>
               </li>
             </ul>

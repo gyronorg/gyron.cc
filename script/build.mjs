@@ -44,8 +44,8 @@ async function render(vnode, url, clientMeta) {
       encoding: 'utf-8',
     })
     .replaceAll(
-      'Gyron 文档',
-      `Gyron | ${router.extra.currentRoute.meta?.title || '文档'}`
+      'Gyron.js 文档',
+      `Gyron.js | ${router.extra.currentRoute.meta?.title || '文档'}`
     )
     .replace('<!--ssr-outlet-->', html)
     .replace(

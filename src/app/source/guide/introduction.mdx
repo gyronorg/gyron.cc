@@ -1,13 +1,12 @@
 # Gyron
 
-> 注意：可能当前版本不适合运行在正式环境中，请注意控制台提示。
-> `Gyron`的更新尽可能最小，用户可以在生命周期钩子中告诉`Gyron`，此次数据更新不需要自动渲染（通常不应该这样使用，如果需要定义不会响应的数据可以直接定义数据即可）。
+> `Gyron.js`的更新尽可能最小，用户可以在生命周期钩子中告诉`Gyron.js`，此次数据更新不需要自动渲染（通常不应该这样使用，如果需要定义不会响应的数据可以直接定义数据即可）。
 
-`Gyron`是一款灵活的响应式前端框架，压缩后可减少到 9KB ，相比于其它框架，体积上面它有更大的优势。
+`Gyron.js`是一款灵活的响应式前端框架，压缩后可减少到 9KB ，相比于其它框架，体积上面它有更大的优势。
 
 ## 在线体验
 
-如果你想使用`Gyron`进行开发但是电脑上没有相关环境，可以使用自带浏览器访问我们的在线体验地址，在里面可以编写任何的用户代码，并且可以得到实时反馈。
+如果你想使用`Gyron.js`进行开发但是电脑上没有相关环境，可以使用自带浏览器访问我们的在线体验地址，在里面可以编写任何的用户代码，并且可以得到实时反馈。
 
 去 [codepen](https://codepen.io/linkontoask/embed/ExQNxGR?default-tab=js%2Cresult&editable=true)，或者[codesandbox](https://codesandbox.io/s/gyron-ckwixo?file=/src/index.tsx)直接在线体验。
 
@@ -16,7 +15,7 @@
 
 ## 在网站中使用 Gyron
 
-我们可以使用各种 CDN 服务来访问我们的代码，在你的页面中添加一个`script`标签，并且加上`type="module"`属性，然后再通过 esm 模块的形式导入`createInstance`方法，创建一个 Gyron 应用实例。
+我们可以使用各种 CDN 服务来访问我们的代码，在你的页面中添加一个`script`标签，并且加上`type="module"`属性，然后再通过 esm 模块的形式导入`createInstance`方法，创建一个 Gyron.js 应用实例。
 
 ```html
 <div id="root"></div>
@@ -128,4 +127,4 @@ createInstance(<button>Like</button>).render('#root')
 
 文档名词解释：
 
-- `Gyron` 框架名称。在 npm 中是 `gyron`，所以在安装的时候请运行 `npm install gyron`
+- `Gyron.js` 框架名称。在 npm 中是 `gyron`，所以在安装的时候请运行 `npm install gyron`

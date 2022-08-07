@@ -78,7 +78,7 @@ export const app = () => {
       },
       afterEach: (from, to) => {
         if (to.meta) {
-          const title = `Gyron | ${to.meta.title}`
+          const title = `Gyron.js | ${to.meta.title}`
           document.title = title
           const og = document.querySelector(
             'meta[property="og:title"]'

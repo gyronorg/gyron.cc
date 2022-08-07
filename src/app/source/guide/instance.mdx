@@ -11,20 +11,20 @@
 ```typescript
 import { createInstance, h } from 'gyron'
 
-createInstance(h('div', 'Gyron')).render('#root')
+createInstance(h('div', 'Gyron.js')).render('#root')
 ```
 
 ### 根节点
 
-`Gyron`只允许有一个根节点，因为需要在根节点中存放一些上下文信息，便于在组件运行时获取全局（插件 ）信息。
+`Gyron.js`只允许有一个根节点，因为需要在根节点中存放一些上下文信息，便于在组件运行时获取全局（插件 ）信息。
 
 如果不想在`DOM`节点中生成唯一根节点，可以使用`createFragment`方法创建一个虚拟的节点。
 
 ```typescript
 import { createInstance, createFragment } from 'gyron'
 
-createInstance(createFragment(['hello ', 'Gyron'])).render('#root')
-// <div id="root">hello Gyron</div>
+createInstance(createFragment(['hello ', 'Gyron.js'])).render('#root')
+// <div id="root">hello Gyron.js</div>
 ```
 
 ### 插件
@@ -94,6 +94,6 @@ interface Instance {
 
 生命周期概念在市场上已经很常见，但在开发一款简单的应用未必能用到，暂时不用掌握。在构建一个复杂的应用程序时，生命周期勾子就展现了它的优势。比如在优化页面渲染时可以使用`onBeforeUpdate`方法，它接受一个回调函数，并且必须返回一个 Boolean 值，如果返回一个`Falsy`，渲染程序则会阻止当前组件以及子组件的更新。
 
-每个生命周期勾子都可以注册多次，`Gyron`会按照注册顺序顺序调用，但是`onBeforeUpdate`除外，这个勾子在组件中只允许注册一次。
+每个生命周期勾子都可以注册多次，`Gyron.js`会按照注册顺序顺序调用，但是`onBeforeUpdate`除外，这个勾子在组件中只允许注册一次。
 
 ![Do生命周期图](/assets/image/lifecycle-md.png)

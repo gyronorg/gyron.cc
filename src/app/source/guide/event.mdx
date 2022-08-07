@@ -1,8 +1,8 @@
 ## 事件处理
 
-Gyron 和 javascript 事件处理保持一致，只是在写法上面会有一点区别。
+Gyron.js 和 javascript 事件处理保持一致，只是在写法上面会有一点区别。
 
-在传统模式中 onclick 只能绑定一次，而在 Gyron 中使用的 addEventListener 将方法绑定到元素身上，并且根据先后顺序依次触发。
+在传统模式中 onclick 只能绑定一次，而在 Gyron.js 中使用的 addEventListener 将方法绑定到元素身上，并且根据先后顺序依次触发。
 
 传统模式的写法
 
@@ -10,7 +10,7 @@ Gyron 和 javascript 事件处理保持一致，只是在写法上面会有一�
 <button onclick="myClick()">click me</button>
 ```
 
-在 Gyron 中有所不同，用 on 开头的属性名称都被转为 javascript 事件。
+在 Gyron.js 中有所不同，用 on 开头的属性名称都被转为 javascript 事件。
 
 ```jsx
 const button = <button onClick={myClick}>click me</button>
@@ -30,7 +30,7 @@ const myClick = (e) => {
 
 const a = (
   <a href="https://github.com/Linkontoask/gyron/issues" onClick={myClick}>
-    Github Gyron
+    Github Gyron.js
   </a>
 )
 ```
