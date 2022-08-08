@@ -137,6 +137,77 @@ const App = h(() => {
 })
 ```
 
+## memo
+
+创建一个缓存组件，并且组件的状态可以一直保留。可以使用`clearCacheComponent`清空组件缓存。
+
+**类型声明**
+
+```ts d
+declare function memo<
+  Props extends object = object,
+  T extends ComponentSetupFunction<Props> = ComponentSetupFunction<Props>
+>(componentFunction: T): WrapperFunction<T, Props>
+```
+
+**示例**
+
+```javascript
+import { h, memo } from 'gyron'
+
+const App = memo(() => {
+  return h('div')
+})
+```
+
+## clearCacheComponent
+
+传入组件函数，清空组件缓存。
+
+**类型声明**
+
+```ts d
+declare function clearCacheComponent(
+  componentFunction: ComponentSetupFunction
+): void
+```
+
+**示例**
+
+```javascript line=7
+import { h, memo, clearCacheComponent } from 'gyron'
+
+const App = memo(() => {
+  return h('div')
+})
+
+clearCacheComponent(App)
+```
+
+## useWatch
+
+传入组件函数，清空组件缓存。
+
+**类型声明**
+
+```ts d
+declare function useWatch<T = any>(
+  watcher: EffectFunction<T>,
+  dependency?: Dependency[]
+): void
+```
+
+**示例**
+
+```javascript line=4
+import { h, useWatch } from 'gyron'
+
+const App = h(() => {
+  useWatch(/* ... */)
+  return h('div')
+})
+```
+
 ## onBeforeMount
 
 生命周期勾子，组件挂载之前调用。
