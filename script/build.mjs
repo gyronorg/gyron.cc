@@ -6,6 +6,8 @@ import { createMemoryRouter, generateNestedRoutes } from '@gyron/router'
 import { buildClient, buildAPP } from './base.mjs'
 import fs from 'fs-extra'
 import path from 'path'
+import chalk from 'chalk'
+import ProgressBar from 'progress'
 
 const tempPath = 'dist'
 
@@ -62,7 +64,12 @@ buildClient(false, tempPath).then((appMeta) => {
   buildAPP().then(async ({ App, ExposeRoutes }) => {
     const node = ExposeRoutes()
     const routes = await getRoutes(node())
-    console.log(routes)
+    const bar = new ProgressBar(
+      `${chalk.blue('Page being rendered:')} [:bar] :current/:total`,
+      {
+        total: routes.length,
+      }
+    )
     for (const url of routes) {
       const html = await render(gyron.h(App), url, appMeta)
       const urls = url.slice(1).split('/')
@@ -76,6 +83,7 @@ buildClient(false, tempPath).then((appMeta) => {
           encoding: 'utf-8',
         })
       }
+      bar.tick()
     }
     fs.copyFile('public/sitemap.xml', `${tempPath}/sitemap.xml`)
     fs.copySync('public/assets', `${tempPath}/assets`)
