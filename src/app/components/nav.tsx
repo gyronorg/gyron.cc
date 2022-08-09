@@ -24,6 +24,10 @@ export const Nav = FC<DocsLinkProps>(({ menus }) => {
 
   return (
     <aside>
+      <div class="text-sm mt-3 hidden">
+        <div>当前版本</div>
+        <div>v0.0.10-alpha.2</div>
+      </div>
       <nav class="lg:text-sm lg:leading-6">
         <ul class="space-y-12 lg:space-y-8 md:first:mt-12 lg:first:mt-8">
           {menus.map((group) => (

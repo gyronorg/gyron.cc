@@ -16,9 +16,7 @@ createInstance(h('div', 'Gyron.js')).render('#root')
 
 ### 根节点
 
-`Gyron.js`只允许有一个根节点，因为需要在根节点中存放一些上下文信息，便于在组件运行时获取全局（插件 ）信息。
-
-如果不想在`DOM`节点中生成唯一根节点，可以使用`createFragment`方法创建一个虚拟的节点。
+`Gyron.js`允许有多个根节点，如果是多节点的情况我们会自动创建 Fragment Node。
 
 ```typescript
 import { createInstance, createFragment } from 'gyron'
@@ -29,62 +27,30 @@ createInstance(createFragment(['hello ', 'Gyron.js'])).render('#root')
 
 ### 插件
 
-我们设计了一款很简单但是能满足开发的扩展模式，可以通过`createPlugin`方法创建一个应用插件，里面必须包含一个`install`方法，便于将插件数据保存在节点上下文中。
+我们的插件系统非常简单，甚至都不需要使用我们提供的`createPlugin`方法，你可以自己创建一个上下文环境，然后通过自定义方法访问到插件实例即可。
 
-然后使用实例的`use`方法安装插件。
+后续我们会把插件实例和组件绑定起来，在遇到错误时更快的定位问题。也可以让插件干预组件的渲染，实现类似于“指令”的功能。
 
 ```typescript
-import { createInstance, createPlugin } from 'gyron'
+import { createInstance, createPlugin, usePlugin } from 'gyron'
 
+const Type = Symbol('')
 const customPluginData = /* createRouter */ null
-const plugin = createPlugin({
-  name: 'custom',
-  extra: custom,
-  install: (instance) => {
-    const context = instance.root.context
-    context.set('TypeRouter', customPluginData)
-  },
-})
-createInstance(/* VNode */).use(plugin)
+const plugin = usePlugin()
+plugin.set(Type, customPluginData)
 ```
 
-后面在组件中就可以通过 useRootContext 方法得到 customPluginData。
+后面在组件中就可以通过 usePlugin 方法得到 customPluginData。
 
 ```jsx line=6
-import { useRootContext } from 'gyron'
+import { usePlugin } from 'gyron'
 
 const App = () => {
-  const context = useRootContext()
+  const context = usePlugin()
 
-  context.get('TypeRouter')
+  context.get(Type)
 
-  return () => <div></div>
-}
-```
-
-### 用户接口
-
-开发者可以根据接口进行开发，而不需要对照着文档。
-
-这里只列举一些常用的用户接口，可以在下载后根据`index.d.ts`文件提示进行更多的操作。
-
-```typescript
-// 插件
-interface Plugin<E = any> {
-  type: typeof TypePlugin
-  extra: E
-  name: string | symbol
-  install: (instance: Instance) => void
-}
-
-// 应用实例
-interface Instance {
-  container: Element | null
-  use: (plugin: Plugin) => Instance
-  render: (containerOrSelector: string | HTMLElement) => Instance
-  destory: () => Instance
-  readonly plugins: Set<Plugin>
-  get root(): VNode
+  return /*...*/
 }
 ```
 
