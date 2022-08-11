@@ -2,13 +2,14 @@
 
 jsx 是 javascript 的语法扩展，因为其特性足够好并且学习成本低，Gyron.js 不再自己创造自己的语法，而是适配现有的 jsx 语法糖。
 
-核心库中有四个关于 jsx 的库，他们的作用都是把 jsx 语法转换成运行时的代码，只是运行在不同平台上而已。
+核心库中有两个关于 jsx 的库，他们的作用都是把 jsx 语法转换成运行时的代码，只是运行在不同平台或者插件上而已。
 
 ## babel-plugin-jsx
 
 babel-plugin-jsx 是将 jsx 语法转换成 Gyron.js 方法的 babel 插件，他和其它类型库一样，都是使用 babel 提供的 visitor 访问者将 JSXElement 等 jsx token 转换成`h()`可执行函数。
 
-babel-plugin-jsx 还可以在开发环境时生成 hmr 辅助代码，在开发大型项目时收益非常大。
+babel-plugin-jsx 还可以在开发环境时生成`热更新`辅助代码，只需要在配置中使用`{ hmr: true }`即可。使用此配置后可以在控制台的 source 面板中看到组件函数上声明了`__hmr`属性，这是一个以文件路径和函数名生成的哈希值。
+然后在不同平台提供的热更新接口中实现热更新的逻辑。目前核心中只接入了 vite，其它平台同理。
 
 ### 安装
 
@@ -144,7 +145,7 @@ const App = () => {
 
 这里有一个`@gyron/jsx-runtime`搭配 vite 的简单用法。
 
-> 注意一点就是 vite 不会在一开始就加载 jsx-runtime 代码，所以第一次加载界面会白屏，只要刷新一下界面即可。
+> 注意一点就是 vite 不会在一开始就加载 jsx-runtime 代码，所以第一次加载界面会白屏，只要刷新一下界面即可。或者升级 vite 到 v3 版本，这个问题就会迎刃而解。
 
 ```js line=6,7,8
 import { defineConfig } from 'vite'
