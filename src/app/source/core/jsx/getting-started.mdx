@@ -8,7 +8,7 @@ jsx 是 javascript 的语法扩展，因为其特性足够好并且学习成本�
 
 babel-plugin-jsx 是将 jsx 语法转换成 Gyron.js 方法的 babel 插件，他和其它类型库一样，都是使用 babel 提供的 visitor 访问者将 JSXElement 等 jsx token 转换成`h()`可执行函数。
 
-babel-plugin-jsx 还可以在开发环境时生成`热更新`辅助代码，只需要在配置中使用`{ hmr: true }`即可。使用此配置后可以在控制台的 source 面板中看到组件函数上声明了`__hmr`属性，这是一个以文件路径和函数名生成的哈希值。
+babel-plugin-jsx 还可以在开发环境时生成`热更新`辅助代码，只需要在配置中使用`{ hmr: true }`即可。使用此配置后可以在控制台的 source 面板中看到组件函数上声明了`__hmr_id`属性，这是一个以文件路径和函数名生成的哈希值。
 然后在不同平台提供的热更新接口中实现热更新的逻辑。目前核心中只接入了 vite，其它平台同理。
 
 ### 安装
