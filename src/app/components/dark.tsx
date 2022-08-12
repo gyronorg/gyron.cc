@@ -9,7 +9,7 @@ const themeIcons = {
   system: SystemIcon,
 }
 
-type Theme = keyof typeof themeIcons
+type Theme = string | keyof typeof themeIcons
 
 function trigger(add?: boolean) {
   const theme = document.querySelector(
@@ -17,9 +17,11 @@ function trigger(add?: boolean) {
   ) as HTMLMetaElement
   if (add) {
     document.documentElement.classList.add('dark')
+    document.documentElement.setAttribute('data-theme', 'dark')
     theme.content = '#0f172a'
   } else {
     document.documentElement.classList.remove('dark')
+    document.documentElement.removeAttribute('data-theme')
     theme.content = '#f8fafc'
   }
 }
@@ -64,7 +66,7 @@ export const DarkToggle = FC(({ isSSR }) => {
         trigger()
       }
       mediaDark.addEventListener('change', (e) => {
-        const themeName = e.matches ? 'dark' : 'light'
+        const themeName = e.matches ? 'dark' : ''
         theme.value = theme.value === 'system' ? 'system' : themeName
         if (themeName === 'dark') {
           trigger(true)

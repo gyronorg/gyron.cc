@@ -5,8 +5,8 @@ import { CloseIcon, GithubIcon, LogoIcon, MenuIcon } from '@/components/icons'
 import { Nav } from './nav'
 import { DOCS_NAV, CORE_NAV } from '@/pages'
 import classnames from 'classnames'
-// import docsearch from '@docsearch/js'
-// import '@docsearch/css'
+import docsearch from '@docsearch/js'
+import '@docsearch/css'
 
 export const Header = FC(() => {
   const router = useRouter()
@@ -25,12 +25,12 @@ export const Header = FC(() => {
   }
 
   onAfterMount(() => {
-    // docsearch({
-    //   container: '#docsearch',
-    //   appId: '21FTFZSM25',
-    //   indexName: 'search',
-    //   apiKey: '34fb54ad8b121149927deeec2a1641f1',
-    // })
+    docsearch({
+      container: '#docsearch',
+      appId: '8M4INMGM9P',
+      indexName: 'gyron',
+      apiKey: 'e33f7babfe95749aae99870e61e9b7a1',
+    })
   })
 
   return (
@@ -117,13 +117,17 @@ export const Header = FC(() => {
           </ul>
           <div class="flex items-center border-l border-slate-200 ml-5 md:ml-6 pl-5 md:pl-6 dark:border-slate-800 space-x-5 md:space-x-6">
             <DarkToggle />
-            <a href="https://github.com/gyronorg/core" target="_blank">
+            <a
+              href="https://github.com/gyronorg/core"
+              target="_blank"
+              title="暂未开源"
+            >
               <span class="hidden">Github</span>
               <GithubIcon />
             </a>
           </div>
-          {/* <div
-            class={classnames('w-14 sm:w-[199px] doc-light-search', {
+          <div
+            class={classnames('w-15 sm:w-[199px] doc-light-search', {
               'doc-home-search': router.path === '/',
             })}
           >
@@ -131,7 +135,7 @@ export const Header = FC(() => {
               id="docsearch"
               class="pointer-events-auto border-l border-slate-200 dark:border-slate-800 ml-5 md:ml-6 pl-5 md:pl-6"
             ></div>
-          </div> */}
+          </div>
         </nav>
       </div>
     </header>
