@@ -16,7 +16,6 @@
 ```ts d
 interface Instance {
   container: Element | null
-  use: (plugin: Plugin) => Instance
   render: (containerOrSelector: string | HTMLElement) => Instance
   destroy: () => Instance
   readonly plugins: Set<Plugin>
@@ -104,44 +103,6 @@ const App = h(() => {
 })
 
 createInstance(h(App)).render('#root')
-```
-
-## use
-
-应用插件到实例上，其中插件必须使用 createPlugin 方法创建，同一个插件只会被安装一次。
-
-**参数**
-
-- `plugin`: Plugin - 插件对象。
-
-**返回值**
-
-一个应用对象，其中的 plugins 会包含本次安装的插件集合。
-
-**类型声明**
-
-```ts d
-interface Instance {
-  // ...
-  use: (plugin: Plugin) => Instance
-}
-```
-
-**示例**
-
-```javascript
-import { createInstance, createPlugin } from 'gyron'
-
-const customPluginData = /* any */ null
-const plugin = createPlugin({
-  name: 'custom',
-  extra: custom,
-  install: (instance) => {
-    const context = instance.root.context
-    context.set('TypeRouter', customPluginData)
-  },
-})
-createInstance(/* VNode */).use(plugin)
 ```
 
 ## destory
