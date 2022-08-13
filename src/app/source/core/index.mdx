@@ -10,14 +10,16 @@ Gyron.js 作者开发了一些方便开发者搭建前端环境的工具，比�
 Router 是帮助用户构建界面的 JavaScript 库并且拥有强大的 Api，它足够小巧但是功能足够完善，可以使用不同方式声明路由，并且在不同渲染平台(CSR/SSR)中都有效。
 
 ```jsx
-import { Route, Routes } from '@gyron/router'
+import { Router, Route, Routes } from '@gyron/router'
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="" strict element={<div>Home</div>}></Route>
-      <Route path="about" element={<div>About</div>}></Route>
-    </Routes>
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="" strict element={<div>Home</div>}></Route>
+        <Route path="about" element={<div>About</div>}></Route>
+      </Routes>
+    </Router>
   )
 }
 ```

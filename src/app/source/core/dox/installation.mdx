@@ -5,26 +5,26 @@
 使用包管理的方式：
 
 ```bash
-yarn add -D @gyron/dox
+yarn add -D @gyron/redux
 # or
-npm install --save-dev @gyron/dox
+npm install --save-dev @gyron/redux
 ```
 
 使用浏览器模块化的方式：
 
 ```html
 <script type="module">
-  import { createStore } from 'https://cdn.skypack.dev/@gyron/dox'
+  import { createStore } from 'https://cdn.skypack.dev/@gyron/redux'
 </script>
 ```
 
 ### 使用 Store
 
-安装完成后就可以创建一个 store，然后使用`Instance`的`use`方法应用到整个项目上。如果使用[插件](/docs/instance#插件)？
+安装完成后就可以创建一个 store，然后在节点上使用`<Provider>`，它接受一个`store`属性，可以通过`createStore`创建。如果使用[插件](/docs/instance#插件)？
 
 ```jsx
 import { createInstance } from 'gyron'
-import { createStore } from '@gyron/dox'
+import { Provider, createStore } from '@gyron/redux'
 
 function counterReducer(state = { value: 0 }, action) {
   switch (action.type) {
@@ -39,7 +39,7 @@ function counterReducer(state = { value: 0 }, action) {
 const store = createStore({
   reducer: counterReducer,
 })
-createInstance(/* ... */).use(store)
+createInstance(<Provider store={store}>/* ... */</Provider>)
 
 store.extra.dispatch({ type: 'counter/incremented' })
 // {value: 1}

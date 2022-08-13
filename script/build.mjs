@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import gyron from 'gyron'
+import { createSSRInstance, nextRender, h, usePlugin } from '@gyron/runtime'
 import { renderToString } from '@gyron/dom-server'
-import { createMemoryRouter, generateNestedRoutes } from '@gyron/router'
+import { createMemoryRouter, generateNestedRoutes, Router } from '@gyron/router'
 import { buildClient, buildAPP } from './base.mjs'
 import fs from 'fs-extra'
 import path from 'path'
@@ -32,12 +32,13 @@ async function render(vnode, url, clientMeta) {
   const router = createMemoryRouter({
     isSSR: true,
   })
-  const { root } = gyron.createSSRInstance(vnode).use(router)
+
+  const { root } = createSSRInstance(h(Router, { router: router }, vnode))
 
   await router.extra.replace(url)
 
   // waiting for the view to update
-  await gyron.nextRender()
+  await nextRender()
 
   const html = await renderToString(root)
 
@@ -71,7 +72,7 @@ buildClient(false, tempPath).then((appMeta) => {
       }
     )
     for (const url of routes) {
-      const html = await render(gyron.h(App), url, appMeta)
+      const html = await render(h(App), url, appMeta)
       const urls = url.slice(1).split('/')
       const name = urls.pop()
       if (urls.length) {
