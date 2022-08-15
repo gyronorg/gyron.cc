@@ -53,9 +53,10 @@ export const Header = FC(() => {
             }
           )}
         >
-          <span class="flex">
+          <span class="flex items-center">
             <LogoIcon />
             <span class="ml-3 text-sm">Gyron.js</span>
+            <span class="ml-3 text-xs">v0.0.16</span>
           </span>
         </Link>
         <div class="md:hidden">

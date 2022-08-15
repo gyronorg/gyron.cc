@@ -51,8 +51,6 @@ const App = ({ orders }) => {
 
 ### Key
 
-> 有 Key 值的渲染可能会存在问题，如果有相关线索，请提交 [issues](https://github.com/Linkontoask/gyron/issues) 给我们
-
 在循环渲染中如果存在 key 值，那么循环中将会使用 key 作为比对标准，最小化的更新 dom 节点。
 
 ```jsx line=5
@@ -66,3 +64,34 @@ const App = ({ orders }) => {
   )
 }
 ```
+
+当 orders 发生变更，我们会根据传递的 id 进行对比，如果发现只是顺序变更，那么 Gyron.js 只会去更新它们在 DOM 树中的顺序，而不是重新去渲染。
+
+### memo 参数
+
+在一些循环渲染的例子中可以极大的提高渲染速度和响应速度，在基准测试中使用 memo 可以将更新操作和选中操作提高 5 到 15 倍。如果你只是一般的逻辑渲染完全不需要使用此参数进行优化。
+
+```jsx line=12
+import { FC, useValue } from 'gyron'
+
+const Table = FC(() => {
+  const rows = useValue([])
+  return (
+    <table>
+      <tbody>
+        {rows.value.map(({ id, label }) => {
+          return (
+            <tr
+              key={id}
+              class={id === selected.value ? 'danger' : null}
+              memo={[id === selected.value, label]}
+            ></tr>
+          )
+        })}
+      </tbody>
+    </table>
+  )
+})
+```
+
+memo 属性会告诉 Gyron.js 当属性中的值发生变更才继续渲染子节点，否则将跳过子节点的渲染，在循环中尤其有用。更新信息可以参见基准测试结果 [https://krausest.github.io/js-framework-benchmark/current.html](https://krausest.github.io/js-framework-benchmark/current.html)

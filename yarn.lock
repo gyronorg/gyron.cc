@@ -409,62 +409,62 @@
     "@docsearch/css" "3.1.1"
     algoliasearch "^4.0.0"
 
-"@gyron/babel-plugin-jsx@^0.0.16-alpha.1":
-  version "0.0.16-alpha.1"
-  resolved "https://registry.npmmirror.com/@gyron/babel-plugin-jsx/-/babel-plugin-jsx-0.0.16-alpha.1.tgz#a797ca6538d55cdee32384fb77d9e19bba5c77a2"
-  integrity sha512-b8LgH8PLk0azSv4hZ9mlish4+9kdMWwYck+lMIyusdLORPG7xtBfIYzwR0JQCrT7YOxLQftyILzVEc1twqTxdA==
+"@gyron/babel-plugin-jsx@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/@gyron/babel-plugin-jsx/-/babel-plugin-jsx-0.0.16.tgz#74bfe19bbdf61c13e16030d09fda0c03d85fec39"
+  integrity sha512-So3ZA36qpg7RQ4Hp/QIxcUneaX+fFToDcbxQHuu+N9okbubOvRFg1q2Yqyr8XiiDXXtMiUALazks3WCHdZCkYQ==
   dependencies:
     "@babel/core" "^7.18.5"
     "@babel/plugin-syntax-jsx" "^7.16.7"
     "@babel/plugin-transform-typescript" "^7.17.12"
-    "@gyron/shared" "^0.0.15"
-    gyron "^0.0.16-alpha.1"
+    "@gyron/shared" "^0.0.16"
+    gyron "^0.0.16"
 
-"@gyron/dom-server@^0.0.16-alpha.1":
-  version "0.0.16-alpha.1"
-  resolved "https://registry.npmmirror.com/@gyron/dom-server/-/dom-server-0.0.16-alpha.1.tgz#1148a4e232f6e6e4491384dd9bee71b4c2df3d41"
-  integrity sha512-MfEymmVRzUN0cfffwbR5FlayQ777WnO7E/na7NZGgGiYdZ7937iNFjNOtfUwApi09wlGkcM4msVxoADYip1rZg==
+"@gyron/dom-server@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/@gyron/dom-server/-/dom-server-0.0.16.tgz#e12a3d0cd946fea9bad0ba9543116fffb55b3421"
+  integrity sha512-eIpQVfVFU9bLqikndPydrBcdPic5cptjfObxIM5PkwgSf0m21O/J6Jqx5wIJyu3vPugRr4PNr1KQ9yAAnuwOTQ==
   dependencies:
-    "@gyron/runtime" "^0.0.16-alpha.1"
+    "@gyron/runtime" "^0.0.16"
 
-"@gyron/jsx-runtime@^0.0.16-alpha.1":
-  version "0.0.16-alpha.1"
-  resolved "https://registry.npmmirror.com/@gyron/jsx-runtime/-/jsx-runtime-0.0.16-alpha.1.tgz#7729efa874a5ec0ca07cf1f8a2070b22be136c18"
-  integrity sha512-AbiSvJ5tXgm65cpWFeAOSRsXpkYEd9gp1haEqeRRbmUGmGoWKGgCAsXEPeFdFqGsChEAOtEuUg/O7QGEneCcHg==
+"@gyron/jsx-runtime@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/@gyron/jsx-runtime/-/jsx-runtime-0.0.16.tgz#cbd270f0c378d0fb002131cd0518aba7bf2f938b"
+  integrity sha512-cJQgcIhA7ebnFh3R5cBuFo2ZytRMTvHS5HIdYy8v0mFvFkSwJkcFeejNLNFwRYiI9reX/pz/QxJA0tCQWSH/KQ==
   dependencies:
-    "@gyron/runtime" "^0.0.16-alpha.1"
-    "@gyron/shared" "^0.0.15"
+    "@gyron/runtime" "^0.0.16"
+    "@gyron/shared" "^0.0.16"
 
 "@gyron/rehype-highlight@^0.0.8":
   version "0.0.8"
   resolved "https://registry.npmmirror.com/@gyron/rehype-highlight/-/rehype-highlight-0.0.8.tgz#ebf6bbeb78df2d1bbeacf528026a29a4574ad2c6"
   integrity sha512-uatpEv/7KpS1eVnyzioMv/fqEYSJW3R1TaEI0Xc9dpqM1IZSYMqPPia6SHyoVdZfDUzu407/ltTr2SVxaDrFfg==
 
-"@gyron/router@^0.0.16-alpha.1":
-  version "0.0.16-alpha.1"
-  resolved "https://registry.npmmirror.com/@gyron/router/-/router-0.0.16-alpha.1.tgz#11adee873dbdb920d5d53cfabfc03675a1a70782"
-  integrity sha512-Dmp7phl8wlu5hG2GWq+eF4Wdfxi227d8tztiQcln0r4oa+YhI4XmkbsSWy+QVC/D0c7BOXHDyntOTXtEZd7i6A==
+"@gyron/router@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/@gyron/router/-/router-0.0.16.tgz#a5967ead203edb6931501f46d3c9f7ec90d546ac"
+  integrity sha512-bPMhzUn/Tz+dyClgl5AqkOCdmMTPCdFGRJ/gIx7G3Q4VUeNaRm8775zPme3LCmxgmwzb8VVKuvTsqC+ClXcmPw==
   dependencies:
-    "@gyron/runtime" "^0.0.16-alpha.1"
-    "@gyron/shared" "^0.0.15"
-    "@gyron/sync" "^0.0.15"
+    "@gyron/runtime" "^0.0.16"
+    "@gyron/shared" "^0.0.16"
+    "@gyron/sync" "^0.0.16"
     history "^5.3.0"
     path-to-regexp "^6.2.0"
 
-"@gyron/runtime@^0.0.16-alpha.1":
-  version "0.0.16-alpha.1"
-  resolved "https://registry.npmmirror.com/@gyron/runtime/-/runtime-0.0.16-alpha.1.tgz#2f73f056b1239cdecebea6ab228d8f8d34f93bb0"
-  integrity sha512-LF+N1YmNTcfhzfYnDbJcukMtNUeIbEMG/+vDjqt8pSgXuULLQh3PjbgB2cIrdvB53SQ1eBcARONXasXgRwO2WA==
+"@gyron/runtime@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/@gyron/runtime/-/runtime-0.0.16.tgz#9a0cb40977ccc837ae6e92b2dc0875497ff8d52d"
+  integrity sha512-wPDJ7oe2K8+gEI2q7XjIM5RPR+zOYPcENfLNiQzq7X4+u0DjyGI9xARvY64F4E9b3P5ltb6UVXGbBDLzaraA3w==
 
-"@gyron/shared@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.npmmirror.com/@gyron/shared/-/shared-0.0.15.tgz#5ada2e8ba57c9085a678eb08ae0f53a309ed04c9"
-  integrity sha512-LWv4e3enVg5UesFECPf1XzzkunqXtjYOEhXon1ZGEiIb2gqwynM8vJVuCWA2/5P+pDJq2Gj8ja/SZqzHQLw75g==
+"@gyron/shared@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/@gyron/shared/-/shared-0.0.16.tgz#c7da2b44a215610505d5358a940a7d7d04e65a6d"
+  integrity sha512-fqV7x8z+guz601RNz/d2PO2nFr/oYdRafpSmp81Z3okMhKYDKnEwpCySUqZQaEJrQ1x9nLMOahISKhUdE1cMuQ==
 
-"@gyron/sync@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.npmmirror.com/@gyron/sync/-/sync-0.0.15.tgz#623272645283a12bb7210135c5d3323729d812c7"
-  integrity sha512-/BzveC1Olt0E3mtXjkKcPFcJFtHXIefOxLCn+y02mPmxmzMUB+zwZH9mQHY4L+BmFn84bXIyHAy6eIWCnVYy6w==
+"@gyron/sync@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/@gyron/sync/-/sync-0.0.16.tgz#f1253f908bd0e373677fae3236094f6e2e7019a3"
+  integrity sha512-x+wFhxz+ZhxFkKikQsA1aHXHbHA8VKSZNj44ozBlofqlMA1KOsoih6RB+nUUBsqlDZobRcQwh6lKNRnGCSSizg==
 
 "@jridgewell/gen-mapping@^0.1.0":
   version "0.1.1"
@@ -1504,12 +1504,12 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
-gyron@^0.0.16-alpha.1:
-  version "0.0.16-alpha.1"
-  resolved "https://registry.npmmirror.com/gyron/-/gyron-0.0.16-alpha.1.tgz#3845fa4df0fac4caca5f334355338946a29f1cdb"
-  integrity sha512-0Q9vBax6nTid4CFnBPCvatzjMXTlaAYlowWTK1gDr3Rkm0NqfeDFBXguZUmZoDqOSwfkQZzXIUkHsunTAUeHtQ==
+gyron@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.npmmirror.com/gyron/-/gyron-0.0.16.tgz#0f4a52bc93a2abdd85b31c80cf19f18959f6457b"
+  integrity sha512-PfPVPrctHaJXWJJHp7iS6soHsZBmkTuR3JyOlmEb9BZeYLNQ7TM0cpWZ8uPpVi9hzIwkEAN7uqEEP9RzLQ75fQ==
   dependencies:
-    "@gyron/runtime" "^0.0.16-alpha.1"
+    "@gyron/runtime" "^0.0.16"
     csstype "^3.1.0"
 
 has-flag@^3.0.0:
