@@ -25,7 +25,7 @@ export const CORE_INDEX: ContentMenu = {
 export const CORE_NAV: Menu = [
   {
     name: 'Router',
-    path: '/core',
+    path: '',
     children: [
       {
         path: '/core/router/installation',
@@ -75,7 +75,7 @@ export const CORE_NAV: Menu = [
   },
   {
     name: 'Dox',
-    path: '/core',
+    path: '',
     children: [
       {
         path: '/core/dox/installation',
@@ -114,7 +114,7 @@ export const CORE_NAV: Menu = [
   },
   {
     name: 'JSX',
-    path: '/core',
+    path: '',
     children: [
       {
         path: '/core/jsx/getting-started',
