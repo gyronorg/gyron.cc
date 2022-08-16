@@ -1,6 +1,6 @@
-import { createSSRInstance, nextRender } from 'gyron'
+import { createSSRInstance, nextRender, usePlugin } from 'gyron'
 import { renderToString } from '@gyron/dom-server'
-import { createMemoryRouter } from '@gyron/router'
+import { createMemoryRouter, Router } from '@gyron/router'
 import { App } from '@/index'
 import express from 'express'
 import path from 'path'
@@ -22,12 +22,18 @@ app.use('/js', express.static(clientPath))
 app.use('/css', express.static(clientPath))
 app.use('/assets', express.static(assetsPath))
 
+const router = createMemoryRouter({
+  isSSR: true,
+})
+
 app.get('*', async (req, res) => {
   const { theme } = req.cookies
-  const router = createMemoryRouter({
-    isSSR: true,
-  })
-  const { root } = createSSRInstance(<App />).use(router)
+
+  const { root } = createSSRInstance(
+    <Router router={router}>
+      <App />
+    </Router>
+  )
 
   await router.extra.push(req.url)
 
@@ -39,7 +45,10 @@ app.get('*', async (req, res) => {
   try {
     res.send(
       template
-        .replace('data-server-theme', `class="${theme || ''}"`)
+        .replace(
+          'data-server-theme',
+          `class="${theme === 'dark' ? theme : ''}"`
+        )
         .replace(
           'Gyron.js 文档',
           `Gyron.js | ${router.extra.currentRoute.meta.title}`

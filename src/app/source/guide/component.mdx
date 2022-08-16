@@ -323,9 +323,9 @@ const HelloWorld = ({ count }) => {
 缓存组件可以自动保持组件的状态，当组件不可见时，组件的状态会一直保留，当下次激活组件时，状态自动还原。
 
 ```jsx
-import { memo, useValue } from 'gyron'
+import { keepComponent, useValue } from 'gyron'
 
-const App = memo(() => {
+const App = keepComponent(() => {
   const count = useValue(0)
 
   function increment() {
@@ -337,12 +337,12 @@ const App = memo(() => {
 ```
 
 当缓存组件 Props 发生变更时，缓存组件会自动更新，当组件依赖的数据发生变更时组件也会自动更新。
-你可以使用 memo 方法对组件进行优化，请勿过度使用 memo 组件，因为这在内部使用了一个 Map 保存这些组件，如果缓存组件确定不再使用，你可以使用`clearCacheComponent`方法清空本地缓存并且断开组件的依赖关系。
+你可以使用 keepComponent 方法对组件进行优化，请勿过度使用 keepComponent 组件，因为这在内部使用了一个 Map 保存这些组件，如果缓存组件确定不再使用，你可以使用`clearCacheComponent`方法清空本地缓存并且断开组件的依赖关系。
 
 ```jsx line=7
-import { clearCacheComponent, memo } from 'gyron'
+import { clearCacheComponent, keepComponent } from 'gyron'
 
-const App = memo(() => {
+const App = keepComponent(() => {
   // ...
 })
 

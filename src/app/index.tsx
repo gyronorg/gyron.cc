@@ -1,4 +1,4 @@
-import { createBrowserRouter, Route, Routes } from '@gyron/router'
+import { createBrowserRouter, Route, Router, Routes } from '@gyron/router'
 import { createSSRInstance, FC } from 'gyron'
 import { MdxHelper } from './components/helper'
 import { MdxContainer, ParentPath } from './components/mdx'
@@ -75,32 +75,35 @@ export const App = FC(() => {
 })
 
 export const app = () => {
-  return createSSRInstance(<App />).use(
-    createBrowserRouter({
-      beforeEach: (from, to, next) => {
-        next()
-      },
-      afterEach: (from, to) => {
-        if (to.meta) {
-          const title = `Gyron.js | ${to.meta.title}`
-          document.title = title
-          const og = document.querySelector(
-            'meta[property="og:title"]'
-          ) as HTMLMetaElement
-          if (og) {
-            og.content = title
-          }
+  const router = createBrowserRouter({
+    beforeEach: (from, to, next) => {
+      next()
+    },
+    afterEach: (from, to) => {
+      if (to.meta) {
+        const title = `Gyron.js | ${to.meta.title}`
+        document.title = title
+        const og = document.querySelector(
+          'meta[property="og:title"]'
+        ) as HTMLMetaElement
+        if (og) {
+          og.content = title
         }
-        if (from.path !== to.path) {
-          for (const k in storeState.guidance) {
-            Reflect.deleteProperty(storeState.guidance, k)
-          }
+      }
+      if (from.path !== to.path) {
+        for (const k in storeState.guidance) {
+          Reflect.deleteProperty(storeState.guidance, k)
         }
-        document.documentElement.scrollTo({
-          top: 0,
-          behavior: 'smooth',
-        })
-      },
-    })
+      }
+      document.documentElement.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
+    },
+  })
+  return createSSRInstance(
+    <Router router={router}>
+      <App />
+    </Router>
   )
 }

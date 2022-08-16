@@ -114,8 +114,10 @@ app.use('/js', express.static(path.join(__dirname, 'client')))
 
 ### SSR 项目搭建
 
-这里介绍一个快速搭建的办法，访问 [https://github.com/Linkontoask/gyron/tree/master/packages/docs](https://github.com/Linkontoask/gyron/tree/master/packages/docs) 下载其中的代码，然后修改 app 中的 app.ts。
+这里介绍一个快速搭建的办法，访问 [https://github.com/gyronorg/docs](https://github.com/gyronorg/docs) 下载其中的代码，然后修改 app 中的 app.ts。删除其它代码只保留 client、server、app/index.ts 中的代码
 
 将上述代码修改到下载的目录中后用命令`yarn start`启动项目。
 
 启动项目后访问 [http://localhost:3000](http://localhost:3000) 页面，看到 Counter 0 后点击一次，然后 0 会变成 1。
+
+脚手架暂不支持 SSR 项目的创建，后续会用可选配置做支持。

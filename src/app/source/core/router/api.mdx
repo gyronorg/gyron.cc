@@ -2,7 +2,7 @@
 
 ## createRouter
 
-创建一个 Router，然后通过`use`方式使用。
+创建一个 Router，然后通过`<Router router={/* ... */}>`方式使用。
 
 **返回值**
 
@@ -19,26 +19,26 @@ declare function createRouter(option: Partial<RouterOption>): Plugin<RouterBase>
 ```jsx
 import { createBrowserHistory } from 'history'
 import { createInstance } from 'gyron'
-import { createRouter, Route, Routes } from '@gyron/router'
+import { createRouter, Router, Route, Routes } from '@gyron/router'
 
 const router = createRouter({
   history: createBrowserHistory(),
 })
 
 createInstance(
-  <Routes>
-    <Route path="" strict element={<Welcome />}></Route>
-    <Route path="user" element={<User />}>
-      <Route path=":id">
-        <Route path="member" element={<Member />}></Route>
-        <Route path="setting" element={<Setting />}></Route>
+  <Router router={/* router */}>
+    <Routes>
+      <Route path="" strict element={<Welcome />}></Route>
+      <Route path="user" element={<User />}>
+        <Route path=":id">
+          <Route path="member" element={<Member />}></Route>
+          <Route path="setting" element={<Setting />}></Route>
+        </Route>
       </Route>
-    </Route>
-    <Route path="*" element={<Mismatch />}></Route>
-  </Routes>
-)
-  .use(router)
-  .render(document.getElementById('root'))
+      <Route path="*" element={<Mismatch />}></Route>
+    </Routes>
+  </Router>
+).render(document.getElementById('root'))
 ```
 
 ## createBrowserRouter
@@ -99,13 +99,15 @@ declare const Routes: ComponentSetupFunction<object, false>
 **示例**
 
 ```jsx
-import { Routes, Route } from '@gyron/router'
+import { Router, Routes, Route } from '@gyron/router'
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<span>Home</span>} />
-    </Routes>
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="/" element={<span>Home</span>} />
+      </Routes>
+    </Router>
   )
 }
 ```
@@ -128,13 +130,15 @@ declare const Route: ComponentSetupFunction<
 **示例**
 
 ```jsx
-import { Routes, Route } from '@gyron/router'
+import { Router, Routes, Route } from '@gyron/router'
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<span>Home</span>} />
-    </Routes>
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="/" element={<span>Home</span>} />
+      </Routes>
+    </Router>
   )
 }
 ```
@@ -209,13 +213,15 @@ declare const Redirect: ComponentSetupFunction<RedirectProps, false>
 **示例**
 
 ```jsx
-import { Redirect } from '@gyron/router'
+import { Router, Redirect } from '@gyron/router'
 
 const App = () => {
   return (
-    <Routes>
-      <Redirect path="oldPath" redirect="newPath"></Redirect>
-    </Routes>
+    <Router router={/* router */}>
+      <Routes>
+        <Redirect path="oldPath" redirect="newPath"></Redirect>
+      </Routes>
+    </Router>
   )
 }
 ```

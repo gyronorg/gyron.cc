@@ -10,7 +10,7 @@
 可以使用`createStore`创建一个 store plugin，然后将其导出
 
 ```js filename=store.js
-import { createStore } from '@gyron/dox'
+import { createStore } from '@gyron/redux'
 
 export default createStore({
   reducer: {},
@@ -32,7 +32,7 @@ createStore({
 接着就可以在应用中任何地方使用这个 State。
 
 ```js
-import { useSelector } from '@gyron/dox'
+import { useSelector } from '@gyron/redux'
 
 const App = () => {
   const state = useSelector()
@@ -45,7 +45,7 @@ const App = () => {
 在简单的数据场景中上面已经可以满足了，但是在开发的时候会遇到一些比较复杂的场景，比如自定义中间件、根据页面分离 state，我们可以使用`createSlice`方法创建一个 state 片段。
 
 ```js filename=counter.js
-import { createSlice } from '@gyron/dox'
+import { createSlice } from '@gyron/redux'
 
 const counter = createSlice({
   name: 'counter',
@@ -81,7 +81,7 @@ createStore({
 state 在外部是无法进行更新的，如果强制更新会导致异常，如果需要更新需要通过 dispatch 方法。
 
 ```js
-import { createStore } from '@gyron/dox'
+import { createStore } from '@gyron/redux'
 
 const store = createStore({
   reducer: (state = { value: 0 }, action) => {

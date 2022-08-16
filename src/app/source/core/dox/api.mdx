@@ -17,7 +17,7 @@ declare function createStore<
 **示例**
 
 ```jsx
-import { createStore } from '@gyron/dox'
+import { createStore } from '@gyron/redux'
 
 export default createStore({
   reducer: {},
@@ -37,7 +37,7 @@ declare function useSelector(sliceName?: string | ((state: any) => any)): any
 **示例**
 
 ```jsx
-import { useSelector } from '@gyron/dox'
+import { useSelector } from '@gyron/redux'
 
 const App = () => {
   const state = useSelector()
@@ -58,7 +58,7 @@ declare function useStore(): StorePlugin<any>
 **示例**
 
 ```jsx
-import { useStore } from '@gyron/dox'
+import { useStore } from '@gyron/redux'
 
 const App = () => {
   const { state } = useStore()
@@ -84,7 +84,7 @@ declare function useDispatch(): (
 **示例**
 
 ```jsx
-import { useDispatch } from '@gyron/dox'
+import { useDispatch } from '@gyron/redux'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -108,7 +108,7 @@ declare function createAction<P = void, T extends string = string>(
 **示例**
 
 ```jsx
-import { createAction } from '@gyron/dox'
+import { createAction } from '@gyron/redux'
 
 const increment = createAction('counter/increment')
 increment()
@@ -131,7 +131,7 @@ declare function createReducer<S extends NotFunction<any>>(
 **示例**
 
 ```jsx
-import { createAction, createReducer } from '@gyron/dox'
+import { createAction, createReducer } from '@gyron/redux'
 
 const increment = createAction('counter/increment')
 
@@ -163,7 +163,7 @@ declare function createSlice<
 **示例**
 
 ```jsx
-import { createSlice } from '@gyron/dox'
+import { createSlice } from '@gyron/redux'
 
 const counter = createSlice({
   name: 'counter',

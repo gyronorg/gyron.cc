@@ -2,28 +2,39 @@ name: Publish dist
 
 on:
   push:
-    branches: [master]
+    branches: [master, next]
   pull_request:
-    branches: [master]
+    branches: [master, next]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js 16 and Yarn
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
-        cache: 'yarn'
-    - run: yarn
-    - run: yarn build
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16 and Yarn
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn build
 
-    - name: copy file via ssh password
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        source: "dist/*"
-        target: "/usr/share/nginx/html"
+      - name: publish release
+        if: github.ref == 'refs/heads/master'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: 'dist/*'
+          target: '/usr/share/nginx/html'
+
+      - name: publish test
+        if: github.ref == 'refs/heads/next'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: 'dist/*'
+          target: '/usr/share/nginx/test'
