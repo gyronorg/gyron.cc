@@ -27,6 +27,7 @@ import { wrapAsyncMdxContent } from '@/utils/mdx'
 export const DOCS_NAV: Menu = [
   {
     name: '入门指南',
+    path: '/docs',
     children: [
       {
         path: 'tutorial',
@@ -122,6 +123,7 @@ export const DOCS_NAV: Menu = [
   },
   {
     name: '高级指引',
+    path: '/docs',
     children: [
       {
         path: 'context',
@@ -177,6 +179,7 @@ export const DOCS_NAV: Menu = [
   },
   {
     name: 'API',
+    path: '/docs',
     children: [
       {
         name: '全局API',

@@ -35,7 +35,7 @@ export const Nav = FC<DocsLinkProps>(({ menus }) => {
                 {group.children.map((menu) => (
                   <li>
                     <a
-                      href={useHref(menu.path)}
+                      href={useHref(group.path + '/' + menu.path)}
                       class={classnames(
                         'block border-l pl-4 -ml-px hover:text-sky-600 dark:hover:border-slate-600 dark:text-slate-400 text-slate-700 dark:hover:text-slate-300',
                         {
