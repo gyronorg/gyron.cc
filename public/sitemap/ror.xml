@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:ror="http://rorweb.com/0.1/" >
+<channel>
+  <title>ROR Sitemap for https://gyron.cc/</title>
+  <link>https://gyron.cc/</link>
+
+<item>
+     <link>https://gyron.cc/</link>
+     <title>Gyron.js | 文档</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>0</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/tutorial</link>
+     <title>Gyron.js | 入门指南 介绍</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core</link>
+     <title>Gyron.js | 核心 介绍</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/installation</link>
+     <title>Gyron.js | Router 安装</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/quick-started</link>
+     <title>Gyron.js | Router 快速使用</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/core-concepts</link>
+     <title>Gyron.js | Router 核心理念</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/api</link>
+     <title>Gyron.js | Router API</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/dox/installation</link>
+     <title>Gyron.js | Dox 安装</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/dox/quick-started</link>
+     <title>Gyron.js | Dox 快速使用</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/dox/api</link>
+     <title>Gyron.js | Dox API</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/jsx/getting-started</link>
+     <title>Gyron.js | JSX 介绍</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/jsx/faq</link>
+     <title>Gyron.js | JSX 区别</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/installation</link>
+     <title>Gyron.js | 入门指南 安装</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/instance</link>
+     <title>Gyron.js | 入门指南 应用实例</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/hello-world</link>
+     <title>Gyron.js | 入门指南 最小示范</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/reactive</link>
+     <title>Gyron.js | 入门指南 数据响应</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/component</link>
+     <title>Gyron.js | 入门指南 组件</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/conditional-rendering</link>
+     <title>Gyron.js | 入门指南 条件渲染</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/list-rendering</link>
+     <title>Gyron.js | 入门指南 列表渲染</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/event-bind</link>
+     <title>Gyron.js | 入门指南 事件处理</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/context</link>
+     <title>Gyron.js | 高级指引 上下文</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/form</link>
+     <title>Gyron.js | 高级指引 表单</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/async-component</link>
+     <title>Gyron.js | 高级指引 异步组件</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/ssr</link>
+     <title>Gyron.js | 高级指引 服务端渲染</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/error-boundary</link>
+     <title>Gyron.js | 高级指引 错误边界</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/global-api</link>
+     <title>Gyron.js | API 全局API</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/instance-api</link>
+     <title>Gyron.js | API 应用</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/reactivity-api</link>
+     <title>Gyron.js | API 响应式</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/component-api</link>
+     <title>Gyron.js | API 组件</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/context-api</link>
+     <title>Gyron.js | API 上下文</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/vnode-api</link>
+     <title>Gyron.js | API 节点</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/handler-api</link>
+     <title>Gyron.js | API 错误边界</title>
+     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+</channel>
+</rss>
+  
