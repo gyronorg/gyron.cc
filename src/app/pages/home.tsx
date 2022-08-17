@@ -68,7 +68,8 @@ export const Home = FC(() => {
             <p>
               <span>Copyright © {new Date().getFullYear()} Link</span>
               <span class="sm:border-l sm:border-slate-400 sm:ml-4 sm:pl-4 block sm:inline">
-                Produced with @gyron/docs
+                Produced with
+                <a href="https://github.com/gyronorg/docs" class="underline">@gyron/docs</a>
               </span>
             </p>
           </div>
