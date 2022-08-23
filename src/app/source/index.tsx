@@ -17,12 +17,10 @@ const ErrorBoundary = () => import('./advanced/error-boundary.mdx')
 
 // api
 const ApiGlobal = () => import('./api/global.mdx')
-const ApiInstance = () => import('./api/instance.mdx')
 const ApiReactivity = () => import('./api/reactivity.mdx')
 const ApiComponent = () => import('./api/component.mdx')
-const ApiVNode = () => import('./api/vnode.mdx')
 const ApiContext = () => import('./api/context.mdx')
-const ApiHandler = () => import('./api/handler.mdx')
+const ApiBoundaries = () => import('./api/boundaries.mdx')
 
 // core
 const CoreIndex = () => import('./core/index.mdx')
@@ -52,12 +50,10 @@ export {
   SSR,
   ErrorBoundary,
   ApiGlobal,
-  ApiInstance,
   ApiReactivity,
   ApiComponent,
-  ApiVNode,
   ApiContext,
-  ApiHandler,
+  ApiBoundaries,
   CoreIndex,
   CoreRouterInstallation,
   CoreRouterQuickStarted,

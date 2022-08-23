@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "start": "node script/dev.mjs",
-    "build": "rimraf dist && node script/build.mjs"
+    "build": "rimraf dist && node script/build.mjs",
+    "update:api": "node script/parser.mjs"
   },
   "devDependencies": {
     "@docsearch/js": "^3.1.0",
@@ -30,6 +31,7 @@
     "postcss-syntax": "^0.36.2",
     "prettier": "^2.7.1",
     "progress": "^2.0.3",
+    "remark": "^14.0.2",
     "remark-gfm": "^3.0.1",
     "tailwindcss": "^3.0.24",
     "tmp": "^0.2.1"

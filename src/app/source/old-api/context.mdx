@@ -1,0 +1,196 @@
+## useRootContext
+
+获取根节点中的 context 信息，只能在函数体中使用，不可以在回调函数中使用。
+
+**返回值**
+
+返回一个 Map 对象，可以通过 get 或者 set 访问或者设置全局状态。
+
+**类型声明**
+
+```ts d
+declare function useRootContext(): VNodeContext
+```
+
+**示例**
+
+```javascript
+import { h, useRootContext } from 'gyron'
+
+const Child = h(() => {
+  const context = useRootContext()
+  context.get('data') // 0
+  return () => h('div', 'child')
+})
+
+const App = h(() => {
+  const context = useRootContext()
+  context.set('data', 0)
+  return () => h('div', 'hello world')
+})
+```
+
+## useComponentContext
+
+获取组件中的 context 信息，只有在`层级`组件中可以使用。
+
+**返回值**
+
+返回一个 object 对象。
+
+**类型声明**
+
+```ts d
+declare function useComponentContext(): {
+  context: Record<string | symbol, unknown>
+  provide: (name: string | symbol, data: unknown) => void
+  inject: <T>(name: string | symbol) => T
+}
+```
+
+**示例**
+
+```javascript
+import { h, useComponentContext } from 'gyron'
+
+const Child = h(() => {
+  const context = useComponentContext()
+  context['data'] // 0
+  return () => h('div', 'child')
+})
+
+const App = h(() => {
+  const { context } = useComponentContext()
+  context['data'] = 0
+  return () => h(Child)
+})
+```
+
+## useProvide
+
+向所有子组件中注入任何数据，可以是深度组件，也可以是同级组件。
+
+**返回值**
+
+返回一个函数，可以在任何地方进行注入数据。
+
+> 在异步注入数据时请注意获取注入数据需要在注入数据之后被调用。
+
+**类型声明**
+
+```ts d
+declare function useProvide<T = unknown>(): (
+  name: string | symbol,
+  data: T
+) => void
+```
+
+**示例**
+
+```javascript
+import { h, useProvide } from 'gyron'
+
+const App = h(() => {
+  const provide = useProvide()
+  provide('data', 0)
+  return () => h('div', 'hello world')
+})
+```
+
+## provide
+
+功能和`useProvide`一样，但是需要的参数有所不同。
+
+**参数**
+
+- `component`: Component - 组件对象，可以通过`getCurrentComponent`方法获取。
+- `name`: string | symbol - 注入数据时的所用的 key 值。
+- `data`: any - 注入的数据。
+
+**类型声明**
+
+```ts d
+declare function provide(
+  component: Component,
+  name: string | symbol,
+  data: unknown
+): void
+```
+
+**示例**
+
+```javascript
+import { h, provide, getCurrentComponent } from 'gyron'
+
+const App = h(() => {
+  const component = getCurrentComponent()
+  provide(component, 'data', 0)
+  return () => h('div', 'hello world')
+})
+```
+
+## useInject
+
+当上层组件使用`useProvide`之后，通过`useInject`获取注入的数据。
+
+**类型声明**
+
+```ts d
+declare function useInject(): <T>(name: string | symbol) => T
+```
+
+**示例**
+
+```javascript
+import { h, useInject } from 'gyron'
+
+const Child = h(() => {
+  const inject = useInject()
+  const data = inject('data') // 0
+  return h('div', data)
+})
+
+const App = h(() => {
+  const provide = useProvide()
+  provide('data', 0)
+  return () => h(Child)
+})
+```
+
+## inject
+
+功能和`useInject`一样，但是需要的参数有所不同。
+
+**参数**
+
+- `component`: Component - 组件对象，可以通过`getCurrentComponent`方法获取。
+- `name`: string | symbol - 注入数据时的所用的 key 值。
+- `shouldWarn`: boolean - 没有获取到值是是否走向错误边界处理。
+
+**类型声明**
+
+```ts d
+declare function inject<T = unknown>(
+  component: Component,
+  name: string | symbol,
+  shouldWarn?: boolean
+): T
+```
+
+**示例**
+
+```javascript
+import { h, provide, inject, getCurrentComponent } from 'gyron'
+
+const Child = h(() => {
+  const component = getCurrentComponent()
+  const data = inject(component, 'data') // 0
+  return h('div', data)
+})
+
+const App = h(() => {
+  const component = getCurrentComponent()
+  provide(component, 'data', 0)
+  return () => h('div', 'hello world')
+})
+```

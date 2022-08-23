@@ -1,226 +1,12 @@
-## getCurrentComponent
-
-获取当前组件对象，但是请勿随意更改或者删除其中的值，可能会发生预期之外的错误。
-
-**返回值**
-
-返回组件对象。
-
-**类型声明**
-
-```ts d
-declare function getCurrentComponent(): Component
-```
-
-**示例**
-
-```javascript
-import { h, getCurrentComponent } from 'gyron'
-
-const App = h(() => {
-  const component = getCurrentComponent()
-  return () => h('div', 'hello world')
-})
-```
-
-## defineProps
-
-获取当前组件的 props，是为了解决 setup 函数中 props 不是最新的问题。
-
-**返回值**
-
-组件的 props，并且包含 children 对象。
-
-**类型声明**
-
-```ts d
-declare function defineProps<T extends Data>(): T & ComponentDefaultProps
-```
-
-**示例**
-
-```javascript
-import { h, defineProps } from 'gyron'
-
-const App = h(() => {
-  const props = defineProps()
-  return () => h('div', props.message)
-})
-```
-
-## forceUpdate
-
-在使用某些非响应式数据时想要更新，就可以使用此函数强制更新当前组件。
-这种方式不是推荐的，你可以使用 useValue 或者 useReactive 函数创建响应式数据。
-
-**类型声明**
-
-```ts d
-declare function forceUpdate(component: Component): void
-```
-
-**示例**
-
-```javascript
-import { h, forceUpdate } from 'gyron'
-
-const App = h(({ component }) => {
-  let message = 0
-  setTimeout(() => {
-    message = 1
-    forceUpdate(component)
-  })
-  return () => h('div', message)
-})
-```
-
-## useRef
-
-创建一个 ref 对象，可以绑定到 vnode 节点上，如果绑定的节点是一个普通节点，其值就为 Node，如果是组件，其值就是组件暴露的对象。
-
-**返回值**
-
-`{ current: any }`用户可以用 current 访问绑定的 ref 对象。
-
-**类型声明**
-
-```ts d
-declare function useRef<T = any>(): UserRef<T>
-```
-
-**示例**
-
-```javascript
-import { h, useRef } from 'gyron'
-
-const App = h(() => {
-  const ref = useRef()
-  return () =>
-    h('div', {
-      ref,
-    })
-})
-```
-
-## exposeComponent
-
-暴露组件中的数据给父组件使用。
-
-**类型声明**
-
-```ts d
-declare function exposeComponent(exposed: Record<string | number, any>): void
-```
-
-**示例**
-
-```javascript
-import { h, useValue, useRef, exposeComponent } from 'gyron'
-
-const Child = h(() => {
-  const name = useValue('foo')
-
-  exposeComponent({ name })
-
-  return h('div', null, name.value)
-})
-
-const App = h(() => {
-  const ref = useRef()
-
-  ref.current // {name: {value: 'foo'}}
-
-  return () =>
-    h(Child, {
-      ref,
-    })
-})
-```
-
-## keepComponent
-
-创建一个缓存组件，并且组件的状态可以一直保留。可以使用`clearCacheComponent`清空组件缓存。
-
-**类型声明**
-
-```ts d
-declare function keepComponent<
-  Props extends object = object,
-  T extends ComponentSetupFunction<Props> = ComponentSetupFunction<Props>
->(componentFunction: T): WrapperFunction<Props>
-```
-
-**示例**
-
-```javascript
-import { h, keepComponent } from 'gyron'
-
-const App = keepComponent(() => {
-  return h('div')
-})
-```
-
-## clearCacheComponent
-
-传入组件函数，清空组件缓存。
-
-**类型声明**
-
-```ts d
-declare function clearCacheComponent(
-  componentFunction: ComponentSetupFunction
-): void
-```
-
-**示例**
-
-```javascript line=7
-import { h, keepComponent, clearCacheComponent } from 'gyron'
-
-const App = keepComponent(() => {
-  return h('div')
-})
-
-clearCacheComponent(App)
-```
-
-## useWatch
-
-传入组件函数，清空组件缓存。
-
-**类型声明**
-
-```ts d
-declare function useWatch<T = any>(
-  watcher: EffectFunction<T>,
-  dependency?: Dependency[]
-): void
-```
-
-**示例**
-
-```javascript line=4
-import { h, useWatch } from 'gyron'
-
-const App = h(() => {
-  useWatch(/* ... */)
-  return h('div')
-})
-```
+> 为了保持 API 文档实时更新，文档由`index.d.ts`文件自动生成。
 
 ## onBeforeMount
 
-生命周期勾子，组件挂载之前调用。
-
-**类型声明**
-
-```ts d
-declare function onBeforeMount(callback: LifecycleCallback): void
-```
+Lifecycle hooks, register a callback function that is called before the component is rendered.
 
 **示例**
 
-```javascript
+```js
 import { h, onBeforeMount } from 'gyron'
 
 const App = h(() => {
@@ -231,19 +17,24 @@ const App = h(() => {
 })
 ```
 
-## onAfterMount
+**参数说明**
 
-生命周期勾子，组件挂载之后调用。
+- callback - Callback function.
 
 **类型声明**
 
 ```ts d
-declare function onAfterMount(callback: LifecycleCallback): void
+declare function onBeforeMount(callback: LifecycleCallback): void
 ```
+
+## onAfterMount
+
+Life cycle hooks, register a callback function to be called after the component has been rendered,
+where you can get the real DOM information in the callback function.
 
 **示例**
 
-```javascript
+```js
 import { h, onAfterMount } from 'gyron'
 
 const App = h(() => {
@@ -254,65 +45,23 @@ const App = h(() => {
 })
 ```
 
-## onBeforeUpdate
+**参数说明**
 
-生命周期勾子，组件更新之前调用。可以返回 Falsy 组织自身和子组件的更新。
-
-**类型声明**
-
-```ts d
-declare function onBeforeUpdate(callback: LifecycleCallback<boolean>): void
-```
-
-**示例**
-
-```javascript
-import { h, onBeforeUpdate } from 'gyron'
-
-const App = h(() => {
-  onBeforeUpdate((component) => {
-    return false // 当发生变更也不会更新视图
-  })
-  return () => h('div', 'hello world')
-})
-```
-
-## onAfterUpdate
-
-生命周期勾子，组件更新之后调用。
+- callback - Callback function.
 
 **类型声明**
 
 ```ts d
-declare function onAfterUpdate(callback: LifecycleCallback): void
-```
-
-**示例**
-
-```javascript
-import { h, onAfterUpdate } from 'gyron'
-
-const App = h(() => {
-  onAfterUpdate((component) => {
-    component.$el // DOM元素已经更新
-  })
-  return () => h('div', 'hello world')
-})
+declare function onAfterMount(callback: LifecycleCallback): void
 ```
 
 ## onDestroyed
 
-生命周期勾子，组件销毁之后调用。
-
-**类型声明**
-
-```ts d
-declare function onDestroyed(callback: LifecycleCallback): void
-```
+Lifecycle hook to register a callback function to be called after the component has been destroyed.
 
 **示例**
 
-```javascript
+```js
 import { h, onDestroyed } from 'gyron'
 
 const App = h(() => {
@@ -326,62 +75,187 @@ const App = h(() => {
 })
 ```
 
-## FC
+**参数说明**
 
-在 typescript 中帮助开发者进行类型推导。
-
-**返回值**
-
-返回组件本身。
+- callback - Callback function.
 
 **类型声明**
 
 ```ts d
-declare function FC<Props extends Data = object>(
-  componentFunction: ComponentSetupFunction<Props, false>
-): ComponentSetupFunction<Props, false>
+declare function onDestroyed(callback: LifecycleCallback): void
 ```
+
+## onBeforeUpdate
+
+Lifecycle hooks that register a callback function to be called before the component is updated.
+Updates to the `Falsy` organisation itself and to child components can be returned.
 
 **示例**
 
+```js
+import { h, onBeforeUpdate } from 'gyron'
+
+const App = h(() => {
+  onBeforeUpdate((prevProps, props) => {
+    return false // The view will not be updated even when changes occur
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+**参数说明**
+
+- callback - Callback function.
+
+**类型声明**
+
 ```ts d
-import { FC } from 'gyron'
+declare function onBeforeUpdate<T extends object>(
+  callback: LifecycleUpdateCallback<T>
+): void
+```
 
-interface Props {
-  count: number
-}
+## onAfterUpdate
 
-const Child = FC<Props>(() => {
-  return ({ count }) => <span>{count}</span>
+Lifecycle hooks, register a callback function that is called before the component is rendered.
+
+**示例**
+
+```js
+import { h, onAfterUpdate } from 'gyron'
+
+const App = h(() => {
+  onAfterUpdate((prevProps, props) => {
+    component // self
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+**参数说明**
+
+- callback - Callback function.
+
+**类型声明**
+
+```ts d
+declare function onAfterUpdate(callback: LifecycleUpdateCallback): void
+```
+
+## getCurrentComponent
+
+Get the current component object, but do not change or delete the values in it, as unintended errors may occur.
+
+**示例**
+
+```js
+import { h, getCurrentComponent } from 'gyron'
+
+const App = h(() => {
+  const component = getCurrentComponent()
+  return () => h('div', 'hello world')
+})
+```
+
+**返回值**
+
+Component
+
+**类型声明**
+
+```ts d
+declare function getCurrentComponent(): Component<object>
+```
+
+## defineProps
+
+~~incorrect code:~~
+
+**示例**
+
+```js
+const { foo } = defineProps()
+```
+
+**类型声明**
+
+```ts d
+declare function defineProps<
+  T extends object,
+  R extends object = T & ComponentDefaultProps
+>(defaultValue?: object): R
+```
+
+## exposeComponent
+
+Exposes the data in the component for use by the parent component.
+
+**示例**
+
+```js
+import { h, useValue, createRef, exposeComponent } from 'gyron'
+
+const Child = h(() => {
+  const name = useValue('foo')
+
+  exposeComponent({ name })
+
+  return h('div', null, name.value)
 })
 
-export const App = FC(() => {
-  return <Child count={1} />
+const App = h(() => {
+  const ref = createRef()
+
+  ref.current // {name: {value: 'foo'}}
+
+  return () =>
+    h(Child, {
+      ref,
+    })
 })
+```
+
+**参数说明**
+
+- exposed - object
+
+**类型声明**
+
+```ts d
+declare function exposeComponent(exposed: Record<string | number, any>): void
+```
+
+## useWatch
+
+Or you can use the second argument to automatically load a dependency that you don't need to use in the function, but pass the second argument if you need to make changes based on the dependency.
+
+**示例**
+
+```js
+useWatch(() => {
+  if (loading.value) {
+    console.log('loading')
+  }
+}, [() => changed.value])
+```
+
+**类型声明**
+
+```ts d
+declare function useWatch<T = any>(
+  watcher: EffectFunction<T>,
+  dependency?: Dependency[]
+): void
 ```
 
 ## FCA
 
-异步组件的包裹函数，提供 fallback 回退方案，支持打包工具异步导入等场景。
-
-**类型声明**
-
-```ts d
-declare function FCA<Props extends Data = object>(
-  componentAsyncFunction: AsyncComponentFunction<Props>
-): {
-  (props: AsyncProps<Props>):
-    | Promise<VNode<VNodeType> | VNode<typeof Comment>>
-    | ((props: AsyncProps<Props>) => VNode)
-  __loader: (
-    props: AsyncProps<Props>
-  ) => Promise<VNode<VNodeType> | VNode<typeof Comment>>
-}
-```
+Wrapping functions for asynchronous components, providing fallback solutions,
+support for scenarios such as asynchronous import of packaging tools.
 
 **示例**
 
-```ts d
+```ts
 import { FCA } from 'gyron'
 
 interface Props {
@@ -395,4 +269,119 @@ const Child = FCA<Props>(() => {
 export const App = FC(() => {
   return <Child fallback={<span>loading...</span>} count={1} />
 })
+```
+
+**参数说明**
+
+- componentAsyncFunction - function
+
+**返回值**
+
+function
+
+**类型声明**
+
+```ts d
+declare function FCA<
+  Props extends object = object,
+  T extends AsyncComponentFunction<Props> = AsyncComponentFunction<Props>
+>(componentAsyncFunction: T): WrapperFunction<Props>
+```
+
+## FC
+
+Define a component that is primarily used for type derivation in typescript
+
+**示例**
+
+```ts
+import { FC } from 'gyron'
+interface Props {
+  count: number
+}
+
+const Child = FC<Props>(() => {
+  return ({ count }) => <span>{count}</span>
+})
+
+export const App = FC(() => {
+  return <Child count={1} />
+})
+```
+
+**参数说明**
+
+- componentFunction - function
+
+**返回值**
+
+function
+
+**类型声明**
+
+```ts d
+declare function FC<
+  Props extends object = object,
+  T extends ComponentSetupFunction<Props> = ComponentSetupFunction<Props>
+>(componentFunction: T): WrapperFunction<Props>
+```
+
+## clearCacheComponent
+
+Pass in the component function to clear the component cache.
+
+**示例**
+
+```js
+import { h, keepComponent, clearCacheComponent } from 'gyron'
+
+const App = keepComponent(() => {
+  return h('div')
+})
+
+clearCacheComponent(App)
+```
+
+**参数说明**
+
+- componentFunction - function
+
+**类型声明**
+
+```ts d
+declare function clearCacheComponent(
+  componentFunction: ComponentSetupFunction
+): void
+```
+
+## keepComponent
+
+A cached component is created and the state of the component can be retained at all times.
+The component cache can be cleared using `clearCacheComponent`.
+
+**示例**
+
+```javascript
+import { h, keepComponent } from 'gyron'
+
+const App = keepComponent(() => {
+  return h('div')
+})
+```
+
+**参数说明**
+
+- componentFunction - function
+
+**返回值**
+
+function
+
+**类型声明**
+
+```ts d
+declare function keepComponent<
+  Props extends object = object,
+  T extends ComponentSetupFunction<Props> = ComponentSetupFunction<Props>
+>(componentFunction: T): WrapperFunction<Props>
 ```

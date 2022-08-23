@@ -1,30 +1,161 @@
-## h
+> 为了保持 API 文档实时更新，文档由`index.d.ts`文件自动生成。
 
-创建一个 VNode 节点，返回值为一个普通的对象。可以直接运行在浏览器，主要用来在非编译环境下编写应用。
+## createRef
 
-**参数**
-
-- `type`: VNodeType - 要创建的节点类型，可以是标签名或者一个函数。
-- `props`: string | VNodeProps - 可以是字符串或者对象，如果是字符串则会当作`children`。
-- `children`: Children | Children[] - 子节点。可以是 VNode 节点或者字符串。
-
-**返回值**
-
-一个 VNode 节点。
-
-**类型声明**
-
-```ts d
-declare function h(
-  type: VNodeType,
-  props?: string | VNodeProps,
-  children?: Children | Children[]
-): VNode
-```
+creates a `ref` object that can be bound to a `vnode` node. If the bound node is a normal node, its value is `Node`.
+If it is a component, the value is the object exposed by the component.
+A default value can be passed, `current` is the default value when the value is not bound.
 
 **示例**
 
 ```javascript
+import { h, createRef } from 'gyron'
+
+const App = h(() => {
+  const myRef = createRef()
+  return h('div', {
+    ref: myRef,
+  })
+})
+```
+
+**参数说明**
+
+- initialValue - initial value.
+
+**类型声明**
+
+```ts d
+declare function createRef<T = any>(initialValue?: T): UserRef<T>
+```
+
+## cloneVNode
+
+Clone the `VNode` node.
+
+**示例**
+
+```js
+import { createComment, cloneVNode, h } from 'gyron'
+
+const App = h(() => {
+  return createComment('async anchor')
+})
+
+App !== cloneVNode(App) // true
+```
+
+**参数说明**
+
+- vnode - The node to be copied, or it can be a normal value.
+
+**返回值**
+
+Nodes after cloning.
+
+**类型声明**
+
+```ts d
+declare function cloneVNode<T extends VNode | VNode[]>(vnode: T): T
+```
+
+## mergeVNode
+
+Merge `props` to the target node.
+
+**示例**
+
+```javascript
+import { createComment, mergeVNode, h } from 'gyron'
+
+const Child = h(() => {
+  return createComment('async anchor')
+})
+
+const App = mergeVNode(Child, { class: 'container' })
+App.props.class === 'container' // true
+```
+
+**参数说明**
+
+- vnode - Nodes that need to be merged.
+- props - The attributes to be copied to the node.
+
+**返回值**
+
+Returns the merged node.
+
+**类型声明**
+
+```ts d
+declare function mergeVNode<T extends VNode | VNode[]>(
+  vnode: T,
+  props: Partial<VNodeProps>
+): T
+```
+
+## render
+
+Render virtual nodes to the real DOM.
+
+**示例**
+
+```js
+import { render, h } from 'gyron'
+
+render(h('div', { id: 'gyron' }), document.body)
+```
+
+**参数说明**
+
+- vnode - Virtual nodes.
+- container - Browser nodes.
+
+**类型声明**
+
+```ts d
+declare function render(vnode: VNode, container: Element): void
+```
+
+## createInstance
+
+Create the application and render it as an actual DOM node via the `render` method on the application.
+
+**示例**
+
+```js
+import { h, createInstance } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+createInstance(h(App)).render('#root')
+```
+
+**参数说明**
+
+- root - A `VNode` node, which can be created with the `h` function.
+- isHydrate - For server-side rendering parameters, `Truthy` means that the "hydration" method is used to make the interface responsive.
+
+**返回值**
+
+Application examples.
+
+**类型声明**
+
+```ts d
+declare function createInstance(root: VNode, isHydrate?: boolean): Instance
+```
+
+## h
+
+Creates a `VNode` node with a normal object return value.
+Can be run directly in the browser and is mainly used to write applications in non-compiled environments.
+
+**示例**
+
+```js
 import { h } from 'gyron'
 
 const App = h(() => {
@@ -32,40 +163,128 @@ const App = h(() => {
 })
 ```
 
-## nextRender
+**参数说明**
 
-等待数据渲染完成，在下一个刻度中可以获取到更新后的 DOM 节点。
-
-**参数**
-
-- `fn`: Noop - 回调函数，渲染完成后触发。
+- type - The type of node to be created, either a tag name or a function.
+- props - Can be a string or an object, if it is a string it will be treated as `children`.
+- children - A child node, either a VNode node or a string.
 
 **返回值**
 
-返回一个 Promise。
+VNode
 
 **类型声明**
 
 ```ts d
-declare function nextRender(fn?: Noop): Promise<unknown>
+declare function h<T extends VNodeType>(
+  type: T,
+  props?: UtilComponentProps<T, HProps>,
+  children?: VNodeChildren
+): VNode
 ```
+
+## isVNode
+
+Determine if the incoming parameter is a virtual node
+
+**示例**
+
+```js
+import { isVNode, h } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'async anchor')
+})
+
+isVNode(App) // true
+```
+
+**返回值**
+
+boolean
+
+**类型声明**
+
+```ts d
+declare function isVNode(n: any): n is VNode
+```
+
+## isVNodeComponent
+
+Determine if the incoming parameter is a component node
+
+**示例**
+
+```js
+import { isVNodeComponent, h } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'async anchor')
+})
+
+isVNodeComponent(App) // true
+```
+
+**返回值**
+
+boolean
+
+**类型声明**
+
+```ts d
+declare function isVNodeComponent(n: VNode): n is VNode<ComponentSetupFunction>
+```
+
+## getPlugins
+
+Return all registered plugins
+
+**示例**
+
+```js
+import { getPlugins } from 'gyron'
+const plugins = getPlugins()
+```
+
+**返回值**
+
+Map
+
+**类型声明**
+
+```ts d
+declare function getPlugins(): Map<any, any>
+```
+
+## createSSRInstance
+
+Create a server-side application. The parameter `isSSR` is always true for all components in the server-side application.
 
 **示例**
 
 ```javascript
-import { h, useValue, nextRender, useRef, onAfterMount } from 'gyron'
+import { h, createSSRInstance, renderToString } from 'gyron'
 
 const App = h(() => {
-  const count = useValue(0)
-  const ref = useRef()
-
-  onAfterMount(() => {
-    count.value++
-    nextRender().then(() => {
-      console.log(ref.current.innerText) // 1
-    })
-    console.log(ref.current.innerText) // 0
-  })
-  return () => h('div', { ref }, count.value)
+  return h('div', 'hello world')
 })
+
+const { root } = createSSRInstance(h(App))
+
+renderToString(root).then((html) => {
+  console.log(html)
+  // <div>hello world</div>
+})
+```
+
+**参数说明**
+
+- vnode -
+
+**类型声明**
+
+```ts d
+declare function createSSRInstance(vnode: VNode): Instance & {
+  root: VNode
+}
 ```

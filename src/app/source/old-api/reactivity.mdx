@@ -1,0 +1,290 @@
+## useReactive
+
+让 object 对象变得可响应。
+
+**参数**
+
+- `target`: object - 需要被响应的数据。
+- `readonly`: boolean - 是否为只读数据。
+
+**返回值**
+
+一个被代理过的对象，内部使用的 Proxy 进行代理。
+
+**类型声明**
+
+```ts d
+declare function useReactive<T extends object>(target: T, readonly?: boolean): T
+```
+
+**示例**
+
+```javascript
+import { useReactive } from 'gyron'
+
+const original = {
+  x: 0,
+  y: 0,
+}
+const observed = useReactive(original)
+original !== observed // true
+```
+
+## isResponsive
+
+判断对象是否具有响应式特性。
+
+**类型声明**
+
+```ts d
+declare function isResponsive(target: any): boolean
+```
+
+**示例**
+
+```javascript
+import { isResponsive } from 'gyron'
+
+isResponsive({}) // false
+isResponsive(useReactive({})) // true
+```
+
+## useValue
+
+使用 value 属性让基本类型的数据变得可响应，其内部就是使用`useReactive`方法，然后使用 value 作为属性名代理。
+
+**参数**
+
+- `value`: any - 想要被代理的数据，可以是基本类型，比如数字或者布尔值。
+
+**返回值**
+
+一个被代理过的对象，使用`.value`进行访问。
+
+**类型声明**
+
+```ts d
+declare function useValue<T = any>(value: T): Primitive<T>
+```
+
+**示例**
+
+```javascript
+import { useValue } from 'gyron'
+
+const original = useValue(0)
+original.value === 0 // true
+```
+
+## useComputed
+
+类似于 javascript 中的访问器属性，但是其依赖的数据的变动会自动触发依赖 useComputed 的数据变更。
+
+**参数**
+
+- `getter`: Function - 获取响应的数据。
+- `setter`: Function - 设置响应的数据。
+- `dependency`: () => T - useComputed 的依赖数据。
+
+**返回值**
+
+一个被代理过的对象，其值的读和写都可以被监听。
+
+**类型声明**
+
+```ts d
+declare function useComputed<T>(getter: () => T): Computed<T>
+declare function useComputed<T>(
+  getter: () => T,
+  dependency: Dependency[]
+): Computed<T>
+declare function useComputed<T>(
+  getter: () => T,
+  setter: (value: T) => void,
+  dependency: Dependency[]
+): Computed<T>
+```
+
+**示例**
+
+```javascript
+import { useValue, useComputed } from 'gyron'
+
+const original = useValue(0)
+const observed = useComputed(() => {
+  return original.value + 1
+})
+original.value = 10
+observed.value === 11 // true
+```
+
+## useMemo
+
+同上，但是有一个区别。
+
+如果依赖的数据没有更新，则值将不会得到更新。为了避免这种情况，需要使用 useComputed 对数据进行处理。
+
+**示例**
+
+```javascript
+import { useValue, useMemo } from 'gyron'
+
+const original = useValue(0)
+const memo = useMemo(() => {
+  return Date.now() + original.value
+})
+memo.value === memo.value // true
+```
+
+## useEffect
+
+当函数体中的数据变更后会再次调用函数，可以在使用此方法监听某个数据变更。
+
+**参数**
+
+- `fn`: Function - 数据变更后的调用函数。
+- `dependency`: () => T - useEffect 的自定义依赖数据。
+
+**返回值**
+
+`ReactiveEffectRunner` - 返回一个函数。其中 useEffect 属性可以让其变得不再响应。
+
+**类型声明**
+
+```ts d
+declare function useEffect<T = any>(
+  fn: (...args: any) => T,
+  dependency?: Dependency[]
+): ReactiveEffectRunner<T>
+```
+
+**示例**
+
+```ts d
+import { useValue, useComputed } from 'gyron'
+
+const original = useValue(0)
+let dummy: number
+const s = useEffect(() => {
+  dummy = original.value
+})
+original.value = 10
+dummy === original.value // true
+s.useEffect.stop()
+original.value = 20
+dummy === original.value // false
+```
+
+## pauseTrack
+
+暂停自动收集任务，可以使用`enableTrack`方法启动收集。
+
+**示例**
+
+```ts d
+import { useValue, pauseTrack, enableTrack } from 'gyron'
+
+const original = useValue(0)
+pauseTrack()
+// 其中访问 original 不会被自动收集，也就是不会自动更新依赖 original 的数据
+enableTrack()
+```
+
+## enableTrack
+
+启动自动收集任务，可以使用`pauseTrack`方法暂停收集。
+
+**示例**
+
+```ts d
+import { useValue, pauseTrack, enableTrack } from 'gyron'
+
+const original = useValue(0)
+pauseTrack()
+// 其中访问 original 不会被自动收集，也就是不会自动更新依赖 original 的数据
+enableTrack()
+```
+
+## cleanupTrackEffect
+
+清空数据的依赖，在被意外收集的情况中使用。
+
+**示例**
+
+```ts d
+import { useValue, useEffect, cleanupTrackEffect } from 'gyron'
+
+const original = useValue(0)
+let dummy: number
+useEffect(() => {
+  dummy = original.value
+})
+cleanupTrackEffect(original, 'value')
+original.value = 1
+dummy === 0 // true
+```
+
+## asyncTrackEffect
+
+在异步的过程中主动收集依赖。
+
+**示例**
+
+```ts d
+const original = useValue(0)
+let dummy: number
+const useEffect = new ReactiveEffect(
+  () => {
+    Promise.resolve().then(() => {
+      asyncTrackEffect(useEffect)
+      dummy = original.value
+      clearTrackEffect()
+    })
+  },
+  () => {
+    dummy = original.value
+  }
+)
+useEffect.run()
+await Promise.resolve()
+dummy === 0 // true
+original.value = 10
+dummy === 10 // true
+```
+
+## clearTrackEffect
+
+通常搭配`asyncTrackEffect`一起使用，清除 asyncTrackEffect 引起的副作用。
+
+## toRaw
+
+访问被代理对象的原始数据，在复杂的对象中非常有用。在 useValue 中会解构 value 对象，返回其原始值。
+
+**参数**
+
+- `observed`: object - 响应式的数据。
+
+**返回值**
+
+一个被代理过的对象原始数据，其值不可响应。
+
+**类型声明**
+
+```ts d
+declare function toRaw<T>(observed: T): T
+```
+
+**示例**
+
+```javascript
+import { useValue } from 'gyron'
+
+const original = useValue(0)
+let dummy: number
+useEffect(() => {
+  dummy = toRaw(original)
+})
+dummy === 0 // true
+original.count = 1
+dummy === 0 // true
+```

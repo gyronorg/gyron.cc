@@ -15,12 +15,10 @@ import {
   SSR,
   ErrorBoundary,
   ApiGlobal,
-  ApiInstance,
   ApiReactivity,
   ApiComponent,
   ApiContext,
-  ApiVNode,
-  ApiHandler,
+  ApiBoundaries,
 } from '@/source'
 import { wrapAsyncMdxContent } from '@/utils/mdx'
 
@@ -192,16 +190,6 @@ export const DOCS_NAV: Menu = [
         },
       },
       {
-        name: '应用API',
-        path: 'instance-api',
-        anchor: ApiInstance,
-        component: wrapAsyncMdxContent(ApiInstance),
-        meta: {
-          page: 'api/instance',
-          title: 'API 应用',
-        },
-      },
-      {
         name: '响应式API',
         path: 'reactivity-api',
         anchor: ApiReactivity,
@@ -232,20 +220,10 @@ export const DOCS_NAV: Menu = [
         },
       },
       {
-        name: '节点',
-        path: 'vnode-api',
-        anchor: ApiVNode,
-        component: wrapAsyncMdxContent(ApiVNode),
-        meta: {
-          page: 'api/vnode',
-          title: 'API 节点',
-        },
-      },
-      {
         name: '错误边界',
         path: 'handler-api',
-        anchor: ApiHandler,
-        component: wrapAsyncMdxContent(ApiHandler),
+        anchor: ApiBoundaries,
+        component: wrapAsyncMdxContent(ApiBoundaries),
         meta: {
           page: 'api/handler',
           title: 'API 错误边界',

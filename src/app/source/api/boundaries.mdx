@@ -1,0 +1,117 @@
+> 为了保持 API 文档实时更新，文档由`index.d.ts`文件自动生成。
+
+## registerErrorHandler
+
+Register an event listener for errors and the registered callbackfunction
+will be executed when an error occurs in the component.
+
+**示例**
+
+```js
+import { registerErrorHandler, h } from 'gyron'
+const App = h(() => {
+  registerErrorHandler(({ message }) => {
+    message // Uncaught exceptions
+  })
+  throw new Error('Uncaught exceptions')
+})
+```
+
+**参数说明**
+
+- handler - Handling functions.
+
+**类型声明**
+
+```ts d
+declare function registerErrorHandler(handler: BoundariesHandler): void
+```
+
+## registerWarnHandler
+
+Register an event listener for warnings, the registered callback function
+will be executed when a warning occurs on the component.
+
+**示例**
+
+```js
+import { registerWarnHandler, useInject, h } from 'gyron'
+
+const App = h(() => {
+  registerWarnHandler(({ message }) => {
+    message // Contextual information not obtained ...
+  })
+  useInject()('a')
+  return h('div', 'hello world')
+})
+```
+
+**参数说明**
+
+- handler - Handling functions.
+
+**类型声明**
+
+```ts d
+declare function registerWarnHandler(handler: BoundariesHandler): void
+```
+
+## manualErrorHandler
+
+Proactive triggering of event callbacks registered via the registerErrorHandler method.
+
+**示例**
+
+```js
+import { manualErrorHandler, h } from 'gyron'
+
+const App = h(() => {
+  Promise.reject('Error: Uncaught exceptions').catch((e) => {
+    manualErrorHandler(e, component)
+  })
+  return h('div', 'hello world')
+})
+```
+
+**参数说明**
+
+- error - Error message
+- component - Component
+
+**类型声明**
+
+```ts d
+declare function manualErrorHandler(
+  error: Error | unknown,
+  component: Component
+): any
+```
+
+## manualWarnHandler
+
+Proactive triggering of event callbacks registered via the registerWarnHandler method
+
+**示例**
+
+```js
+import { manualWarnHandler, h } from 'gyron'
+
+const App = h(() => {
+  manualWarnHandler('Warn: performance is not defined', component)
+  return h('div', 'hello world')
+})
+```
+
+**参数说明**
+
+- warn - string
+- component - Component
+
+**类型声明**
+
+```ts d
+declare function manualWarnHandler(
+  warn: Error | unknown,
+  component: Component
+): any
+```
