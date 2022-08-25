@@ -119,6 +119,47 @@ export default () => {
 }
 ```
 
+### 转换
+
+为了保持最直观的编码习惯，`babel-plugin-jsx`将会生成一些辅助代码，这些辅助功能需要传递参数进行开启，它们默认都是关闭状态。如果发生预期之外的编码错误，可以尝试关闭这些辅助功能然后检查问题。
+
+`Gyron.js`中的组件分为两种，有状态和无状态，它们唯一的区别就是组件的返回值是否为一个函数，但是很多时候，我们不需要无状态组件，但是又为了直观的写法，我们可以开启`setup`功能。
+
+当我们开启之后，代码会进行如下转换：
+
+```tsx
+import { FC } from 'gyron'
+
+const HelloWorld = FC<{ msg: string }>(({ msg }) => {
+  function onClick() {
+    if (msg === '') {
+      console.log('gyron.js')
+    }
+  }
+
+  return <div onClick={onClick}>{msg}</div>
+})
+// ↓ ↓ ↓ ↓ ↓
+import { onBeforeUpdate as _onBeforeUpdate } from 'gyron'
+import { FC } from 'gyron'
+
+const HelloWorld = FC<{ msg: string }>(({ msg }) => {
+  // Auxiliary update of deconstructed props
+  _onBeforeUpdate((_, props) => {
+    var _props = props
+    msg = _props.msg
+  })
+
+  function onClick() {
+    if (msg === '') {
+      console.log('gyron.js')
+    }
+  }
+
+  return ({ msg }) => <div onClick={onClick}>{msg}</div>
+})
+```
+
 ## jsx-runtime
 
 jsx-runtime 是支持现代的 jsx 构建器，一般用于 babel-plugin-transform-react-jsx 插件。
