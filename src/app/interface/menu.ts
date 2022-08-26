@@ -3,6 +3,7 @@ import { MdxHelper } from '@/components/helper'
 import {
   AsyncComponentFunction,
   ComponentSetupFunction,
+  VNode,
   WrapperFunction,
 } from 'gyron'
 
@@ -12,7 +13,7 @@ export interface MenuView {
   path: string
   name: string
   anchor: Navigations
-  component: WrapperFunction<object>
+  component: WrapperFunction<{ fallback: VNode; components: object }>
   meta: {
     page: string
     title: string
