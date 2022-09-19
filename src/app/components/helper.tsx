@@ -1,5 +1,5 @@
 import { storeState } from '@/store'
-import { useRef, FC, nextRender, onAfterMount, useReactive } from 'gyron'
+import { createRef, FC, nextRender, onAfterMount, useReactive } from 'gyron'
 import { omit } from '@gyron/shared'
 import { Link } from '@gyron/router'
 import { AnchorIcon, CopyIcon } from './icons'
@@ -35,7 +35,7 @@ export const H1 = FC(({ children }) => {
 })
 
 export const H2 = FC(({ children }) => {
-  const ref = useRef<HTMLElement>()
+  const ref = createRef<HTMLElement>()
 
   onAfterMount(() => {
     nextRender(() => {
@@ -67,7 +67,7 @@ export const H2 = FC(({ children }) => {
 })
 
 export const H3 = FC(({ children }) => {
-  const ref = useRef<HTMLElement>()
+  const ref = createRef<HTMLElement>()
 
   onAfterMount(() => {
     nextRender(() => {
