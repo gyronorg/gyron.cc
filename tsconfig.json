@@ -6,6 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["src/app/*"]
     }

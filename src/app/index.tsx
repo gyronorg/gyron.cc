@@ -1,5 +1,5 @@
 import { createBrowserRouter, Route, Router, Routes } from '@gyron/router'
-import { createSSRInstance, FC } from 'gyron'
+import { createSSRContext, FC } from 'gyron'
 import { MdxHelper } from './components/helper'
 import { MdxContainer, ParentPath } from './components/mdx'
 import { Mismatch } from './components/mismatch'
@@ -101,9 +101,10 @@ export const app = () => {
       })
     },
   })
-  return createSSRInstance(
+  return createSSRContext({ message: {} }).render(
     <Router router={router}>
       <App />
-    </Router>
+    </Router>,
+    '#app'
   )
 }

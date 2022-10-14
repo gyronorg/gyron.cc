@@ -44,7 +44,7 @@ import { useParams } from '@gyron/router'
 
 const Member = () => {
   const params = useParams()
-  return () => <div>{params.id}</div> //<div>admin</div>
+  return <div>{params.id}</div> //<div>admin</div>
 }
 ```
 
@@ -453,7 +453,7 @@ const App = () => {
   onBeforeRouteEach((from, to, next) => {
     next()
   })
-  return () => <div></div>
+  return <div></div>
 }
 ```
 
@@ -472,7 +472,7 @@ const App = () => {
       ref.current // div
     })
   })
-  return () => <div ref={ref}></div>
+  return <div ref={ref}></div>
 }
 ```
 
@@ -540,7 +540,7 @@ const App = () => {
   const login = () => {
     router.push('/login')
   }
-  return () => <button onClick={login}>Login</button>
+  return <button onClick={login}>Login</button>
 }
 ```
 

@@ -48,7 +48,7 @@ import { useValue } from 'gyron'
 
 const App = () => {
   const count = useValue(0)
-  return () => <div onClick={() => count.value++}>Counter {count.value}</div>
+  return <div onClick={() => count.value++}>Counter {count.value}</div>
 }
 
 export default App
@@ -57,7 +57,6 @@ export default App
 app/index.js 文件中导出一个应用实例，等待 server 和 client 的调用。
 
 ```jsx filename=server/index.js
-import { createSSRInstance } from 'gyron'
 import { renderToString } from '@gyron/dom-server'
 import express from 'express'
 import App from '../app/index'
@@ -66,8 +65,7 @@ import template from '../index.html'
 const app = express()
 
 app.get('*', async (req, res) => {
-  const { root } = createSSRInstance(<App />)
-  const html = await renderToString(root)
+  const html = await renderToString(<App />)
   res.send(template.replace('<!--ssr-outlet-->', html))
 })
 
@@ -121,3 +119,20 @@ app.use('/js', express.static(path.join(__dirname, 'client')))
 启动项目后访问 [http://localhost:3000](http://localhost:3000) 页面，看到 Counter 0 后点击一次，然后 0 会变成 1。
 
 脚手架暂不支持 SSR 项目的创建，后续会用可选配置做支持。
+
+## 常见问题
+
+### 水合代码时重复添加节点
+
+请检查 html 文件中渲染的节点是否在首尾包含换行，如果包含换行会导致水合代码时换行部分会被解析成文本节点导致前后端节点不一致，这时客户端代码会将不一致的节点再次渲染到屏幕上。
+
+举一个简单的例子
+
+```html
+<div id="app"><!--ssr-outlet--></div>
+
+<!--错误的写法-->
+<div id="app">
+  <!--ssr-outlet-->
+</div>
+```

@@ -1,4 +1,4 @@
-import { createSSRInstance, nextRender } from 'gyron'
+import { createSSRContext, nextRender } from 'gyron'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, Router } from '@gyron/router'
 import { App } from '@/index'
@@ -29,7 +29,7 @@ const router = createMemoryRouter({
 app.get('*', async (req, res) => {
   const { theme } = req.cookies
 
-  const { root } = createSSRInstance(
+  const root = (
     <Router router={router}>
       <App />
     </Router>

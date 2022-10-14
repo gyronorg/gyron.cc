@@ -246,7 +246,7 @@ const App = () => {
   const login = () => {
     router.push('/login')
   }
-  return () => <button onClick={login}>Login</button>
+  return <button onClick={login}>Login</button>
 }
 ```
 
@@ -453,7 +453,7 @@ const App = () => {
   onBeforeRouteEach((from, to, next) => {
     next()
   })
-  return () => <div></div>
+  return <div></div>
 }
 ```
 
@@ -476,7 +476,7 @@ const App = () => {
   onBeforeRouteUpdate((from, to) => {
     // ...
   })
-  return () => <div></div>
+  return <div></div>
 }
 ```
 
@@ -503,7 +503,7 @@ const App = () => {
       ref.current // div
     })
   })
-  return () => <div ref={ref}></div>
+  return <div ref={ref}></div>
 }
 ```
 
@@ -526,6 +526,6 @@ const App = () => {
   onAfterRouteUpdate((from, to) => {
     // ...
   })
-  return () => <div></div>
+  return <div></div>
 }
 ```

@@ -9,6 +9,7 @@ import {
   ConditionalRendering,
   ListRendering,
   EventBind,
+  BuiltProps,
   Context,
   Form,
   AsyncComponent,
@@ -117,6 +118,16 @@ export const DOCS_NAV: Menu = [
         meta: {
           page: 'guide/event',
           title: '入门指南 事件处理',
+        },
+      },
+      {
+        path: 'built-attr',
+        name: '内置属性',
+        anchor: BuiltProps,
+        component: wrapAsyncMdxContent(BuiltProps),
+        meta: {
+          page: 'guide/built-attr',
+          title: '入门指南 内置属性',
         },
       },
     ],

@@ -35,6 +35,8 @@ const App = () => {
 
 ### Setup 和 Render
 
+如果你是按照脚手架的方式或者使用了我们的 babel plugin 就不需要再阅读这块文档，如果你是第三方开发者可能需要阅读这块内容。
+
 函数组件分为两个区域，一个是 setup scope，另外一个是 render scope。
 setup scope 区域在组件渲染的流程中只会被执行一次，只有在销毁组件后再次渲染才会被执行。
 顾名思义，render scope 就是负责组件更新，只要组件依赖的数据发生变更或者使用`forceUpdate`强制更新时执行。
@@ -207,7 +209,7 @@ const HelloWorld = FC<HelloWorldProps>(({ message, update }) => {
 
 ### Ref
 
-有的时候我们需要自定义渲染，或者想接入第三方框架。我们可以使用`useRef`方法创建一个对象，它会暴露一个`current`属性，然后在对应的组件或元素上使用 ref 进行绑定。
+有的时候我们需要自定义渲染，或者想获取到真实的元素信息。我们可以使用`useRef`方法创建一个对象，它会暴露一个`current`属性，然后在对应的组件或元素上使用 ref 进行绑定。
 
 ```jsx line=4,11
 import { useRef, onAfterMount } from 'gyron'
@@ -220,7 +222,7 @@ const App = () => {
     // HTMLDivElement
   })
 
-  return () => <div ref={useRef}></div>
+  return <div ref={useRef}></div>
 }
 ```
 
@@ -238,7 +240,7 @@ const HelloWorld = ({ message }) => {
     // 在组件渲染完成之后将文字颜色改变成蓝色
     $el.style.color = 'blue'
   })
-  return () => <div>I Am {message}</div>
+  return <div>I Am {message}</div>
 }
 ```
 
@@ -255,7 +257,7 @@ const HelloWorld = ({ message }) => {
     // 移除定时器
     clearInterval(timer)
   })
-  return () => <div>I Am {message}</div>
+  return <div>I Am {message}</div>
 }
 ```
 
@@ -302,7 +304,7 @@ import { useValue } from 'gyron'
 
 const HelloWorld = () => {
   const count = useValue(0)
-  return () => <div>{count}</div>
+  return <div>{count}</div>
 }
 ```
 
@@ -332,7 +334,7 @@ const App = keepComponent(() => {
     count.value++
   }
 
-  return () => <div onClick={increment}>Cache Component {count.value}</div>
+  return <div onClick={increment}>Cache Component {count.value}</div>
 })
 ```
 

@@ -7,6 +7,7 @@ const Component = () => import('./guide/component.mdx')
 const ConditionalRendering = () => import('./guide/conditional-rendering.mdx')
 const ListRendering = () => import('./guide/list-rendering.mdx')
 const EventBind = () => import('./guide/event.mdx')
+const BuiltProps = () => import('./guide/built-attr.mdx')
 
 // advanced
 const Context = () => import('./advanced/context.mdx')
@@ -30,9 +31,9 @@ const CoreRouterInstallation = () => import('./core/router/installation.mdx')
 const CoreRouterQuickStarted = () => import('./core/router/quick-started.mdx')
 const CoreRouterConcepts = () => import('./core/router/concepts.mdx')
 const CoreRouterApi = () => import('./core/router/api.mdx')
-const CoreDoxInstallation = () => import('./core/dox/installation.mdx')
-const CoreDoxQuickStarted = () => import('./core/dox/quick-started.mdx')
-const CoreDoxApi = () => import('./core/dox/api.mdx')
+const CoreDoxInstallation = () => import('./core/redux/installation.mdx')
+const CoreDoxQuickStarted = () => import('./core/redux/quick-started.mdx')
+const CoreDoxApi = () => import('./core/redux/api.mdx')
 const CoreJSXGettingStarted = () => import('./core/jsx/getting-started.mdx')
 const CoreJSXFaq = () => import('./core/jsx/faq.mdx')
 
@@ -46,6 +47,7 @@ export {
   ConditionalRendering,
   ListRendering,
   EventBind,
+  BuiltProps,
   Context,
   Form,
   AsyncComponent,

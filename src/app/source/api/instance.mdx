@@ -37,7 +37,7 @@ const App = h(() => {
 createInstance(h(App)).render('#root')
 ```
 
-## createSSRInstance
+## ~~createSSRInstance~~
 
 创建服务端应用。服务端组件的 isSSR 的值始终为 true。
 
@@ -70,6 +70,43 @@ renderToString(root).then((html) => {
   console.log(html)
   // <div>hello world</div>
 })
+```
+
+## createSSRContext
+
+创建服务端应用后在客户端用此方法水合代码，接受一个对象，对象上包含一个`message`属性，它的值通常由程序自动生成。
+
+生成规则如下：
+对象的`key`是组件所在的位置和名称组成。
+对象的`value`是组件的`props`。由 Gyron 自动注入。
+
+**类型声明**
+
+```ts d
+declare function createSSRContext(context: SSRContext): {
+  render: (
+    vnode: VNode,
+    containerOrSelector: string | HTMLElement
+  ) => VNode<VNodeType>
+}
+```
+
+**示例**
+
+```javascript
+import { h, createSSRContext } from 'gyron'
+
+const App = h(({ msg }) => {
+  return h('div', msg)
+})
+
+createSSRContext({
+  message: {
+    '/test?name=App': {
+      msg: 'hello world',
+    },
+  },
+}).render(App, '#app')
 ```
 
 ## render

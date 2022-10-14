@@ -1,0 +1,91 @@
+## 内置属性
+
+这篇文档将介绍 Gyron 中有哪些内置属性，这些属性有什么作用，用户应该怎么去使用。有些内置属性是为了优化渲染速度，有些内置属性是为了快捷渲染。
+
+### ref
+
+ref 可以应用在组件或者元素节点上。具体用法可以参考[Ref 的用法](/docs/component#Ref)。
+用在组件上时 ref 是组件暴露的对象，用在元素节点上时 ref 是真实的元素。
+
+```jsx line=4,11
+import { useRef, onAfterMount, exposeComponent } from 'gyron'
+
+const Child = () => {
+  exposeComponent({
+    msg: 'Gyron',
+  })
+  return //...
+}
+
+const App = () => {
+  const ref = useRef()
+
+  onAfterMount(() => {
+    console.log(ref.current)
+    // {
+    //   msg: 'Gyron',
+    // }
+  })
+
+  return <Child ref={useRef}></Child>
+}
+```
+
+### key
+
+在循环渲染中用于比对节点的唯一的值，它们不应该是数组的下标。
+
+当用户定义了 key 之后则处于 keyed 模式下，在这种模式下很多内部操作都将变得更快，因为算法会自动在同层数据中找到没有变更的节点并复用。
+当用户没有定义 key 时渲染则处于 Non keyed 模式下，在这种模式下可能有些行为速度会变慢，比如更新一条记录。
+
+举一个 keyed 例子。
+
+```jsx
+const App = ({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li key={order.id}>{order.name}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+### memo
+
+memo 通常在循环渲染中使用，在使用之后会弥补只传入 key 时算法的不足。它和 keepComponent 不同，keepComponent 是保证组件的状态一直不变，而 memo 是用于节点的更新。
+
+传递 memo 之后，在渲染的时候会比对 memo 中的值是否发生更改，如果没有则直接跳过，如果有变更再走 diff 算法进行更新。
+
+更详细的解释可以参考[如何正确的使用 memo](/docs/list-rendering#memo%20参数)
+
+### \_html
+
+\_html 属性是为了解决服务端渲染时插入动态的子节点，在客户端渲染时也可以使用。
+
+```jsx
+const App = ({ orders }) => {
+  return <div _html="<h1>Gyron</h1>"></div>
+}
+```
+
+如果使用了\_html 属性的同时还使用了 children，那么现在以 children 属性为准，并且控制台将会报告此警告。
+
+```jsx
+const App = ({ orders }) => {
+  return <div _html="<h1>Hello Gyron</h1>">Welcome Gyron</div>
+}
+// <div>Welcome Gyron</div>
+```
+
+### children
+
+在编写组件时不应该显示的传递 children 属性，应该使用 jsx 语法糖的能力自动生成 children。
+
+### isSSR
+
+isSSR 是编写服务端渲染时用到的属性，很多情况下可以使用 isSSR 来区分当前组件所处的环境，如果为 true 代表当前正在服务端渲染环境中，
+不能访问 window 或者 document 对象，反之则处于浏览器环境中，可以正常使用浏览器环境的 API。
+
+具体例子可以访问[isSSR 的用法](docs/ssr#什么是%20SSR？)

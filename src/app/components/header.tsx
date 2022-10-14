@@ -4,6 +4,7 @@ import { DarkToggle } from '@/components/dark'
 import { CloseIcon, GithubIcon, LogoIcon, MenuIcon } from '@/components/icons'
 import { Nav } from './nav'
 import { DOCS_NAV, CORE_NAV } from '@/pages'
+import pkg from '../../../package.json'
 import classnames from 'classnames'
 import docsearch from '@docsearch/js'
 import '@docsearch/css'
@@ -56,7 +57,7 @@ export const Header = FC(() => {
           <span class="flex items-center">
             <LogoIcon />
             <span class="ml-3 text-sm">Gyron.js</span>
-            <span class="ml-3 text-xs">v0.0.16</span>
+            <span class="ml-3 text-xs">v{pkg.version}</span>
           </span>
         </Link>
         <div class="md:hidden">

@@ -56,6 +56,7 @@ export default {
 babel-plugin-jsx 接受两个参数以帮助用户转换出更贴切的代码。
 
 - `hmr` 是否生成热更新辅助代码。
+- `ssr` 是否生成 ssr hydrate 时的辅助代码。在服务端渲染完成后调用`createSSRContext`时自动注入组件参数的辅助功能。
 - `setup` 是否自动将[无状态组件](/docs/component#有状态组件%20和%20无状态组件)转换成[有状态组件](/docs/component#有状态组件%20和%20无状态组件)。
 
 ### 热更新
