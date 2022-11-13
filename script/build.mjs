@@ -4,6 +4,7 @@ import { createSSRInstance, nextRender, h } from '@gyron/runtime'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, generateNestedRoutes, Router } from '@gyron/router'
 import { buildClient, buildAPP } from './base.mjs'
+import { JSDOM } from 'jsdom'
 import fs from 'fs-extra'
 import path from 'path'
 import chalk from 'chalk'
@@ -62,6 +63,8 @@ async function render(vnode, url, clientMeta) {
 }
 
 buildClient(false, tempPath).then((appMeta) => {
+  // many web standards
+  global.document = new JSDOM().window.document
   buildAPP().then(async ({ App, ExposeRoutes }) => {
     const node = ExposeRoutes()
     const routes = await getRoutes(node())

@@ -17,7 +17,7 @@ export interface EditorWindowProps {
 
 export const EditorWindow = FC<EditorWindowProps>(({ content }) => {
   return (
-    <div class="container mr-auto ml-auto max-w-3xl">
+    <div class="container mr-auto ml-auto max-w-3xl prose prose-slate dark:prose-invert">
       {content.map((item) => {
         return (
           <pre>
