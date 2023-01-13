@@ -14,7 +14,7 @@ import { ArrowRightIcon } from './icons'
 import { Skeleton } from './skeleton'
 import classnames from 'classnames'
 
-export type Navigations = () => Promise<typeof import('*.mdx')>
+export type Navigation = () => Promise<typeof import('*.mdx')>
 
 export interface NavigationBar {
   type: 'h2' | 'h3'
@@ -22,7 +22,7 @@ export interface NavigationBar {
 }
 
 export interface GuidanceProps {
-  navigations: Navigations
+  navigations: Navigation
 }
 
 function useScroll(isSSR: boolean) {
@@ -44,7 +44,7 @@ function useScroll(isSSR: boolean) {
   return scroll
 }
 
-const loaded: Navigations[] = []
+const loaded: Navigation[] = []
 
 export const Guidance = FC<GuidanceProps>(({ isSSR }) => {
   const props = defineProps<GuidanceProps>()

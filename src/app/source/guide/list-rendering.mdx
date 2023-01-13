@@ -3,7 +3,9 @@
 当我们有一个场景需要展示一个订单列表，用户可以选择过滤掉某些订单便于快速操作，我们可以通过内联 map 和 filter 来完成这个功能。
 
 ```jsx
-const App = ({ orders }) => {
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
   return (
     <ul>
       {orders
@@ -13,13 +15,15 @@ const App = ({ orders }) => {
         ))}
     </ul>
   )
-}
+})
 ```
 
 我们通过 filter 先筛选出价格大于 2000 的订单然后通过 map 渲染它们。这是一个比较常见的用法，也可以在 map 中使用条件判断来完成这些事情。
 
 ```jsx
-const App = ({ orders }) => {
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
   return (
     <ul>
       {orders.map((order) => {
@@ -30,13 +34,15 @@ const App = ({ orders }) => {
       })}
     </ul>
   )
-}
+})
 ```
 
 我们可以通过条件判断，让订单金额大于 2000 的文字更醒目。上面代码还可以简化成这样
 
 ```jsx
-const App = ({ orders }) => {
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
   return (
     <ul>
       {orders.map((order) => (
@@ -46,7 +52,7 @@ const App = ({ orders }) => {
       ))}
     </ul>
   )
-}
+})
 ```
 
 ### Key
@@ -54,7 +60,9 @@ const App = ({ orders }) => {
 在循环渲染中如果存在 key 值，那么循环中将会使用 key 作为比对标准，最小化的更新 dom 节点。
 
 ```jsx line=5
-const App = ({ orders }) => {
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
   return (
     <ul>
       {orders.map((order) => (
@@ -62,7 +70,7 @@ const App = ({ orders }) => {
       ))}
     </ul>
   )
-}
+})
 ```
 
 当 orders 发生变更，我们会根据传递的 id 进行对比，如果发现只是顺序变更，那么 Gyron.js 只会去更新它们在 DOM 树中的顺序，而不是重新去渲染。
@@ -71,7 +79,7 @@ const App = ({ orders }) => {
 
 在一些循环渲染的例子中可以极大的提高渲染速度和响应速度，在基准测试中使用 memo 可以将更新操作和选中操作提高 5 到 15 倍。如果你只是一般的逻辑渲染完全不需要使用此参数进行优化。
 
-```jsx line=12
+```jsx line=10
 import { FC, useValue } from 'gyron'
 
 const Table = FC(() => {

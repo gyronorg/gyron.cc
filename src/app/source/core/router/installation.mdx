@@ -25,9 +25,10 @@ npm install --save-dev @gyron/router
 在安装完成之后，在项目需要使用 Router 的地方使用 import 语法导入 Routes、Route 等组件。示例如下：
 
 ```jsx
+import { FC } from 'gyron'
 import { Router, Route, Routes } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   return (
     <Router router={/* router */}>
       <Routes>
@@ -36,7 +37,7 @@ const App = () => {
       </Routes>
     </Router>
   )
-}
+})
 ```
 
 **在 script 标签中使用**

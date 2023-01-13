@@ -32,12 +32,12 @@ createStore({
 接着就可以在应用中任何地方使用这个 State。
 
 ```js
-import { useSelector } from '@gyron/redux'
+import { useSelector, FC } from '@gyron/redux'
 
-const App = () => {
+const App = FC(() => {
   const state = useSelector()
   return <div>{state.value}</div>
-}
+})
 ```
 
 ### 创建一个模块

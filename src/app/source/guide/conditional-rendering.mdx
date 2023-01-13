@@ -7,15 +7,17 @@
 比如，我们可以根据用户登陆状态展示不同的组件。
 
 ```jsx
-const Guest = () => {
+import { FC } from 'gyron'
+
+const Guest = FC(() => {
   return <div>Please sign up</div>
-}
-const User = () => {
+})
+const User = FC(() => {
   return <div>Welcome</div>
-}
-const Home = ({ isLogin }) => {
+})
+const Home = FC(({ isLogin }) => {
   return isLogin ? <User /> : <Guest />
-}
+})
 ```
 
 上述代码中有一个传入的`isLogin`变量，当它为[Truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy)时，便会展示 Welcome 文字，否则会展示 Please sign up。

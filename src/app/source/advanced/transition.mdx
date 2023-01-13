@@ -1,0 +1,118 @@
+## Transition
+
+过渡可以给一个元素在不同状态之间切换的时候定义不同的过渡效果，比如你可以使用 opacity 定义一个渐入渐出的效果。
+
+而在我们的框架中，你只需要使用我们提供的`Transition`组件即可快速到达。
+
+```tsx filename=index.tsx
+import { Transition, FC } from 'gyron'
+
+const App = FC(() => {
+  const visible = useValue(true)
+  return (
+    <div>
+      <button onClick={(visible.value = !visible.value)}>toggle</button>
+      <Transition name="fade">
+        {visible.value && <aside>menu</aside>}
+      </Transition>
+    </div>
+  )
+})
+```
+
+当我们定义好组件后，然后就可以开始编写 css。我们推荐使用 less、sass 等预编译语言。
+
+```less filename=index.less
+.fade {
+  &-active {
+    transition: opacity 0.2s;
+    $-before {
+      opacity: 0;
+    }
+  }
+  &-leave {
+    transition: opacity 0.2s;
+    opacity: 0;
+  }
+}
+```
+
+然后再将编写好的 less 导入到我们的模块中，然后点击按钮就可以直观的感受`Transition`能给我们带来什么。
+
+```tsx filename=index.tsx line=2
+// ...
+import './index.less'
+// ...
+```
+
+### 组件渲染
+
+`Transition` 组件也可以包裹在组件上，比如我有一个 A 组件和 B 组件，它们是互斥的，这时我们可以使用逻辑操作符来控制渲染哪一个组件。
+
+```tsx
+import { FC, useValue, Transition } from 'gyron'
+
+const A = FC(({ children }) => {
+  return <div>{children}</div>
+})
+
+const B = FC(({ children }) => {
+  return <div>{children}</div>
+})
+
+const App = FC(() => {
+  const visible = useValue(true)
+  const count = useValue(0)
+  return (
+    <div>
+      <button onClick={onChange}>toggle</button>
+      <Transition name="visible">
+        {visible.value ? <A>{count.value}</A> : <B>{count.value}</B>}
+      </Transition>
+    </div>
+  )
+
+  function onChange() {
+    visible.value = !visible.value
+    count.value++
+  }
+})
+```
+
+### 执行时机
+
+如果想在实际应用场景中使用，我们还需要知道它是如何工作，有一些边界情况也需要考虑。
+我们通过绘图的方式告诉大家`Transition`有哪些执行时机，在这些时机中`Transition`又做了哪些工作才能将过渡呈现出来。
+
+![gyron transition lifecycle](/assets/image/transition.png)
+
+如图所示，过渡分为两个部分。一个是元素从无到有的过渡，还有一个是从有到无的过渡，我们在这里将这两种时机分别用数字来表示。
+
+- `0 -> 1` 就是图中的`active`，也就是元素进入时过渡的周期。
+- `1 -> 0` 就是图中的`leave`，也就是元素退出时过渡的周期。
+
+元素过渡周期的类名在 css 中分别为：
+
+- `active-before`: 元素进入之前使用的类名。通常在其中声明元素进入前的初始状态。
+- `active`: 元素已经渲染到 DOM 中，会一直持续到过渡结束。通常需要声明`transition: all 0.1s`
+- `leave-before`: 元素离开前的状态，可以告诉浏览器离开前的初始状态。
+- `leave`: 元素在离开的过程中会一直存在于 className 中。通常在这里也需要声明`transition: all 0.1s`
+
+### 实现原理
+
+为了让用户无感知的看到动画过渡之前的效果，我们使用了浏览器提供的`requestAnimationFrame`，它将在下一次重绘之前执行回调。
+
+### 边界情况
+
+在某些场景下，用户可能会连续多次操作，就会发现组件还未完成上一次的过渡周期立马就进入到下一个过渡周期，
+这个时候我们是怎么处理的呢？其实很简单，只需要把过渡所需要的时间缩小到 0 秒就可以让它再执行下一个过渡周期。
+用数字表示就是：
+
+```bash
+# 周期一
+0 -> 0.5
+# 周期二
+0.5 -> 1 # 瞬间完成
+# 周期三
+1 -> 0
+```

@@ -31,17 +31,18 @@ original.count = 1
 接下来我们再看一个例子。
 
 ```jsx
-import { useValue } from 'gyron'
-export const App = () => {
+import { useValue, FC } from 'gyron'
+
+export const App = FC(() => {
   const list = useValue([0])
-  return () => (
+  return (
     <div>
       {list.map((item) => (
         <div onClick={() => list.value.push(list.value.length)}>{item}</div>
       ))}
     </div>
   )
-}
+})
 ```
 
 接下来讲解其中的依赖收集和组件更新。
@@ -80,7 +81,7 @@ patch 会先调用 App 这个函数，然后把当前 useEffect（SchedulerJob�
 文字描述可能不太直观，下面用图的形式复述上述代码的依赖收集和更新。
 
 收集过程图解
-![track](/assets/image/track.png)
+![gyron component track](/assets/image/track.png)
 
 更新过程图解
-![update](/assets/image/update.png)
+![gyron component update](/assets/image/update.png)

@@ -1,5 +1,4 @@
-import { Navigations } from '@/components/guidance'
-import { MdxHelper } from '@/components/helper'
+import { Navigation } from '@/components/guidance'
 import {
   AsyncComponentFunction,
   ComponentSetupFunction,
@@ -12,7 +11,7 @@ export type ContentMenu = Pick<MenuView, 'anchor' | 'component' | 'meta'>
 export interface MenuView {
   path: string
   name: string
-  anchor: Navigations
+  anchor: Navigation
   component: WrapperFunction<{ fallback: VNode; components: object }>
   meta: {
     page: string
@@ -36,6 +35,6 @@ export type MenuHashView = {
   name: string
   path: string
   children: MenusHash[]
-  anchor: Navigations
+  anchor: Navigation
   component: ComponentSetupFunction | AsyncComponentFunction
 }[]

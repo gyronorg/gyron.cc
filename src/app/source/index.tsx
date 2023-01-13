@@ -15,6 +15,7 @@ const Form = () => import('./advanced/form.mdx')
 const AsyncComponent = () => import('./advanced/async-component.mdx')
 const SSR = () => import('./advanced/ssr.mdx')
 const ErrorBoundary = () => import('./advanced/error-boundary.mdx')
+const Transition = () => import('./advanced/transition.mdx')
 
 // api
 const ApiGlobal = () => import('./api/global.mdx')
@@ -48,11 +49,14 @@ export {
   ListRendering,
   EventBind,
   BuiltProps,
+  // Advanced
   Context,
   Form,
   AsyncComponent,
   SSR,
   ErrorBoundary,
+  Transition,
+  // API
   ApiGlobal,
   ApiInstance,
   ApiReactivity,
@@ -60,6 +64,7 @@ export {
   ApiVNode,
   ApiContext,
   ApiHandler,
+  // Core
   CoreIndex,
   CoreRouterInstallation,
   CoreRouterQuickStarted,

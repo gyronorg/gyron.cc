@@ -65,13 +65,15 @@ babel-plugin-jsx 会自动寻找 Gyron.js 中的组件，并且在组件函数�
 Gyron.js 会自动寻找组件之间的依赖关系并且在开发环境中对依赖的组件进行更新。
 
 ```jsx
-const App = () => {
+import { FC } from 'gyron'
+
+const App = FC(() => {
   return <div>App</div>
-}
+})
 // ↓ ↓ ↓ ↓ ↓
-const App = () => {
+const App = FC(() => {
   return h('div', null, ['App'])
-}
+})
 App.__hmr_id = 'xxaanncc'
 ```
 

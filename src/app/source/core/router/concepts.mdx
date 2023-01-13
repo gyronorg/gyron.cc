@@ -100,9 +100,10 @@ Router 另外一个核心就是匹配规则。在匹配之前会格式化声明�
 Router 还保留着`<Redirect />`路由，它和"Not Found"路由保留着一些区别。前者可以用声明式写法管理多个重定向，而"Not Found"路由需要在 element 组件中实现等效的代码。
 
 ```jsx
+import { FC } from 'gyron'
 import { useRoutes } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   return useRoutes([
     {
       path: '',
@@ -133,7 +134,7 @@ const App = () => {
       element: <Mismatch />,
     },
   ])
-}
+})
 ```
 
 上面通过 useRoutes 方法配置的路由和 Route 是等效的。关于路由声明和路由配置可以参考上一篇文章[声明式路由](quick-started#声明式路由)。
@@ -145,10 +146,11 @@ const App = () => {
 > 需要注意的一点就是，我们不会删除用户的任何路由规则，就算它们的配置是相同。如果遇到相同的匹配规则我们会以`Fragment`节点渲染出所有匹配的路由。
 
 ```jsx line=11
+import { FC } from 'gyron'
 import { Link, Outlet } from '@gyron/router'
 
-export const Layout = () => {
-  return () => (
+export const Layout = FC(() => {
+  return (
     <div>
       <div>
         <Link to="/docs">文档</Link>
@@ -159,5 +161,5 @@ export const Layout = () => {
       </div>
     </div>
   )
-}
+})
 ```

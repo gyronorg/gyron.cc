@@ -22,7 +22,7 @@ export const EditorWindow = FC<EditorWindowProps>(({ content }) => {
         return (
           <pre>
             <code
-              _html={toHtml(refractor.highlight(item.value, item.type))}
+              html={toHtml(refractor.highlight(item.value, item.type))}
             ></code>
           </pre>
         )

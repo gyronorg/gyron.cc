@@ -180,6 +180,15 @@ const Pre = FC(({ children }) => {
   )
 })
 
+interface ImageProps {
+  alt: string
+  src: string
+}
+
+const Image = FC<ImageProps>(({ alt, src }) => {
+  return <img src={src} alt={alt} />
+})
+
 export const MdxHelper = {
   a: A,
   p: P,
@@ -187,4 +196,5 @@ export const MdxHelper = {
   h2: H2,
   h3: H3,
   pre: Pre,
+  img: Image,
 }

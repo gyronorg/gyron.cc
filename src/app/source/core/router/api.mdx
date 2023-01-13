@@ -99,9 +99,10 @@ declare const Routes: ComponentSetupFunction<object, false>
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { Router, Routes, Route } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   return (
     <Router router={/* router */}>
       <Routes>
@@ -109,7 +110,7 @@ const App = () => {
       </Routes>
     </Router>
   )
-}
+})
 ```
 
 ## Route
@@ -130,9 +131,10 @@ declare const Route: ComponentSetupFunction<
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { Router, Routes, Route } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   return (
     <Router router={/* router */}>
       <Routes>
@@ -140,7 +142,7 @@ const App = () => {
       </Routes>
     </Router>
   )
-}
+})
 ```
 
 ## Link
@@ -156,18 +158,17 @@ declare const Link: ComponentSetupFunction<LinkProps, false>
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { Link } from '@gyron/router'
 
-const Navigation = () => {
-  return () => {
-    return (
-      <div>
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-      </div>
-    )
-  }
-}
+const Navigation = FC(() => {
+  return (
+    <div>
+      <Link to="/">Home</Link>
+      <Link to="/about">About</Link>
+    </div>
+  )
+})
 ```
 
 ## Outlet
@@ -183,10 +184,11 @@ declare const Outlet: ComponentSetupFunction<object, false>
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { Link, Outlet } from '@gyron/router'
 
-export const Layout = () => {
-  return () => (
+export const Layout = FC(() => {
+  return (
     <div>
       <div>
         <Link to="/docs">文档</Link>
@@ -197,7 +199,7 @@ export const Layout = () => {
       </div>
     </div>
   )
-}
+})
 ```
 
 ## Redirect
@@ -213,9 +215,10 @@ declare const Redirect: ComponentSetupFunction<RedirectProps, false>
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { Router, Redirect } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   return (
     <Router router={/* router */}>
       <Routes>
@@ -223,7 +226,7 @@ const App = () => {
       </Routes>
     </Router>
   )
-}
+})
 ```
 
 ## useRouter
@@ -239,15 +242,16 @@ declare function useRouter(): RouterBase
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { useRouter } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   const router = useRouter()
   const login = () => {
     router.push('/login')
   }
   return <button onClick={login}>Login</button>
-}
+})
 ```
 
 ## useRoutes
@@ -263,9 +267,10 @@ declare function useRoutes(routes: RouteRecordConfig[]): VNode<VNodeType>
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { useRoutes } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   return useRoutes([
     {
       path: '',
@@ -296,7 +301,7 @@ const App = () => {
       element: <Mismatch />,
     },
   ])
-}
+})
 ```
 
 ## useRoute
@@ -312,13 +317,14 @@ declare function useRoute(): Primitive<RouteRecord>
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { useRoute } from '@gyron/router'
 
-const Dashboard = () => {
+const Dashboard = FC(() => {
   const route = useRoute()
   route.value // RouteRecord
   return <div>Dashboard</div>
-}
+})
 ```
 
 ## useHref
@@ -380,12 +386,13 @@ declare function useParams(): TypeParamsRaw
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { useParams } from '@gyron/router'
 
-const Dashboard = () => {
+const Dashboard = FC(() => {
   const params = useParams()
   return <div>Dashboard</div>
-}
+})
 ```
 
 ## useOutlet
@@ -401,9 +408,10 @@ declare function useOutlet(): TypeOutletRaw
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { useOutlet } from '@gyron/router'
 
-const Dashboard = () => {
+const Dashboard = FC(() => {
   const outlet = useOutlet()
   /**
    * {
@@ -411,7 +419,7 @@ const Dashboard = () => {
    *   depth: number;
    * }
    */
-}
+})
 ```
 
 ## useMatch
@@ -427,11 +435,12 @@ declare function useMatch(path: string): boolean
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { useMatch } from '@gyron/router'
 
-const Dashboard = () => {
+const Dashboard = FC(() => {
   const matched = useMatch('/dashboard')
-}
+})
 ```
 
 ## onBeforeRouteEach
@@ -447,14 +456,15 @@ declare function onBeforeRouteEach(listener: RouterHookBeforeEach): void
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { onBeforeRouteEach } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   onBeforeRouteEach((from, to, next) => {
     next()
   })
   return <div></div>
-}
+})
 ```
 
 ## onBeforeRouteUpdate
@@ -470,14 +480,15 @@ declare function onBeforeRouteUpdate(listener: RouterHookBeforeUpdate): void
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { onBeforeRouteUpdate } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   onBeforeRouteUpdate((from, to) => {
     // ...
   })
   return <div></div>
-}
+})
 ```
 
 ## onAfterRouteEach
@@ -493,10 +504,10 @@ declare function onAfterRouteEach(listener: RouterHookAfterEach): void
 **示例**
 
 ```jsx
-import { useRef, nextRender } from 'gyron'
+import { useRef, nextRender, FC } from 'gyron'
 import { onAfterRouteEach } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   const ref = useRef()
   onAfterRouteEach((from, to) => {
     nextRender().then(() => {
@@ -504,7 +515,7 @@ const App = () => {
     })
   })
   return <div ref={ref}></div>
-}
+})
 ```
 
 ## onAfterRouteUpdate
@@ -520,12 +531,13 @@ declare function onAfterRouteUpdate(listener: RouterHookAfterUpdate): void
 **示例**
 
 ```jsx
+import { FC } from 'gyron'
 import { onAfterRouteUpdate } from '@gyron/router'
 
-const App = () => {
+const App = FC(() => {
   onAfterRouteUpdate((from, to) => {
     // ...
   })
   return <div></div>
-}
+})
 ```

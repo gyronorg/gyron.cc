@@ -42,16 +42,16 @@ plugin.set(Type, customPluginData)
 
 后面在组件中就可以通过 usePlugin 方法得到 customPluginData。
 
-```jsx line=6
-import { usePlugin } from 'gyron'
+```jsx line=4
+import { usePlugin, FC } from 'gyron'
 
-const App = () => {
+const App = FC(() => {
   const context = usePlugin()
 
   context.get(Type)
 
   return /*...*/
-}
+})
 ```
 
 ### 生命周期

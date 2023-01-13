@@ -21,9 +21,9 @@
 这种写法好处就是不需要过多的处理，当用户输入完成后点击提交按钮即可，缺点也很明显，没办法对输入的值进行修改。
 
 ```jsx line=9
-import { useReactive } from 'gyron'
+import { useReactive, FC } from 'gyron'
 
-const Form = () => {
+const Form = FC(() => {
   const state = useReactive({
     name: '',
   })
@@ -33,7 +33,7 @@ const Form = () => {
     e.preventDefault()
   }
 
-  return () => (
+  return (
     <form onSubmit={handleSubmit}>
       <label>
         名字:
@@ -47,7 +47,7 @@ const Form = () => {
       <input type="submit" value="提交" />
     </form>
   )
-}
+})
 ```
 
 ### 受控组件
@@ -57,9 +57,9 @@ const Form = () => {
 有一个特殊的例子就是`select`标签，它的 value 是根据 option 的 checked 的状态来决定的，这在我们内部做了兼容处理，所以只需要关心 value 的值即可。
 
 ```jsx
-import { useValue } from 'gyron'
+import { useValue, FC } from 'gyron'
 
-const App = () => {
+const App = FC(() => {
   const selected = useValue(['bar'])
 
   const handleChange = (e) => {
@@ -69,13 +69,13 @@ const App = () => {
     selected.value = value
   }
 
-  return () => (
+  return (
     <select multiple={true} value={selected.value} onChange={handleChange}>
       <option value="foo">foo</option>
       <option value="bar">bar</option>
     </select>
   )
-}
+})
 ```
 
 上面的例子就是一个简单的多选例子，在发生变更的时候通过 selectedOptions 来更新绑定的值，如果绑定的值发生变更也会更新 select 的状态。
@@ -85,9 +85,9 @@ const App = () => {
 **注意：如果依赖的值没有发生变更，可以使用 update 进行更新操作**
 
 ```jsx line=8
-import { useValue } from 'gyron'
+import { useValue, FC } from 'gyron'
 
-const App = ({ component }) => {
+const App = FC(({ component }) => {
   const code = useValue('')
 
   const handleInput = (e) => {
@@ -96,5 +96,5 @@ const App = ({ component }) => {
   }
 
   return <input value={code.value} onInput={handleInput} />
-}
+})
 ```

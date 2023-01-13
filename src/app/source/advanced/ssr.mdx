@@ -44,12 +44,12 @@ const App = ({ isSSR }) => {
 server 文件夹下存放服务端渲染的代码，通常都有类似于 express 的 node 服务。client 文件夹下存放 hydrate 代码，让服务端渲染出来的静态资源变得可响应。
 
 ```jsx filename=app/index.js
-import { useValue } from 'gyron'
+import { useValue, FC } from 'gyron'
 
-const App = () => {
+const App = FC(() => {
   const count = useValue(0)
   return <div onClick={() => count.value++}>Counter {count.value}</div>
-}
+})
 
 export default App
 ```

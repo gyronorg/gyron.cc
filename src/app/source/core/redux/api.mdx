@@ -37,12 +37,12 @@ declare function useSelector(sliceName?: string | ((state: any) => any)): any
 **示例**
 
 ```jsx
-import { useSelector } from '@gyron/redux'
+import { useSelector, FC } from '@gyron/redux'
 
-const App = () => {
+const App = FC(() => {
   const state = useSelector()
   return <div>{state.value}</div>
-}
+})
 ```
 
 ## useStore
@@ -58,12 +58,12 @@ declare function useStore(): StorePlugin<any>
 **示例**
 
 ```jsx
-import { useStore } from '@gyron/redux'
+import { useStore, FC } from '@gyron/redux'
 
-const App = () => {
+const App = FC(() => {
   const { state } = useStore()
   return <div>{state.name}</div>
-}
+})
 ```
 
 ## useDispatch
@@ -84,13 +84,13 @@ declare function useDispatch(): (
 **示例**
 
 ```jsx
-import { useDispatch } from '@gyron/redux'
+import { useDispatch, FC } from '@gyron/redux'
 
-const App = () => {
+const App = FC(() => {
   const dispatch = useDispatch()
   dispatch({ type: 'counter/increment' })
   return <div>{state.name}</div>
-}
+})
 ```
 
 ## createAction

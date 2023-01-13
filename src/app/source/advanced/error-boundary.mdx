@@ -10,9 +10,10 @@ import {
   registerErrorHandler,
   registerWarnHandler,
   BoundariesHandlerParams,
+  FC
 } from 'gyron'
 
-const App = () => {
+const App = FC(() => {
   registerWarnHandler((params: BoundariesHandlerParams) => {
     // ...
   })
@@ -20,7 +21,7 @@ const App = () => {
     // ...
   })
   return <div></div>
-}
+})
 ```
 
 ### 手动处理

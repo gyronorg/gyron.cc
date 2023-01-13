@@ -41,8 +41,10 @@ const a = (
 
 在编写可复用代码时，通常会将一些函数封装出去，根据函数参数的变化从而得到不同的结果。比如，在循环中需要传递当前 item 中的值到事件当中。
 
-```jsx line=8
-const App = ({ orders }) => {
+```jsx line=10
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
   const onPay = (id) => {
     pay(id)
   }
@@ -53,5 +55,5 @@ const App = ({ orders }) => {
       ))}
     </ul>
   )
-}
+})
 ```

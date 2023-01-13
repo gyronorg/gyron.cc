@@ -9,10 +9,10 @@
 表单数据传递往往会遇到层级问题，中间可能会穿插多个 layout 组件进来，有的时候又会忘记将数据往下进行传递，我们可以通过 Provide 和 Inject 进行跨组件通讯。
 
 ```jsx filename=form.jsx line=9
-import { useReactive, useProvide } from 'gyron'
+import { useReactive, useProvide, FC } from 'gyron'
 import { FormItem } from './formItem'
 
-const Form = () => {
+const Form = FC(() => {
   const state = useReactive({
     value: 'Gyron.js',
   })
@@ -20,34 +20,34 @@ const Form = () => {
   useProvide()('form-data', state)
 
   return <FormItem></FormItem>
-}
+})
 ```
 
 我们先声明了一个 Form 表单组件，使用了一个通用的 FormItem 组件管理表单输入的每一项。
 
 ```jsx filename=formItem.jsx
-import { Input } from './input'
+import { Input, FC } from './input'
 
-const FormItem = () => {
+const FormItem = FC(() => {
   return <Input />
-}
+})
 ```
 
 FormItem 在这里只是为了简单表明中间有一个层级，实际在使用过程中可能会遇到更多的组件嵌套。
 
 ```jsx filename=input.jsx line=4
-import { useInject } from 'gyron'
+import { useInject, FC } from 'gyron'
 
-const Input = () => {
+const Input = FC(() => {
   const state = useInject()('form-data')
 
-  return () => (
+  return (
     <input
       value={state.value}
       onChange={(e) => (state.value = e.target.value)}
     />
   )
-}
+})
 ```
 
 Input 组件使用 useInject 接收 Form 表单传递过来的数据，然后在这里对数据进行更改。

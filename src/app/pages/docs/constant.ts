@@ -13,6 +13,7 @@ import {
   Context,
   Form,
   AsyncComponent,
+  Transition,
   SSR,
   ErrorBoundary,
   ApiGlobal,
@@ -164,6 +165,16 @@ export const DOCS_NAV: Menu = [
         meta: {
           page: 'advanced/async-component',
           title: '高级指引 异步组件',
+        },
+      },
+      {
+        path: 'transition',
+        name: '动画组件',
+        anchor: Transition,
+        component: wrapAsyncMdxContent(Transition),
+        meta: {
+          page: 'advanced/transition',
+          title: '高级指引 动画组件',
         },
       },
       {

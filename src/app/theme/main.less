@@ -118,6 +118,17 @@ img {
   }
 }
 
+.image-container {
+  &:after {
+    content: "attr(alt)";
+    display: block;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 @keyframes skeleton-loading {
   0% {
     transform: translateX(-37.5%);
