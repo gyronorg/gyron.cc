@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+global.__DEV__ = false
+global.__WARN__ = true
 import { createSSRInstance, nextRender, h } from '@gyron/runtime'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, generateNestedRoutes, Router } from '@gyron/router'
