@@ -61,24 +61,24 @@
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
-     <link>https://gyron.cc/core/dox/installation</link>
-     <title>Gyron.js | Dox 安装</title>
+     <link>https://gyron.cc/core/redux/installation</link>
+     <title>Gyron.js | Redux 安装</title>
      <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
      <ror:updatePeriod></ror:updatePeriod>
      <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
-     <link>https://gyron.cc/core/dox/quick-started</link>
-     <title>Gyron.js | Dox 快速使用</title>
+     <link>https://gyron.cc/core/redux/quick-started</link>
+     <title>Gyron.js | Redux 快速使用</title>
      <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
      <ror:updatePeriod></ror:updatePeriod>
      <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
-     <link>https://gyron.cc/core/dox/api</link>
-     <title>Gyron.js | Dox API</title>
+     <link>https://gyron.cc/core/redux/api</link>
+     <title>Gyron.js | Redux API</title>
      <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
      <ror:updatePeriod></ror:updatePeriod>
      <ror:sortOrder>1</ror:sortOrder>

@@ -5,9 +5,9 @@ https://gyron.cc/core/router/installation
 https://gyron.cc/core/router/quick-started
 https://gyron.cc/core/router/core-concepts
 https://gyron.cc/core/router/api
-https://gyron.cc/core/dox/installation
-https://gyron.cc/core/dox/quick-started
-https://gyron.cc/core/dox/api
+https://gyron.cc/core/redux/installation
+https://gyron.cc/core/redux/quick-started
+https://gyron.cc/core/redux/api
 https://gyron.cc/core/jsx/getting-started
 https://gyron.cc/core/jsx/faq
 https://gyron.cc/docs/installation
