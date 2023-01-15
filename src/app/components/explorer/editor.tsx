@@ -1,6 +1,11 @@
 import { createRef, FC, onAfterMount } from 'gyron'
 
-export const Editor = FC(({ isSSR }) => {
+interface EditorProps {
+  code: string
+  onChange: (code: string) => void
+}
+
+export const Editor = FC<EditorProps>(({ isSSR, code, onChange }) => {
   const container = createRef<HTMLDivElement>()
   onAfterMount(() => {
     if (!isSSR) {
@@ -8,8 +13,16 @@ export const Editor = FC(({ isSSR }) => {
         'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution'
       ).then(() => {
         import('monaco-editor/esm/vs/editor/editor.api').then(({ editor }) => {
-          editor.create(container.current, {
+          const editorInstance = editor.create(container.current, {
             language: 'typescript',
+            value: code,
+            minimap: { enabled: false },
+            lineNumbers: 'off',
+          })
+          const model = editorInstance.getModel()
+          model.onDidChangeContent(() => {
+            const value = model.getValue()
+            onChange(value)
           })
         })
       })
