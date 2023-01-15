@@ -4,6 +4,9 @@ import { renderConfig } from './config.mjs'
 import { fork } from 'child_process'
 import esbuild from 'esbuild'
 import fs from 'fs-extra'
+import plugin from 'node-stdlib-browser/helpers/esbuild/plugin';
+import stdLibBrowser from 'node-stdlib-browser';
+import path from 'path';
 
 let task
 /**
@@ -60,10 +63,10 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
       platform: 'node',
       watch: watch
         ? {
-            onRebuild(err, result) {
-              runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
-            },
-          }
+          onRebuild(err, result) {
+            runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
+          },
+        }
         : false,
       define: {
         __DEV__: String(watch),
@@ -93,20 +96,26 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
 export async function buildClient(watch, tempPath) {
   // client
   try {
+    const config = renderConfig(watch, watch)
     const result = await esbuild.build({
-      ...renderConfig(watch, watch),
+      ...config,
       entryPoints: ['src/client/index.tsx'],
       outdir: watch ? `${tempPath}/client` : 'dist/client',
       format: 'esm',
       splitting: true,
       platform: 'browser',
+      inject: [path.resolve('node_modules/node-stdlib-browser/helpers/esbuild/shim.js')],
       define: {
         __DEV__: String(watch),
         __WARN__: String(false),
+        global: 'global',
+        process: 'process',
+        Buffer: 'Buffer',
         'process.env.NODE_ENV': JSON.stringify(
           watch ? 'development' : 'production'
         ),
       },
+      plugins: config.plugins.concat(plugin(stdLibBrowser))
     })
     return formatEntryMeta(result.metafile.outputs)
   } catch (e) {

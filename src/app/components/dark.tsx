@@ -1,7 +1,8 @@
 import { FC, useValue } from 'gyron'
 import { DarkIcon, LightIcon, SystemIcon } from './icons'
-import classnames from 'classnames'
 import { onDestroyed } from 'gyron'
+import { EVENT_TYPES, useEvent } from '@/hooks/event'
+import classnames from 'classnames'
 
 const themeIcons = {
   light: LightIcon,
@@ -26,6 +27,10 @@ function trigger(add?: boolean) {
   }
 }
 
+export function isDarkTheme() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
 export const DarkToggle = FC(({ isSSR }) => {
   const theme = useValue<Theme>(
     (isSSR ? 'system' : localStorage.theme) || 'system'
@@ -37,12 +42,18 @@ export const DarkToggle = FC(({ isSSR }) => {
     visible.value = !visible.value
   }
 
+  const event = useEvent(EVENT_TYPES.dark)
+
   const handleChosesTheme = (themeName: Theme) => {
     theme.value = themeName
+
+    // 发送主题变更事件
+    event.emit(themeName === 'dark')
+
     if (themeName === 'system') {
-      const mediaDark = window.matchMedia('(prefers-color-scheme: dark)')
+      const mediaDark = isDarkTheme()
       trigger()
-      if (mediaDark.matches) {
+      if (mediaDark) {
         trigger(true)
       }
       localStorage.removeItem('theme')
