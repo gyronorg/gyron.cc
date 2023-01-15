@@ -1,4 +1,4 @@
-import { createSSRContext, nextRender } from 'gyron'
+import { nextRender } from 'gyron'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, Router } from '@gyron/router'
 import { App } from '@/index'

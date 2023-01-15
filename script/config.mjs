@@ -149,5 +149,8 @@ export function renderConfig(watch, __DEV__) {
         setup: true,
       }),
     ],
+    loader: {
+      '.ttf': 'dataurl',
+    }
   }
 }

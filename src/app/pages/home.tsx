@@ -2,7 +2,7 @@ import { Link } from '@gyron/router'
 import { FC } from 'gyron'
 import { Nav } from '@/components/nav'
 import { DOCS_NAV, CORE_NAV } from '@/pages'
-import { EditorWindow, EditorWindowProps } from '@/components/window'
+import { CodeHighlight, EditorWindowProps } from '@/components/window'
 
 const CodeExample: EditorWindowProps['content'] = [
   {
@@ -95,7 +95,7 @@ export const Home = FC(() => {
             如果同一时间发生多次组件更新，并且更新时间大于5ms时或者有用户在输入时，更新将暂停，直至宿主有空闲或者用户输入完成才会继续。
           </div>
         </div>
-        <EditorWindow content={CodeExample} />
+        <CodeHighlight content={CodeExample} />
         <div class="max-w-3xl text-xs ml-auto mr-auto mt-4">
           以上示例来自
           <a href="https://codesandbox.io/s/todo-list-b1kdmq?file=/src/components/Home.tsx:54-529">
