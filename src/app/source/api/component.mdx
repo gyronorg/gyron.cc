@@ -74,7 +74,7 @@ const App = h(({ component }) => {
 })
 ```
 
-## useRef
+## createRef
 
 创建一个 ref 对象，可以绑定到 vnode 节点上，如果绑定的节点是一个普通节点，其值就为 Node，如果是组件，其值就是组件暴露的对象。
 
@@ -85,16 +85,16 @@ const App = h(({ component }) => {
 **类型声明**
 
 ```ts d
-declare function useRef<T = any>(): UserRef<T>
+declare function createRef<T = any>(): UserRef<T>
 ```
 
 **示例**
 
 ```javascript
-import { h, useRef } from 'gyron'
+import { h, createRef } from 'gyron'
 
 const App = h(() => {
-  const ref = useRef()
+  const ref = createRef()
   return () =>
     h('div', {
       ref,
@@ -115,7 +115,7 @@ declare function exposeComponent(exposed: Record<string | number, any>): void
 **示例**
 
 ```javascript
-import { h, useValue, useRef, exposeComponent } from 'gyron'
+import { h, useValue, createRef, exposeComponent } from 'gyron'
 
 const Child = h(() => {
   const name = useValue('foo')
@@ -126,7 +126,7 @@ const Child = h(() => {
 })
 
 const App = h(() => {
-  const ref = useRef()
+  const ref = createRef()
 
   ref.current // {name: {value: 'foo'}}
 

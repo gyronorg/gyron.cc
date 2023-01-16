@@ -209,20 +209,20 @@ const HelloWorld = FC<HelloWorldProps>(({ message, update }) => {
 
 ### Ref
 
-有的时候我们需要自定义渲染，或者想获取到真实的元素信息。我们可以使用`useRef`方法创建一个对象，它会暴露一个`current`属性，然后在对应的组件或元素上使用 ref 进行绑定。
+有的时候我们需要自定义渲染，或者想获取到真实的元素信息。我们可以使用`createRef`方法创建一个对象，它会暴露一个`current`属性，然后在对应的组件或元素上使用 ref 进行绑定。
 
 ```jsx line=4,11
-import { useRef, onAfterMount, FC } from 'gyron'
+import { createRef, onAfterMount, FC } from 'gyron'
 
 const App = FC(() => {
-  const ref = useRef()
+  const ref = createRef()
 
   onAfterMount(() => {
     console.log(ref.current)
     // HTMLDivElement
   })
 
-  return <div ref={useRef}></div>
+  return <div ref={createRef}></div>
 })
 ```
 

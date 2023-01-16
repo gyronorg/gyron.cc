@@ -8,7 +8,7 @@ ref 可以应用在组件或者元素节点上。具体用法可以参考[Ref �
 用在组件上时 ref 是组件暴露的对象，用在元素节点上时 ref 是真实的元素。
 
 ```jsx line=4,11
-import { useRef, onAfterMount, exposeComponent, FC } from 'gyron'
+import { createRef, onAfterMount, exposeComponent, FC } from 'gyron'
 
 const Child = FC(() => {
   exposeComponent({
@@ -18,7 +18,7 @@ const Child = FC(() => {
 })
 
 const App = FC(() => {
-  const ref = useRef()
+  const ref = createRef()
 
   onAfterMount(() => {
     console.log(ref.current)
@@ -27,7 +27,7 @@ const App = FC(() => {
     // }
   })
 
-  return <Child ref={useRef}></Child>
+  return <Child ref={createRef}></Child>
 })
 ```
 

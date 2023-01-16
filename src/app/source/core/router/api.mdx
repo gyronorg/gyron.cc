@@ -504,11 +504,11 @@ declare function onAfterRouteEach(listener: RouterHookAfterEach): void
 **示例**
 
 ```jsx
-import { useRef, nextRender, FC } from 'gyron'
+import { createRef, nextRender, FC } from 'gyron'
 import { onAfterRouteEach } from '@gyron/router'
 
 const App = FC(() => {
-  const ref = useRef()
+  const ref = createRef()
   onAfterRouteEach((from, to) => {
     nextRender().then(() => {
       ref.current // div

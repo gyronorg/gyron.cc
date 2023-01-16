@@ -53,11 +53,11 @@ declare function nextRender(fn?: Noop): Promise<unknown>
 **示例**
 
 ```javascript
-import { h, useValue, nextRender, useRef, onAfterMount } from 'gyron'
+import { h, useValue, nextRender, createRef, onAfterMount } from 'gyron'
 
 const App = h(() => {
   const count = useValue(0)
-  const ref = useRef()
+  const ref = createRef()
 
   onAfterMount(() => {
     count.value++

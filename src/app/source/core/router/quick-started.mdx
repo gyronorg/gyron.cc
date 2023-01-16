@@ -471,11 +471,11 @@ const App = FC(() => {
 当路由发生变更之后触发，可以在`nextRender`之后拿到真实的 DOM 数据。
 
 ```jsx line=9
-import { useRef, nextRender, FC } from 'gyron'
+import { createRef, nextRender, FC } from 'gyron'
 import { onAfterRouteEach } from '@gyron/router'
 
 const App = FC(() => {
-  const ref = useRef()
+  const ref = createRef()
   onAfterRouteEach((from, to) => {
     nextRender().then(() => {
       ref.current // div

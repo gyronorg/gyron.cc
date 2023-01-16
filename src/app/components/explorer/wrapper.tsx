@@ -3,11 +3,13 @@ import { Dropdown, DropdownItem } from './dropdown'
 import { Editor, EditorType } from './editor'
 import { Preview } from './preview'
 import { Tabs, Tab } from './tab'
+import { v4 as uuid } from 'uuid'
 
-interface Source {
+export interface Source {
   code: string
   name: string
   type: EditorType
+  uuid: string
 }
 
 let _uid = 1
@@ -23,17 +25,22 @@ export const WrapperEditor = FC(() => {
       name: 'Comp.jsx',
       type: 'jsx',
       code: '',
+      uuid: uuid(),
     },
   ])
 
+  function onActiveChange(uuid: string, name: string) {
+    sources.value.forEach((item) => {
+      if (item.uuid === uuid) {
+        item.name = name
+      }
+    })
+  }
+
   return (
-    <Tabs>
+    <Tabs onInputChange={onActiveChange} onAdd={add}>
       {sources.value.map((item) => (
-        <Tab
-          name={item.name}
-          label={item.name}
-          onInputChange={(value) => (item.name = value)}
-        >
+        <Tab name={item.name} label={item.name} uuid={item.uuid}>
           <Editor
             code={item.code}
             type={item.type}
@@ -41,14 +48,8 @@ export const WrapperEditor = FC(() => {
           />
         </Tab>
       ))}
-      <Tab name="editor" label="添加">
-        <Dropdown onClick={add}>
-          <DropdownItem name="jsx">JSX</DropdownItem>
-          <DropdownItem name="css">CSS</DropdownItem>
-        </Dropdown>
-      </Tab>
-      <Tab name="preview" label="预览" fixed="right">
-        <Preview code={code.value} />
+      <Tab name="preview" label="预览" fixed="right" uuid="preview">
+        <Preview source={sources.value} />
       </Tab>
     </Tabs>
   )
@@ -58,6 +59,7 @@ export const WrapperEditor = FC(() => {
       code: '',
       name: `${sourceName[type]}${_uid++}.${type}`,
       type: type,
+      uuid: uuid(),
     })
   }
 })

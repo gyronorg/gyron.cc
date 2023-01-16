@@ -144,3 +144,23 @@ img {
     @apply top-0;
   }
 }
+
+.fade {
+  &-active {
+    transition: all 0.2s linear;
+    height: 24px;
+    &-before {
+      opacity: 0;
+      height: 0;
+    }
+  }
+  &-leave {
+    transition: all 0.2s linear;
+    height: 0;
+    opacity: 0;
+    &-before {
+      height: 24px;
+    }
+  }
+}
+
