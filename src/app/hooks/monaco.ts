@@ -1,5 +1,9 @@
 import type { editor } from 'monaco-editor/esm/vs/editor/editor.api'
 
+// 1, babel-plugin-jsx browser generate local js expression
+// 2, append to script
+// 3, appear browser env `import { h } from 'gyron'`
+
 // jsx invalid
 export async function initialMonacoJSX(
   monaco: any,

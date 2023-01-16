@@ -2,8 +2,11 @@ import { useDark } from '@/hooks/dark'
 import { initialMonaco, initialMonacoJSX } from '@/hooks/monaco'
 import { createRef, FC, onAfterMount } from 'gyron'
 
+export type EditorType = 'jsx' | 'css'
+
 interface EditorProps {
   code: string
+  type: EditorType
   onChange: (code: string) => void
 }
 
@@ -50,6 +53,7 @@ async function initialEditor(container: HTMLElement, code: string) {
   return {
     editor,
     instance,
+    jsxInstance,
   }
 }
 

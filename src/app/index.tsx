@@ -15,6 +15,9 @@ import {
   ROUTE_MENUS,
 } from './pages'
 import { storeState } from './store'
+import { WrapperEditor } from '@/components/explorer/wrapper'
+
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 const Content = FC<{
   menu: ContentMenu
@@ -57,6 +60,11 @@ export const ExposeRoutes = FC(() => {
           />
         ))}
       </Route>
+      <Route
+        path="explorer"
+        meta={{ title: '在线编辑器' }}
+        element={<WrapperEditor />}
+      />
       <Route
         path="*"
         meta={{ title: '404 未找到页面' }}

@@ -11,6 +11,7 @@
     "@docsearch/js": "^3.1.0",
     "@gyron/rehype-highlight": "^0.0.8",
     "@mdx-js/esbuild": "^2.1.1",
+    "@popperjs/core": "^2.11.6",
     "@tailwindcss/typography": "^0.5.2",
     "@types/cookie-parser": "^1.4.3",
     "@types/express": "^4.17.13",
