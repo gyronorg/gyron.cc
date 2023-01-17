@@ -53,7 +53,7 @@ export const Tabs = FC<TabsProps>(({ children, active: _active }) => {
                     autoFocus
                   />
                 ) : (
-                  <span class="px-2" onDblclick={() => onDblclick(uuid)}>
+                  <span class="px-2 select-none" onDblclick={() => onDblclick(uuid)}>
                     {label || name}
                   </span>
                 )}
@@ -61,7 +61,7 @@ export const Tabs = FC<TabsProps>(({ children, active: _active }) => {
             )
           })}
           <Dropdown onClick={onAdd}>
-            <DropdownItem name="jsx">JSX</DropdownItem>
+            <DropdownItem name="typescript">JSX</DropdownItem>
             <DropdownItem name="css">CSS</DropdownItem>
           </Dropdown>
         </div>

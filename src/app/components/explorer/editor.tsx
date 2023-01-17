@@ -2,7 +2,7 @@ import { useDark } from '@/hooks/dark'
 import { initialMonaco, initialMonacoJSX } from '@/hooks/monaco'
 import { createRef, FC, onAfterMount } from 'gyron'
 
-export type EditorType = 'jsx' | 'css'
+export type EditorType = 'typescript' | 'css'
 
 interface EditorProps {
   code: string
@@ -12,7 +12,11 @@ interface EditorProps {
 
 const ThemeName = 'DOCS'
 
-async function initialEditor(container: HTMLElement, code: string) {
+async function initialEditor(
+  container: HTMLElement,
+  code: string,
+  language: 'typescript' | 'css'
+) {
   const monaco = await initialMonaco()
   const { editor } = monaco
   editor.defineTheme(ThemeName, {
@@ -22,7 +26,7 @@ async function initialEditor(container: HTMLElement, code: string) {
     colors: {},
   })
   const instance = editor.create(container, {
-    language: 'typescript',
+    language: language,
     value: code,
     theme: ThemeName,
     minimap: { enabled: false },
@@ -49,20 +53,25 @@ async function initialEditor(container: HTMLElement, code: string) {
       useShadows: false,
     },
   })
-  const jsxInstance = await initialMonacoJSX(monaco, instance)
+  if (language === 'typescript') {
+    await initialMonacoJSX(monaco, instance)
+  }
   return {
     editor,
     instance,
-    jsxInstance,
   }
 }
 
-export const Editor = FC<EditorProps>(({ isSSR, code, onChange }) => {
+export const Editor = FC<EditorProps>(({ isSSR, code, type, onChange }) => {
   const container = createRef<HTMLDivElement>()
   const isDark = useDark(isSSR)
   onAfterMount(async () => {
     if (!isSSR) {
-      const { instance, editor } = await initialEditor(container.current, code)
+      const { instance, editor } = await initialEditor(
+        container.current,
+        code,
+        type
+      )
       const model = instance.getModel()
       model.onDidChangeContent(() => {
         const value = model.getValue()

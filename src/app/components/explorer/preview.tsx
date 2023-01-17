@@ -1,10 +1,11 @@
 import { FC, onAfterMount } from 'gyron'
 import { transform, visitor } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
-import { v4 as uuid } from 'uuid'
+import { generateSafeUuid } from '@/utils/uuid'
 
 interface PreviewProps {
   source: Source[]
+  namespace: string
 }
 
 function generateHelper(code: string, id: string) {
@@ -15,33 +16,72 @@ function generateHelper(code: string, id: string) {
   createInstance(<APP />).render(document.getElementById('${id}'))`
 }
 
-function startEditorRuntime(
-  code: string,
-  id: string,
-  localMap: Record<string, Source>
-) {
-  const old = document.querySelector('#standalone')
-  if (old) {
-    old.remove()
-  }
+function insertScript(ret: any, namespace: string) {
+  const scripts = document.getElementsByClassName(namespace)
+  new Array(...scripts).forEach((item) => item.remove())
+
   const script = document.createElement('script')
   script.setAttribute('type', 'module')
-  const ret = transform(generateHelper(code, id), visitor, {
+  script.id = 'standalone'
+  script.innerHTML = ret.code
+  script.className = namespace
+  document.body.append(script)
+}
+
+function insertStyle(cssResource: Source[], namespace: string) {
+  const css = document.getElementsByClassName(namespace)
+  new Array(...css).forEach((item) => item.remove())
+
+  if (cssResource.length) {
+    cssResource.forEach((css) => {
+      const style = document.createElement('style')
+      style.innerHTML = css.code
+      style.id = css.uuid
+      style.setAttribute('data-name', css.name)
+      style.className = namespace
+      document.head.append(style)
+    })
+  }
+}
+
+function startEditorRuntime(
+  code: string,
+  containerId: string,
+  fileMap: Record<string, Source>,
+  namespace: string
+) {
+  const cssResource: Source[] = []
+  const ret = transform(generateHelper(code, containerId), visitor, {
     setup: true,
     transformLocalImportHelper: (path) => {
-      return localMap[path.node.source.value]?.code || ''
+      const source = path.node.source.value.replace(/^\.\//, '')
+      const ret = fileMap[source]
+      if (source.endsWith('.css')) {
+        if (ret.code === null) {
+          // TODO
+        }
+        cssResource.push(ret)
+        return {
+          shouldTransform: false,
+          code: null,
+        }
+      }
+      return {
+        shouldTransform: path.node.source.value.endsWith('.jsx'),
+        code: ret.code,
+      }
     },
     importSourceMap: {
       gyron: 'https://unpkg.com/gyron/dist/browser/index.js',
     },
   })
-  script.id = 'standalone'
-  script.innerHTML = ret.code
-  document.body.append(script)
+
+  insertScript(ret, namespace)
+  insertStyle(cssResource, namespace)
 }
 
-export const Preview = FC<PreviewProps>(({ source }) => {
-  const id = uuid().replace(/-/g, '')
+export const Preview = FC<PreviewProps>(({ source, namespace }) => {
+  const id = generateSafeUuid()
 
   onAfterMount(() => {
     const main = source[0]
@@ -49,8 +89,10 @@ export const Preview = FC<PreviewProps>(({ source }) => {
       prev[curr.name] = curr
       return prev
     }, {})
-    startEditorRuntime(main.code, id, map)
+    startEditorRuntime(main.code, id, map, namespace)
   })
 
-  return <div class="h-[400px] bg-[#1e293b] dark:bg-[#00000080] p-4" id={id}></div>
+  return (
+    <div class="h-[400px] bg-[#1e293b] dark:bg-[#00000080] p-4" id={id}></div>
+  )
 })

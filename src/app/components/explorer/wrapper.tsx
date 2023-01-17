@@ -1,9 +1,8 @@
+import { generateSafeUuid } from '@/utils/uuid'
 import { FC, useValue } from 'gyron'
-import { Dropdown, DropdownItem } from './dropdown'
 import { Editor, EditorType } from './editor'
 import { Preview } from './preview'
 import { Tabs, Tab } from './tab'
-import { v4 as uuid } from 'uuid'
 
 export interface Source {
   code: string
@@ -14,18 +13,23 @@ export interface Source {
 
 let _uid = 1
 const sourceName: Record<EditorType, string> = {
-  jsx: 'Comp',
+  typescript: 'Comp',
   css: 'Style',
+}
+const sourceSuffixName: Record<EditorType, string> = {
+  typescript: '.jsx',
+  css: '.css',
 }
 
 export const WrapperEditor = FC(() => {
-  const code = useValue('')
+  const namespace = generateSafeUuid()
+
   const sources = useValue<Source[]>([
     {
       name: 'Comp.jsx',
-      type: 'jsx',
+      type: 'typescript',
       code: '',
-      uuid: uuid(),
+      uuid: generateSafeUuid(),
     },
   ])
 
@@ -42,6 +46,7 @@ export const WrapperEditor = FC(() => {
       {sources.value.map((item) => (
         <Tab name={item.name} label={item.name} uuid={item.uuid}>
           <Editor
+            key={item.uuid}
             code={item.code}
             type={item.type}
             onChange={(value) => (item.code = value)}
@@ -49,7 +54,7 @@ export const WrapperEditor = FC(() => {
         </Tab>
       ))}
       <Tab name="preview" label="预览" fixed="right" uuid="preview">
-        <Preview source={sources.value} />
+        <Preview source={sources.value} namespace={namespace} />
       </Tab>
     </Tabs>
   )
@@ -57,9 +62,9 @@ export const WrapperEditor = FC(() => {
   function add(type: EditorType) {
     sources.value.push({
       code: '',
-      name: `${sourceName[type]}${_uid++}.${type}`,
+      name: `${sourceName[type]}${_uid++}${sourceSuffixName[type]}`,
       type: type,
-      uuid: uuid(),
+      uuid: generateSafeUuid(),
     })
   }
 })

@@ -1,9 +1,5 @@
 import type { editor } from 'monaco-editor/esm/vs/editor/editor.api'
 
-// 1, babel-plugin-jsx browser generate local js expression
-// 2, append to script
-// 3, appear browser env `import { h } from 'gyron'`
-
 // jsx invalid
 export async function initialMonacoJSX(
   monaco: any,
@@ -20,10 +16,10 @@ export async function initialMonacoJSX(
   )
 
   const monacoJSXHighlighter = new MonacoJSXHighlighter(
-    monaco, // references Range and other APIs
-    parse, // obtains an AST, internally passes to parse options: {...options, sourceType: "module",plugins: ["jsx"],errorRecovery: true}
-    traverse, // helps collecting the JSX expressions within the AST
-    monacoEditor // highlights the content of that editor via decorations
+    monaco,
+    parse,
+    traverse,
+    monacoEditor
   )
   monacoJSXHighlighter.highlightOnDidChangeModelContent()
   monacoJSXHighlighter.addJSXCommentCommand()
@@ -39,6 +35,9 @@ export async function initialMonacoJSX(
 export async function initialMonaco() {
   await import(
     'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution'
+  )
+  await import(
+    'monaco-editor/esm/vs/basic-languages/css/css.contribution'
   )
   return await import('monaco-editor/esm/vs/editor/editor.api')
 }

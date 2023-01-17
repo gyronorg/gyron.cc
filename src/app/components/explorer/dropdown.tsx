@@ -15,11 +15,10 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
 
   onAfterMount(() => {
     const popper = createPopper(target.current, source.current, {})
-    console.log(source, target)
   })
 
   function onVisible() {
-    visible.value = !visible.value
+    visible.value = false
   }
 
   if (!isSSR) {
@@ -43,7 +42,7 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
       <div
         class={classnames(
           visible.value ? 'opacity-100' : 'opacity-0 pointer-events-none',
-          'absolute shadow-gray-800 shadow-xl'
+          'absolute shadow-gray-800 shadow-xl bg-[#1e293b] dark:bg-[#00000080]'
         )}
         ref={source}
         onClick={onItemClick}
@@ -54,12 +53,16 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
   )
 
   function onItemClick(e: Event) {
-    console.log(e.target)
+    e.stopPropagation()
+    const el = e.target as HTMLDivElement
+    const type = el.dataset['name'] as EditorType
+    onClick(type)
+    onVisible()
   }
 })
 
 interface DropdownItemProps {
-  name: string
+  name: EditorType
 }
 
 export const DropdownItem = FC<DropdownItemProps>(({ children, name }) => {
