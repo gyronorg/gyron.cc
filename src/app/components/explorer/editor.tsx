@@ -80,6 +80,6 @@ export const Editor = FC<EditorProps>(({ isSSR, code, type, onChange }) => {
     }
   })
   return (
-    <div class="h-full bg-[#1e293b] dark:bg-[#00000080]" ref={container}></div>
+    <div class="h-[calc(100%-34px)] bg-[#1e293b] dark:bg-[#00000080]" ref={container}></div>
   )
 })

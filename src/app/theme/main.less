@@ -120,12 +120,20 @@ img {
 
 .image-container {
   &:after {
-    content: "attr(alt)";
+    content: 'attr(alt)';
     display: block;
     position: absolute;
     bottom: 0px;
     left: 50%;
     transform: translateY(-50%);
+  }
+}
+
+.group-item {
+  &:hover {
+    .group-edit {
+      opacity: 1;
+    }
   }
 }
 

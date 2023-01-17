@@ -17,28 +17,31 @@ function generateHelper(code: string, id: string) {
 }
 
 function insertScript(ret: any, namespace: string) {
-  const scripts = document.getElementsByClassName(namespace)
+  const name = `script_${namespace}`
+  const scripts = document.getElementsByClassName(name)
   new Array(...scripts).forEach((item) => item.remove())
 
   const script = document.createElement('script')
   script.setAttribute('type', 'module')
   script.id = 'standalone'
   script.innerHTML = ret.code
-  script.className = namespace
+  script.className = name
   document.body.append(script)
 }
 
 function insertStyle(cssResource: Source[], namespace: string) {
-  const css = document.getElementsByClassName(namespace)
+  const name = `style_${namespace}`
+  const css = document.getElementsByClassName(name)
   new Array(...css).forEach((item) => item.remove())
 
   if (cssResource.length) {
     cssResource.forEach((css) => {
       const style = document.createElement('style')
-      style.innerHTML = css.code
       style.id = css.uuid
+      style.type = 'text/css'
+      style.className = name
       style.setAttribute('data-name', css.name)
-      style.className = namespace
+      style.appendChild(document.createTextNode(css.code))
       document.head.append(style)
     })
   }
@@ -76,8 +79,8 @@ function startEditorRuntime(
     },
   })
 
-  insertScript(ret, namespace)
   insertStyle(cssResource, namespace)
+  insertScript(ret, namespace)
 }
 
 export const Preview = FC<PreviewProps>(({ source, namespace }) => {

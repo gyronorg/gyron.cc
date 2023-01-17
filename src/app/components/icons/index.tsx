@@ -143,8 +143,8 @@ export const MenuIcon = FC<IconProps>(({ class: className, expand }) => (
     ></path>
   </svg>
 ))
-export const CloseIcon = () => (
-  <svg viewBox="0 0 10 10" class={classnames('w-2.5 h-2.5 overflow-visible')}>
+export const CloseIcon = FC<IconProps>(({ class: className }) => (
+  <svg viewBox="0 0 10 10" class={classnames('w-2.5 h-2.5 overflow-visible', className)}>
     <path
       d="M0 0L10 10M10 0L0 10"
       fill="none"
@@ -153,7 +153,7 @@ export const CloseIcon = () => (
       stroke-linecap="round"
     ></path>
   </svg>
-)
+))
 export const AddIcon = FC<IconProps>(({ class: className }) => (
   <svg
     viewBox="0 0 1024 1024"

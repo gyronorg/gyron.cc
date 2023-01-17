@@ -42,7 +42,7 @@ export const WrapperEditor = FC(() => {
   }
 
   return (
-    <Tabs onInputChange={onActiveChange} onAdd={add}>
+    <Tabs onInputChange={onActiveChange} onAdd={add} onRemove={onRemove}>
       {sources.value.map((item) => (
         <Tab name={item.name} label={item.name} uuid={item.uuid}>
           <Editor
@@ -60,11 +60,21 @@ export const WrapperEditor = FC(() => {
   )
 
   function add(type: EditorType) {
-    sources.value.push({
+    const source = {
       code: '',
       name: `${sourceName[type]}${_uid++}${sourceSuffixName[type]}`,
       type: type,
       uuid: generateSafeUuid(),
-    })
+    }
+    sources.value.push(source)
+    return source
+  }
+
+  function onRemove(uuid: string) {
+    const index = sources.value.findIndex((source) => source.uuid === uuid)
+    const nextIndex = index === 0 ? 1 : index - 1
+    const nextUuid = sources.value[nextIndex]?.uuid
+    sources.value.splice(index, 1)
+    return nextUuid
   }
 })
