@@ -1,7 +1,9 @@
-import { exposeComponent, FC, onAfterMount } from 'gyron'
+import { createRef, exposeComponent, FC, onAfterMount, useValue } from 'gyron'
 import { transform, visitor } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
+import { Loading } from '../icons/animation'
+import { useElementMutationObserver } from '@/utils/dom'
 
 export interface PreviewExpose {
   start: () => void
@@ -88,9 +90,17 @@ function startEditorRuntime(
 }
 
 export const Preview = FC<PreviewProps>(({ source, namespace }) => {
+  const loading = useValue(false)
   const id = generateSafeUuid()
+  const container = createRef<Element>()
+
+  useElementMutationObserver(container, () => {
+    loading.value = false
+  })
 
   function start() {
+    container.current.innerHTML = ''
+    loading.value = true
     const main = source[0]
     const map = source.slice(1).reduce<Record<string, Source>>((prev, curr) => {
       prev[curr.name] = curr
@@ -103,5 +113,14 @@ export const Preview = FC<PreviewProps>(({ source, namespace }) => {
     start: start,
   })
 
-  return <div class="h-full bg-[#1e293b] dark:bg-[#00000080] p-4" id={id}></div>
+  return (
+    <div class="h-full bg-[#1e293b] dark:bg-[#00000080] p-4">
+      {loading.value && (
+        <div class="h-full flex items-center justify-center">
+          <Loading class="w-8" />
+        </div>
+      )}
+      <div class="h-full" id={id} ref={container}></div>
+    </div>
+  )
 })
