@@ -1,7 +1,11 @@
-import { FC, onAfterMount } from 'gyron'
+import { exposeComponent, FC, onAfterMount } from 'gyron'
 import { transform, visitor } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
+
+export interface PreviewExpose {
+  start: () => void
+}
 
 interface PreviewProps {
   source: Source[]
@@ -86,16 +90,18 @@ function startEditorRuntime(
 export const Preview = FC<PreviewProps>(({ source, namespace }) => {
   const id = generateSafeUuid()
 
-  onAfterMount(() => {
+  function start() {
     const main = source[0]
     const map = source.slice(1).reduce<Record<string, Source>>((prev, curr) => {
       prev[curr.name] = curr
       return prev
     }, {})
     startEditorRuntime(main.code, id, map, namespace)
+  }
+
+  exposeComponent({
+    start: start,
   })
 
-  return (
-    <div class="h-[400px] bg-[#1e293b] dark:bg-[#00000080] p-4" id={id}></div>
-  )
+  return <div class="h-full bg-[#1e293b] dark:bg-[#00000080] p-4" id={id}></div>
 })

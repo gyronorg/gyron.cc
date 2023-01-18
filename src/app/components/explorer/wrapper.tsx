@@ -1,7 +1,7 @@
 import { generateSafeUuid } from '@/utils/uuid'
-import { FC, useValue } from 'gyron'
+import { createRef, FC, useValue } from 'gyron'
 import { Editor, EditorType } from './editor'
-import { Preview } from './preview'
+import { Preview, PreviewExpose } from './preview'
 import { Tabs, Tab } from './tab'
 
 export interface Source {
@@ -24,6 +24,7 @@ const sourceSuffixName: Record<EditorType, string> = {
 export const WrapperEditor = FC(() => {
   const namespace = generateSafeUuid()
 
+  const preview = createRef<PreviewExpose>()
   const sources = useValue<Source[]>([
     {
       name: 'Comp.jsx',
@@ -41,8 +42,19 @@ export const WrapperEditor = FC(() => {
     })
   }
 
+  function onRun() {
+    if (preview && preview.current) {
+      preview.current.start()
+    }
+  }
+
   return (
-    <Tabs onInputChange={onActiveChange} onAdd={add} onRemove={onRemove}>
+    <Tabs
+      onInputChange={onActiveChange}
+      onAdd={add}
+      onRemove={onRemove}
+      onRun={onRun}
+    >
       {sources.value.map((item) => (
         <Tab name={item.name} label={item.name} uuid={item.uuid}>
           <Editor
@@ -54,7 +66,7 @@ export const WrapperEditor = FC(() => {
         </Tab>
       ))}
       <Tab name="preview" label="预览" fixed="right" uuid="preview">
-        <Preview source={sources.value} namespace={namespace} />
+        <Preview source={sources.value} namespace={namespace} ref={preview} />
       </Tab>
     </Tabs>
   )

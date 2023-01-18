@@ -1,9 +1,9 @@
-import { FC, useValue, VNode } from 'gyron'
+import { FC, nextRender, useValue, VNode } from 'gyron'
 import { Dropdown, DropdownItem } from './dropdown'
 import { EditorType } from './editor'
-import classnames from 'classnames'
 import { Source } from './wrapper'
-import { CloseIcon } from '../icons'
+import { CloseIcon, CodeIcon } from '../icons'
+import classnames from 'classnames'
 
 interface TabProps {
   name: string
@@ -22,6 +22,7 @@ interface TabsProps {
   onInputChange?: (id: string, value: string) => void
   onAdd?: (type: EditorType) => Source
   onRemove?: (uuid: string) => string
+  onRun?: () => void
 }
 
 interface TabEditProps {
@@ -86,9 +87,10 @@ const TabEdit = FC<TabEditProps>(
 )
 
 export const Tabs = FC<TabsProps>(
-  ({ children, onAdd, onRemove, active: _active }) => {
+  ({ children, onAdd, onRemove, onRun, active: _active }) => {
     const active = useValue(_active || children[0]?.props?.uuid)
     const activeUuid = useValue(null)
+    const splitScreen = useValue(false)
 
     function onAddTab(type: EditorType) {
       const { uuid } = onAdd(type)
@@ -99,13 +101,22 @@ export const Tabs = FC<TabsProps>(
       active.value = nextUuid
     }
     function onActive(uuid: string) {
-      active.value = uuid
+      if (uuid === 'preview') {
+        splitScreen.value = !splitScreen.value
+      } else {
+        active.value = uuid
+      }
+    }
+    function onCodeRun() {
+      splitScreen.value = true
+      nextRender(onRun)
     }
 
     return ({ children, onInputChange }) => {
       const child = children.filter(
         (item) => item?.props?.uuid === active.value
       )
+      const preview = children.find((item) => item.props.uuid === 'preview')
       return (
         <div class="h-[400px]">
           <div class="flex relative z-50">
@@ -116,7 +127,9 @@ export const Tabs = FC<TabsProps>(
                   class={classnames(
                     'px-6 py-1 text-sm cursor-pointer text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
                     {
-                      'border-amber-500 border-b-2': active.value === uuid,
+                      'border-amber-500 border-b-2':
+                        active.value === uuid ||
+                        (uuid === 'preview' && splitScreen.value),
                       'ml-auto order-last': fixed === 'right',
                     }
                   )}
@@ -140,7 +153,27 @@ export const Tabs = FC<TabsProps>(
               <DropdownItem name="css">CSS</DropdownItem>
             </Dropdown>
           </div>
-          <div class="h-full relative z-40">{child}</div>
+          <div
+            class="cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-1/2 border-slate-400 border border-t-0 rounded text-xs text-white flex items-center gap-2 min-w-[80px]"
+            onClick={onCodeRun}
+          >
+            <CodeIcon c1="#fff" c2="#000" />
+            <span>运行</span>
+          </div>
+          <div class="h-[calc(100%-36px)] relative z-40 flex">
+            <div
+              class={classnames('h-full flex-1', {
+                'w-1/2': splitScreen.value,
+              })}
+            >
+              {child}
+            </div>
+            {splitScreen.value && (
+              <div class={classnames('flex-1, w-1/2 border-l border-zinc-400')}>
+                {preview}
+              </div>
+            )}
+          </div>
         </div>
       )
     }

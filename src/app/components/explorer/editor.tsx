@@ -1,5 +1,6 @@
 import { useDark } from '@/hooks/dark'
 import { initialMonaco, initialMonacoJSX } from '@/hooks/monaco'
+import { useElementSizeChange } from '@/utils/dom'
 import { createRef, FC, onAfterMount } from 'gyron'
 
 export type EditorType = 'typescript' | 'css'
@@ -43,6 +44,7 @@ async function initialEditor(
     lineNumbersMinChars: 3,
     quickSuggestions: true,
     fontSize: 14,
+    automaticLayout: true,
     padding: {
       top: 10,
       bottom: 10,
@@ -65,6 +67,7 @@ async function initialEditor(
 export const Editor = FC<EditorProps>(({ isSSR, code, type, onChange }) => {
   const container = createRef<HTMLDivElement>()
   const isDark = useDark(isSSR)
+
   onAfterMount(async () => {
     if (!isSSR) {
       const { instance, editor } = await initialEditor(
@@ -72,6 +75,7 @@ export const Editor = FC<EditorProps>(({ isSSR, code, type, onChange }) => {
         code,
         type
       )
+
       const model = instance.getModel()
       model.onDidChangeContent(() => {
         const value = model.getValue()
@@ -79,7 +83,8 @@ export const Editor = FC<EditorProps>(({ isSSR, code, type, onChange }) => {
       })
     }
   })
+
   return (
-    <div class="h-[calc(100%-34px)] bg-[#1e293b] dark:bg-[#00000080]" ref={container}></div>
+    <div class="h-full bg-[#1e293b] dark:bg-[#00000080]" ref={container}></div>
   )
 })
