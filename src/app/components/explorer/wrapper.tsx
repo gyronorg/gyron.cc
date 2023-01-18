@@ -1,7 +1,8 @@
 import { generateSafeUuid } from '@/utils/uuid'
 import { createRef, FC, useValue } from 'gyron'
+import { Explorer } from './constant'
 import { Editor, EditorType } from './editor'
-import { Preview, PreviewExpose } from './preview'
+import { Preview, PreviewExpose, TransformInValidate } from './preview'
 import { Tabs, Tab } from './tab'
 
 export interface Source {
@@ -11,13 +12,28 @@ export interface Source {
   uuid: string
 }
 
+export interface CompilerError {
+  name: string
+  loc: {
+    start: {
+      line: number
+      column: number
+    }
+    end: {
+      line: number
+      column: number
+    }
+  }
+  message: string
+}
+
 let _uid = 1
 const sourceName: Record<EditorType, string> = {
   typescript: 'Comp',
   css: 'Style',
 }
 const sourceSuffixName: Record<EditorType, string> = {
-  typescript: '.jsx',
+  typescript: '.tsx',
   css: '.css',
 }
 
@@ -27,12 +43,13 @@ export const WrapperEditor = FC(() => {
   const preview = createRef<PreviewExpose>()
   const sources = useValue<Source[]>([
     {
-      name: 'Comp.jsx',
+      name: 'Comp.tsx',
       type: 'typescript',
       code: '',
       uuid: generateSafeUuid(),
     },
   ])
+  const compilerTsxError = useValue<CompilerError[]>([])
 
   function onActiveChange(uuid: string, name: string) {
     sources.value.forEach((item) => {
@@ -50,6 +67,7 @@ export const WrapperEditor = FC(() => {
 
   return (
     <Tabs
+      namespace={namespace}
       onInputChange={onActiveChange}
       onAdd={add}
       onRemove={onRemove}
@@ -58,15 +76,27 @@ export const WrapperEditor = FC(() => {
       {sources.value.map((item) => (
         <Tab name={item.name} label={item.name} uuid={item.uuid}>
           <Editor
+            name={item.name}
             key={item.uuid}
             code={item.code}
             type={item.type}
             onChange={(value) => (item.code = value)}
+            compilerTsxError={compilerTsxError}
           />
         </Tab>
       ))}
-      <Tab name="preview" label="预览" fixed="right" uuid="preview">
-        <Preview source={sources.value} namespace={namespace} ref={preview} />
+      <Tab
+        name={Explorer.Preview}
+        label="预览"
+        fixed="right"
+        uuid={Explorer.Preview}
+      >
+        <Preview
+          source={sources.value}
+          namespace={namespace}
+          ref={preview}
+          onTransformInValidate={onTransformInValidate}
+        />
       </Tab>
     </Tabs>
   )
@@ -88,5 +118,13 @@ export const WrapperEditor = FC(() => {
     const nextUuid = sources.value[nextIndex]?.uuid
     sources.value.splice(index, 1)
     return nextUuid
+  }
+
+  function onTransformInValidate(ret: Parameters<TransformInValidate>[0]) {
+    compilerTsxError.value.push({
+      name: ret.name,
+      loc: ret.path.node.loc,
+      message: `File "${ret.name}" is not defined in the local editor, but "${ret.name}" is found imported in the "${ret.parent}" module`,
+    })
   }
 })

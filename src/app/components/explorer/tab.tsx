@@ -1,9 +1,10 @@
-import { FC, nextRender, useValue, VNode } from 'gyron'
+import { FC, nextRender, onDestroyed, useValue, VNode } from 'gyron'
 import { Dropdown, DropdownItem } from './dropdown'
 import { EditorType } from './editor'
 import { Source } from './wrapper'
 import { CloseIcon, CodeIcon } from '../icons'
 import classnames from 'classnames'
+import { Explorer } from './constant'
 
 interface TabProps {
   name: string
@@ -17,6 +18,7 @@ export const Tab = FC<TabProps>(({ children }) => {
 })
 
 interface TabsProps {
+  namespace: string
   active?: string
   children: VNode<any, TabProps>[]
   onInputChange?: (id: string, value: string) => void
@@ -34,6 +36,21 @@ interface TabEditProps {
   onInputChange: (id: string, value: string) => void
   onActiveChange: (uuid: string | null) => void
   onTabRemove?: (uuid: string) => void
+}
+
+export function useStandaloneNamespace(
+  namespace: string,
+  callback?: (err?: Error) => void
+) {
+  if (!window[`$${namespace}`]) {
+    window[`$${namespace}`] = callback
+  }
+
+  onDestroyed(() => {
+    delete window[`$${namespace}`]
+  })
+
+  return window[`$${namespace}`]
 }
 
 const TabEdit = FC<TabEditProps>(
@@ -77,7 +94,9 @@ const TabEdit = FC<TabEditProps>(
       onActiveChange(null)
     }
     function onDblclick(uuid: string) {
-      onActiveChange(uuid)
+      if (uuid !== Explorer.Preview) {
+        onActiveChange(uuid)
+      }
     }
     function onRemove(e: Event) {
       e.stopPropagation()
@@ -87,10 +106,17 @@ const TabEdit = FC<TabEditProps>(
 )
 
 export const Tabs = FC<TabsProps>(
-  ({ children, onAdd, onRemove, onRun, active: _active }) => {
+  ({ children, namespace, onAdd, onRemove, onRun, isSSR, active: _active }) => {
     const active = useValue(_active || children[0]?.props?.uuid)
     const activeUuid = useValue(null)
-    const splitScreen = useValue(false)
+    const splitScreen = useValue(true)
+    const runtimeErrorMessage = useValue(null)
+
+    if (!isSSR) {
+      useStandaloneNamespace(namespace, (err) => {
+        runtimeErrorMessage.value = err ? err.stack : null
+      })
+    }
 
     function onAddTab(type: EditorType) {
       const { uuid } = onAdd(type)
@@ -101,7 +127,7 @@ export const Tabs = FC<TabsProps>(
       active.value = nextUuid
     }
     function onActive(uuid: string) {
-      if (uuid === 'preview') {
+      if (uuid === Explorer.Preview) {
         splitScreen.value = !splitScreen.value
       } else {
         active.value = uuid
@@ -116,10 +142,12 @@ export const Tabs = FC<TabsProps>(
       const child = children.filter(
         (item) => item?.props?.uuid === active.value
       )
-      const preview = children.find((item) => item.props.uuid === 'preview')
+      const preview = children.find(
+        (item) => item.props.uuid === Explorer.Preview
+      )
       return (
-        <div class="h-[400px]">
-          <div class="flex relative z-50">
+        <div class="h-[400px] relative">
+          <div class="flex relative z-30">
             {children.map((item, index) => {
               const { name, label, fixed, uuid } = item.props
               return (
@@ -129,7 +157,7 @@ export const Tabs = FC<TabsProps>(
                     {
                       'border-amber-500 border-b-2':
                         active.value === uuid ||
-                        (uuid === 'preview' && splitScreen.value),
+                        (uuid === Explorer.Preview && splitScreen.value),
                       'ml-auto order-last': fixed === 'right',
                     }
                   )}
@@ -149,16 +177,27 @@ export const Tabs = FC<TabsProps>(
               )
             })}
             <Dropdown onClick={onAddTab}>
-              <DropdownItem name="typescript">JSX</DropdownItem>
+              <DropdownItem name="typescript">TSX</DropdownItem>
               <DropdownItem name="css">CSS</DropdownItem>
             </Dropdown>
           </div>
           <div
-            class="cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-1/2 border-slate-400 border border-t-0 rounded text-xs text-white flex items-center gap-2 min-w-[80px]"
+            class="cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full border-slate-400 border border-t-0 rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[80px]"
             onClick={onCodeRun}
           >
             <CodeIcon c1="#fff" c2="#000" />
             <span>运行</span>
+          </div>
+          <div
+            class={classnames(
+              'absolute bottom-0 right-0 bg-red-900 py-2 px-3 text-red-400 z-50 max-h-40 overflow-auto w-full',
+              {
+                'w-1/2': splitScreen.value,
+                hidden: runtimeErrorMessage.value === null,
+              }
+            )}
+          >
+            <pre>{runtimeErrorMessage.value}</pre>
           </div>
           <div class="h-[calc(100%-36px)] relative z-40 flex">
             <div

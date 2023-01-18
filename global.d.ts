@@ -1,5 +1,6 @@
 declare const __DEV__: boolean
 
+declare module '*.txt'
 declare module '*.html' {
   const A = ''
   export default A

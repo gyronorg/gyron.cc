@@ -33,11 +33,18 @@ export async function initialMonacoJSX(
 }
 
 export async function initialMonaco() {
+  window.MonacoEnvironment = {
+    getWorkerUrl(_, label) {
+      if (label === 'css') {
+        return '/assets/css.worker.js'
+      }
+      return '/assets/editor.worker.js'
+    },
+  }
+
   await import(
     'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution'
   )
-  await import(
-    'monaco-editor/esm/vs/basic-languages/css/css.contribution'
-  )
-  return await import('monaco-editor/esm/vs/editor/editor.api')
+  await import('monaco-editor/esm/vs/basic-languages/css/css.contribution')
+  return await import('monaco-editor')
 }
