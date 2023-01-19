@@ -1,5 +1,5 @@
 import { createRef, exposeComponent, FC, onDestroyed, useValue } from 'gyron'
-import { transform, visitor, insertVisitor } from '@gyron/babel-plugin-jsx'
+import { transform, visitor, ts2js } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
@@ -8,19 +8,8 @@ import { useStandaloneNamespace } from './tab'
 import { EditorType } from './editor'
 import type { NodePath } from '@babel/core'
 import type { ImportDeclaration } from '@babel/types'
-import transformTypescript from '@babel/plugin-transform-typescript'
 import classNames from 'classnames'
 import less from 'less'
-
-const t = transformTypescript(
-  {
-    assertVersion() {},
-    types: {
-      tsInstantiationExpression: false,
-    },
-  },
-  {}
-)
 
 export interface PreviewExpose {
   start: () => void
@@ -95,7 +84,7 @@ function insertStyle(cssResource: Source[], namespace: string) {
   }
 }
 
-function startEditorRuntime(
+async function startEditorRuntime(
   main: Source,
   containerId: string,
   fileMap: Record<string, Source>,
@@ -104,11 +93,10 @@ function startEditorRuntime(
 ) {
   let hasRuntimeError = false
   const cssResource: Source[] = []
-  const visitors = insertVisitor(t.visitor)
 
   const ret = transform(
     generateHelper(main.code, containerId, namespace),
-    visitors,
+    visitor,
     {
       setup: true,
       rootFileName: main.name,
@@ -147,6 +135,10 @@ function startEditorRuntime(
       },
     }
   )
+
+  const { default: plugin } = await import('@babel/plugin-transform-typescript')
+
+  ret.code = ts2js(ret.code, plugin).code
 
   if (!hasRuntimeError) {
     onTransformInValidate()

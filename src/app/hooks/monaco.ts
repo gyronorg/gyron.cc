@@ -13,7 +13,7 @@ export async function initialMonacoJSX(
     default: { parse },
   } = await import('@babel/parser')
   const { default: MonacoJSXHighlighter, JSXTypes } = await import(
-    'monaco-jsx-highlighter'
+    '@gyron/monaco-jsx-highlight'
   )
 
   const monacoJSXHighlighter = new MonacoJSXHighlighter(
