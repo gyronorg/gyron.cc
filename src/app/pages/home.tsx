@@ -66,7 +66,10 @@ export const Home = FC(() => {
               查看教程
             </Link>
           </div>
-          <div class="container mt-24 mx-auto">
+          <div class="mt-8 mb-2">
+            <Link to="/explorer" className="underline">在线编辑(online playground)</Link>
+          </div>
+          <div class="container mt-16 mx-auto">
             <ul class="flex justify-around space-x-6 sm:space-x-8 md:space-x-12 lg:space-x-16">
               <li>
                 <h2 class="text-lg">简单</h2>

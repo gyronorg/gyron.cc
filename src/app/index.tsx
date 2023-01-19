@@ -13,9 +13,9 @@ import {
   Docs,
   Home,
   ROUTE_MENUS,
+  Explorer,
 } from './pages'
 import { storeState } from './store'
-import { WrapperEditor } from '@/components/explorer/wrapper'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -63,7 +63,7 @@ export const ExposeRoutes = FC(() => {
       <Route
         path="explorer"
         meta={{ title: '在线编辑器' }}
-        element={<WrapperEditor />}
+        element={<Explorer />}
       />
       <Route
         path="*"

@@ -1,0 +1,984 @@
+declare type Noop = () => void;
+
+declare type Dep = Set<Effect>;
+declare type EffectScheduler = (...args: any[]) => any;
+interface EffectRunner<T = any> {
+    (): T;
+    effect: Effect;
+}
+declare type Dependency = () => any;
+declare type EffectFunction<T> = (...args: any) => T;
+declare function pauseTrack(): void;
+declare function enableTrack(): void;
+declare function asyncTrackEffect(effect: Effect): void;
+declare function clearTrackEffect(): void;
+interface Effect {
+    deps: Dep[];
+    allowEffect: boolean;
+    scheduler: EffectScheduler | null;
+    wrapper: Noop;
+    run: () => any;
+    stop: Noop;
+}
+/**
+ * The function will be called again when the data in the function body has changed,
+ * so you can use this method to listen for a data change.
+ * ```ts
+ * import { useValue, useComputed } from 'gyron'
+ *
+ * const original = useValue(0)
+ * let dummy: number
+ * const s = useEffect(() => {
+ *   dummy = original.value
+ * })
+ * original.value = 10
+ * dummy === original.value // true
+ * s.useEffect.stop()
+ * original.value = 20
+ * dummy === original.value // false
+ * ```
+ * @api reactivity
+ * @param fn Callback function after data change.
+ * @param dependency Dependent array functions, where the return value of each function is the object to be dependent on.
+ * @returns Returns a function that can be called directly. The function will have an `effect` object attached to it and the `stop` method on the `effect` object can be accessed to stop listening to the data.
+ */
+declare function useEffect<T = any>(fn: EffectFunction<T>, dependency?: Dependency[]): EffectRunner<T>;
+declare function cleanupTrackEffect(target: object, key: string | symbol): void;
+
+declare class Computed<T = any> {
+    private getter;
+    private setter;
+    private dependency;
+    private memo;
+    private _effect;
+    private _value;
+    private _lazy;
+    dep: Dep | undefined;
+    [ReactiveFlags.IS_COMPUTED]: boolean;
+    constructor(getter: () => T, setter: (v: T) => void, dependency?: Dependency[], memo?: boolean);
+    get value(): T;
+    set value(v: T);
+    get [ReactiveFlags.RAW](): any;
+}
+/**
+ * Similar to the accessor property in javascript,
+ * but changes to the data it depends on will automatically trigger changes to the data that depends on useComputed.
+ * ```js
+ * import { useValue, useComputed } from 'gyron'
+ *
+ * const original = useValue(0)
+ * const observed = useComputed(() => {
+ *   return original.value + 1
+ * })
+ * original.value = 10
+ * observed.value === 11 // true
+ * ```
+ * @api reactivity
+ * @param getter Functions for reading data
+ * @param setter Functions for setting data
+ * @param dependency Dependent array functions, where the return value of each function is the object to be dependent on.
+ */
+declare function useComputed<T>(getter: () => T): Computed<T>;
+declare function useComputed<T>(getter: () => T, dependency: Dependency[]): Computed<T>;
+declare function useComputed<T>(getter: () => T, setter: (value: T) => void, dependency: Dependency[]): Computed<T>;
+/**
+ * If the dependent data is not updated, the value will not be updated.
+ * To avoid this, the data needs to be processed using `useComputed`.
+ * ```js
+ * import { useValue, useMemo } from 'gyron'
+ *
+ * const original = useValue(0)
+ * const memo = useMemo(() => {
+ *   return Date.now() + original.value
+ * })
+ * memo.value === memo.value // true
+ * ```
+ * @api reactivity
+ * @param getter Functions for reading data.
+ * @param setter Functions for setting data.
+ * @param dependency Dependent array functions, where the return value of each function is the object to be dependent on.
+ */
+declare function useMemo<T>(getter: () => T): Computed<T>;
+declare function useMemo<T>(getter: () => T, dependency: Dependency[]): Computed<T>;
+declare function useMemo<T>(getter: () => T, setter: (value: T) => void, dependency: Dependency[]): Computed<T>;
+
+declare class Primitive<T = any> {
+    private _value;
+    [ReactiveFlags.IS_PRIMITIVE]: boolean;
+    constructor(value: T);
+    get value(): T;
+    set value(v: T);
+    get [ReactiveFlags.RAW](): RawValue<T>;
+    get [ReactiveFlags.RAW_VALUE](): {
+        value: T;
+    };
+}
+/**
+ * Using the `value` attribute to make basic type data responsive is done
+ * internally using the `useReactive` method and then using `value` as a proxy for the attribute name.
+ * ```js
+ * import { useValue } from 'gyron'
+ *
+ * const original = useValue(0)
+ * original.value === 0 // true
+ * ```
+ * @api reactivity
+ * @param value The data that you want to be proxied can be a basic type, such as a number or a boolean.
+ * @returns An object that has been proxied and is accessed using `.value`.
+ */
+declare function useValue<T = any>(value: T): Primitive<T>;
+
+declare type ReactValue<T> = Primitive<T> | Computed<T>;
+declare type RawValue<T> = T extends ReactValue<infer V> ? V : T;
+declare const enum ReactiveFlags {
+    IS_REACTIVE = "_reactive_",
+    IS_COMPUTED = "_computed_",
+    IS_PRIMITIVE = "_primitive_",
+    IS_READONLY = "_readonly_",
+    RAW = "_raw_",
+    RAW_VALUE = "_raw_value_"
+}
+/**
+ * Determines whether an object has responsive characteristics.
+ * ```js
+ * import { isResponsive } from 'gyron'
+ *
+ * isResponsive({}) // false
+ * isResponsive(useReactive({})) // true
+ * ```
+ * @api reactivity
+ */
+declare function isResponsive(n: any): n is {
+    value: any;
+};
+/**
+ * Access to the original data of the object being proxy is very useful in complex objects.
+ * In `useValue` the value object is deconstructed and its original value returned.
+ * ```javascript
+ * import { useValue } from 'gyron'
+ *
+ * const original = useValue(0)
+ * let dummy: number
+ * useEffect(() => {
+ *   dummy = toRaw(original)
+ * })
+ * dummy === 0 // true
+ * original.count = 1
+ * dummy === 0 // true
+ * ```
+ * @api reactivity
+ * @param observed Responsive data.
+ * @returns Raw data.
+ */
+declare function toRaw<T>(observed: T): RawValue<T>;
+/**
+ * Proxy incoming objects, a second parameter can be passed to control whether the object is read-only or not.
+ * ```js
+ * import { useReactive } from 'gyron'
+ *
+ * const original = {
+ *   x: 0,
+ *   y: 0,
+ * }
+ * const observed = useReactive(original)
+ * original !== observed // true
+ * ```
+ * @api reactivity
+ * @param target The data that needs to be responded to.
+ * @param readonly Whether the data is read-only.
+ * @returns A proxy object, internally proxy using a `Proxy`.
+ */
+declare function useReactive<T extends object>(target: T, readonly?: boolean): T;
+
+interface TransitionHooks {
+    state: ReturnType<typeof useTransitionState>;
+    onActive: (el: Element) => void;
+    onLeave: (el: Element, done: Noop) => void;
+    onLeaveFinish: (el: Element) => void;
+    delayLeave?: (el: Element, done?: Noop) => void;
+}
+declare type Duration = number | {
+    active: number;
+    leave: number;
+};
+interface TransitionProps {
+    name: string;
+    activeBeforeClassName?: string;
+    activeClassName?: string;
+    leaveBeforeClassName?: string;
+    leaveClassName?: string;
+    duration?: Duration;
+}
+declare function useTransitionState(): {
+    leaveInnerNodes: Map<any, Record<string | number | symbol, VNode<VNodeType, VNodeProps>>>;
+    activeInnerNodes: Map<any, Record<string | number | symbol, VNode<VNodeType, VNodeProps>>>;
+};
+declare const Transition: WrapperFunction<TransitionProps>;
+
+declare const Text: unique symbol;
+declare const Element$1: unique symbol;
+declare const Comment: unique symbol;
+declare const Fragment: unique symbol;
+declare type ToUpper<T extends string> = T extends `${infer F}${infer Rest}` ? `${Uppercase<F>}${Rest}` : never;
+declare type ToLower<T extends string> = T extends `${infer F}${infer Rest}` ? `${Lowercase<F>}${Rest}` : never;
+declare type APrefixEvent<K extends string, P extends string> = K extends string ? `${P}${ToUpper<K>}` : never;
+declare type RPrefixEvent<K extends string, P extends string> = K extends `${P}${infer Key}` ? ToLower<Key> : never;
+declare type Prefix = 'on';
+declare type VNodeEvent = {
+    [Key in APrefixEvent<keyof HTMLElementEventMap, Prefix>]?: (e: HTMLElementEventMap[RPrefixEvent<Key, Prefix>]) => any;
+};
+declare enum NodeType {
+    Fragment = -2,
+    Component = -1,
+    Element = 1,
+    Text = 3,
+    Comment = 8
+}
+declare type TextContent = string | number | boolean | null | undefined;
+declare type Children = VNode | TextContent;
+declare type VNodeChildren = Children | Children[];
+interface VNodeDefaultProps {
+    ref: UserRef;
+    key: string | number;
+}
+interface RenderElement extends Node {
+    [key: string]: any;
+    __vnode__?: VNode;
+}
+declare type VNodeType = string | VNode | Component | ComponentFunction<any> | ComponentSetupFunction<any> | typeof Text | typeof Element$1 | typeof Comment | typeof Fragment;
+interface VNode<T extends VNodeType = VNodeType, P extends VNodeProps = VNodeProps> {
+    flag: symbol;
+    type: T;
+    nodeType: NodeType;
+    props: Partial<P>;
+    el?: RenderElement;
+    anchor?: RenderElement;
+    key?: number | string | symbol;
+    parent?: VNode;
+    tag?: string;
+    is?: any;
+    component?: Component;
+    children?: VNodeChildren;
+    transition?: TransitionHooks;
+    __uri?: string;
+}
+interface VNodeProps extends VNodeEvent, ComponentDefaultProps {
+    [k: string]: any;
+}
+/**
+ * Clone the `VNode` node.
+ * ```js
+ * import { createComment, cloneVNode, h } from 'gyron'
+ *
+ * const App = h(() => {
+ *   return createComment('async anchor')
+ * })
+ *
+ * App !== cloneVNode(App) // true
+ * ```
+ * @api global
+ * @param vnode The node to be copied, or it can be a normal value.
+ * @returns Nodes after cloning.
+ */
+declare function cloneVNode<T extends VNode | VNode[]>(vnode: T): T;
+/**
+ * Merge `props` to the target node.
+ * ```javascript
+ * import { createComment, mergeVNode, h } from 'gyron'
+ *
+ * const Child = h(() => {
+ *   return createComment('async anchor')
+ * })
+ *
+ * const App = mergeVNode(Child, { class: 'container' })
+ * App.props.class === 'container' // true
+ * ```
+ * @api global
+ * @param vnode Nodes that need to be merged.
+ * @param props The attributes to be copied to the node.
+ * @returns Returns the merged node.
+ */
+declare function mergeVNode<T extends VNode | VNode[]>(vnode: T, props: Partial<VNodeProps>): T;
+declare function createVNode(tag: unknown, props?: Partial<VNodeProps>, children?: VNodeChildren): VNode;
+declare function createVNodeComment(children?: string): VNode<typeof Comment>;
+declare function normalizeVNode(value: VNodeChildren): VNode;
+declare function normalizeChildrenVNode(vnode: VNode): VNode<VNodeType, VNodeProps>[];
+declare function normalizeVNodeWithLink(children: Children, parent: VNode): VNode<VNodeType, VNodeProps>;
+
+declare type Ref = null | Exposed | RenderElement;
+interface UserRef<T = Ref> {
+    current: T;
+}
+/**
+ * creates a `ref` object that can be bound to a `vnode` node. If the bound node is a normal node, its value is `Node`.
+ * If it is a component, the value is the object exposed by the component.
+ * A default value can be passed, `current` is the default value when the value is not bound.
+ * ```javascript
+ * import { h, createRef } from 'gyron'
+ *
+ * const App = h(() => {
+ *   const myRef = createRef()
+ *   return h('div', {
+ *     ref: myRef,
+ *   })
+ * })
+ * ```
+ * @api global
+ * @param initialValue initial value.
+ */
+declare function createRef<T = any>(initialValue?: T): UserRef<T>;
+
+interface SchedulerJob {
+    (): void;
+    id: number;
+    component: Component;
+    priority: JobPriority;
+}
+/**
+ * Update tasks need to be prioritized, with those of higher priority being executed first, followed by those of lower priority.
+ */
+declare enum JobPriority {
+    DEFERRED = -1,
+    NORMAL = 0,
+    ACCRUED = 1
+}
+/**
+ * Wait for the data to finish rendering and the updated DOM node will be available in the next tick.
+ * ```js
+ * import { h, useValue, nextRender, createRef, onAfterMount } from 'gyron'
+ *
+ * const App = h(() => {
+ *   const count = useValue(0)
+ *   const ref = createRef()
+ *
+ *   onAfterMount(() => {
+ *     count.value++
+ *     nextRender().then(() => {
+ *       console.log(ref.current.innerText) // 1
+ *     })
+ *     console.log(ref.current.innerText) // 0
+ *   })
+ *   return h('div', { ref }, count.value)
+ * })
+ *```
+ * @param fn The next scale call function.
+ * @returns Returns a Promise that changes the state of a task only after all tasks have completed, regardless of how long the task has been executed.
+ */
+declare function nextRender(fn?: Noop): Promise<void> | Promise<unknown[]>;
+declare function useDeferred(fn: Noop): void;
+declare function useAccrued(fn: Noop): void;
+
+declare type LifecycleCallback = (component: Component) => any;
+declare type LifecycleUpdateCallback<T = any> = (prevProps: T, props?: T) => void | boolean;
+declare type Lifecycle = Partial<{
+    beforeMounts: Set<LifecycleCallback>;
+    afterMounts: Set<LifecycleCallback>;
+    destroyed: Set<LifecycleCallback>;
+    beforeUpdates: Set<LifecycleUpdateCallback>;
+    afterUpdates: Set<LifecycleUpdateCallback>;
+}>;
+/**
+ * Lifecycle hooks, register a callback function that is called before the component is rendered.
+ * ```js
+ * import { h, onBeforeMount } from 'gyron'
+ *
+ * const App = h(() => {
+ *   onBeforeMount((component) => {
+ *     component // self
+ *   })
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api component
+ * @param callback Callback function.
+ */
+declare function onBeforeMount(callback: LifecycleCallback): void;
+/**
+ * Life cycle hooks, register a callback function to be called after the component has been rendered,
+ * where you can get the real DOM information in the callback function.
+ * ```js
+ * import { h, onAfterMount } from 'gyron'
+ *
+ * const App = h(() => {
+ *   onAfterMount((component) => {
+ *     component.$el // HTMLDivElement
+ *   })
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api component
+ * @param callback Callback function.
+ */
+declare function onAfterMount(callback: LifecycleCallback): void;
+/**
+ * Lifecycle hook to register a callback function to be called after the component has been destroyed.
+ * ```js
+ * import { h, onDestroyed } from 'gyron'
+ *
+ * const App = h(() => {
+ *   const timer = setInterval(() => {
+ *     console.log(Date.now())
+ *   }, 1000)
+ *   onDestroyed((component) => {
+ *     clearInterval(timer)
+ *   })
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api component
+ * @param callback Callback function.
+ */
+declare function onDestroyed(callback: LifecycleCallback): void;
+/**
+ * Lifecycle hooks that register a callback function to be called before the component is updated.
+ * Returning `Falsy` prevents updates to itself and sub components.
+ * ```js
+ * import { h, onBeforeUpdate } from 'gyron'
+ *
+ * const App = h(() => {
+ *   onBeforeUpdate((prevProps, props) => {
+ *     return false // The view will not be updated even when changes occur
+ *   })
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api component
+ * @param callback Callback function.
+ */
+declare function onBeforeUpdate<T extends object>(callback: LifecycleUpdateCallback<T>): void;
+/**
+ * Lifecycle hooks, register a callback function that is called before the component is rendered.
+ * ```js
+ * import { h, onAfterUpdate } from 'gyron'
+ *
+ * const App = h(() => {
+ *   onAfterUpdate((prevProps, props) => {
+ *     component // self
+ *   })
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api component
+ * @param callback Callback function.
+ */
+declare function onAfterUpdate(callback: LifecycleUpdateCallback): void;
+
+declare type UtilComponentProps<T extends VNodeType, D = never> = T extends ComponentFunction<infer Props> | ComponentSetupFunction<infer Props> ? Props & Omit<ComponentDefaultProps, 'isSSR'> : D;
+declare type ComponentDefaultProps = Partial<{
+    readonly isSSR: boolean;
+    readonly children: VNodeChildren;
+    readonly key: string | number | symbol;
+    readonly ref: UserRef;
+    readonly memo: any[];
+    readonly static: boolean;
+    readonly html: string;
+}>;
+declare type ComponentFunction<Props extends object = object> = (props?: Props & ComponentDefaultProps, component?: Component<Props>) => VNodeChildren;
+interface ComponentSetupFunction<Props extends object = object> {
+    (props: Props & ComponentDefaultProps, component: Component<Props>): (VNodeChildren | Promise<VNodeChildren>) | ComponentFunction<Props>;
+    __cache?: boolean;
+    __cacheIndex?: number;
+    __ssr_uri?: string;
+    __hmr_id?: string;
+    [k: string]: any;
+}
+declare type AsyncComponentFunction<Props extends object = object> = (props: AsyncProps<Props>) => Promise<ComponentSetupFunction<Props> | VNode>;
+declare type AsyncProps<Props> = Props & ComponentDefaultProps & {
+    fallback?: VNode;
+};
+declare type WrapperFunction<Props extends object> = {
+    (props: Omit<Props, keyof ComponentDefaultProps>, component: Component<Props>): VNode;
+};
+declare type Exposed = Record<string | number, any>;
+interface Component<T extends object = object> {
+    uid: number;
+    mounted: boolean;
+    destroyed: boolean;
+    parent: Component;
+    subTree: VNode;
+    vnode: VNode<ComponentSetupFunction>;
+    type: ComponentSetupFunction;
+    effect: Effect;
+    update: SchedulerJob;
+    render: ComponentFunction<T>;
+    setup: ComponentSetupFunction;
+    props: T & ComponentDefaultProps;
+    prevProps: T & ComponentDefaultProps;
+    ctx: Record<string | symbol, unknown>;
+    lifecycle: Lifecycle;
+    exposed: Exposed;
+    $el: RenderElement;
+    $parent: RenderElement;
+}
+declare function createComponentInstance(vnode: VNode<ComponentSetupFunction>, parentComponent: Component | null): Component;
+/**
+ * Get the current component object, but do not change or delete the values in it, as unintended errors may occur.
+ * ```js
+ * import { h, getCurrentComponent } from 'gyron'
+ *
+ * const App = h(() => {
+ *   const component = getCurrentComponent()
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api component
+ * @returns Component
+ */
+declare function getCurrentComponent(): Component<object>;
+declare function forceUpdate(component: Component): void;
+declare function renderComponent(component: Component, isSSR?: boolean): VNode<VNodeType, VNodeProps> | Promise<VNode<VNodeType, VNodeProps>>;
+/**
+ * The defineProps method cannot declare its return value using the deconstruction syntax
+ *
+ * correct code:
+ * ```js
+ * const props = defineProps()
+ * props.foo
+ * ```
+ *
+ * ~~incorrect code:~~
+ * ```js
+ * const { foo } = defineProps()
+ * ```
+ * @api component
+ */
+declare function defineProps<T extends object, R extends object = T & ComponentDefaultProps>(defaultValue?: object): R;
+/**
+ * Exposes the data in the component for use by the parent component.
+ * ```js
+ * import { h, useValue, createRef, exposeComponent } from 'gyron'
+ *
+ * const Child = h(() => {
+ *   const name = useValue('foo')
+ *
+ *   exposeComponent({ name })
+ *
+ *   return h('div', null, name.value)
+ * })
+ *
+ * const App = h(() => {
+ *   const ref = createRef()
+ *
+ *   ref.current // {name: {value: 'foo'}}
+ *
+ *   return h(Child, { ref })
+ * })
+ * ```
+ * @line 14
+ * @api component
+ * @param exposed object
+ */
+declare function exposeComponent(exposed: Record<string | number, any>): void;
+/**
+ * Component wrapper for the useEffect method, which automatically destroys the current effect dependency when the component is destroyed
+ *
+ * ```js
+ * useWatch(() => {
+ *  if (loading.value) {
+ *    console.log('loading')
+ *  }
+ * })
+ * ```
+ *
+ * Or you can use the second argument to automatically load a dependency that you don't need to use in the function, but pass the second argument if you need to make changes based on the dependency.
+ *
+ * ```js
+ * useWatch(() => {
+ *  if (loading.value) {
+ *    console.log('loading')
+ *  }
+ * }, [() => changed.value])
+ * ```
+ * @api component
+ */
+declare function useWatch<T = any>(watcher: EffectFunction<T>, dependency?: Dependency[]): void;
+/**
+ * Wrapping functions for asynchronous components, providing fallback solutions,
+ * support for scenarios such as asynchronous import of packaging tools.
+ * ```ts
+ * import { FCA } from 'gyron'
+ *
+ * interface Props {
+ *   count: number
+ * }
+ *
+ * const Child = FCA<Props>(() => import('./Son'))
+ *
+ * export const App = FC(() => {
+ *   return <Child fallback={<span>loading...</span>} count={1} />
+ * })
+ *```
+ * @api component
+ * @param componentAsyncFunction function
+ * @returns function
+ */
+declare function FCA<Props extends object = object, T extends AsyncComponentFunction<Props> = AsyncComponentFunction<Props>>(componentAsyncFunction: T): WrapperFunction<AsyncProps<Props>>;
+/**
+ * Define a component that is primarily used for type derivation in typescript
+ * ```ts
+ * import { FC } from 'gyron'
+ * interface Props {
+ *   count: number
+ * }
+ *
+ * const Child = FC<Props>(() => {
+ *   return ({ count }) => <span>{count}</span>
+ * })
+ *
+ * export const App = FC(() => {
+ *   return <Child count={1} />
+ * })
+ * ```
+ * @api component
+ * @param componentFunction function
+ * @returns function
+ */
+declare function FC<Props extends object = object, T extends ComponentSetupFunction<Props> = ComponentSetupFunction<Props>>(componentFunction: T): WrapperFunction<Props>;
+/**
+ * Pass in the component function to clear the component cache.
+ * ```js
+ * import { h, keepComponent, clearCacheComponent } from 'gyron'
+ *
+ * const App = keepComponent(() => {
+ *   return h('div')
+ * })
+ *
+ * clearCacheComponent(App)
+ * ```
+ * @api component
+ * @line 7
+ * @param componentFunction function
+ */
+declare function clearCacheComponent(componentFunction: ComponentSetupFunction): void;
+/**
+ * A cached component is created and the state of the component can be retained at all times.
+ * The component cache can be cleared using `clearCacheComponent`.
+ * ```javascript
+ * import { h, keepComponent } from 'gyron'
+ *
+ * const App = keepComponent(() => {
+ *   return h('div')
+ * })
+ * ```
+ * @api component
+ * @param componentFunction function
+ * @returns function
+ */
+declare function keepComponent<Props extends object = object, T extends ComponentSetupFunction<Props> = ComponentSetupFunction<Props>>(componentFunction: T): WrapperFunction<Props>;
+declare function removeBuiltInProps(props: Partial<VNodeProps>): Omit<Partial<{
+    readonly isSSR: boolean;
+    readonly children: VNodeChildren;
+    readonly key: string | number | symbol;
+    readonly ref: UserRef<Ref>;
+    readonly memo: any[];
+    readonly static: boolean;
+    readonly html: string;
+}>, "isSSR" | "key" | "children" | "ref" | "memo" | "static">;
+
+interface ErrorBoundaryProps {
+    fallback: VNode;
+}
+declare const ErrorBoundary: WrapperFunction<ErrorBoundaryProps>;
+
+interface Instance {
+    container: Element | null;
+    render: (containerOrSelector: string | Element) => Instance;
+    destroy: () => Instance;
+}
+declare function createContext(): Map<any, any>;
+/**
+ * Render virtual nodes to the real DOM.
+ * ```js
+ * import { render, h } from 'gyron'
+ *
+ * render(h('div', { id: 'gyron' }), document.body)
+ * ```
+ * @api global
+ * @param vnode Virtual node
+ * @param container Browser nodes
+ */
+declare function render(vnode: VNode, container: Element): void;
+/**
+ * Create the application and render it as an actual DOM node via the `render` method on the application.
+ * ```js
+ * import { h, createInstance } from 'gyron'
+ *
+ * const App = h(() => {
+ *   return h('div', 'hello world')
+ * })
+ *
+ * createInstance(h(App)).render('#root')
+ * ```
+ * @api global
+ * @param root A `VNode` node, which can be created with the `h` function.
+ * @param isHydrate For server-side rendering parameters, `Truthy` means that the "hydration" method is used to make the interface responsive.
+ * @returns Application examples.
+ */
+declare function createInstance(root: VNode, isHydrate?: boolean): Instance;
+
+declare type HProps = VNodeProps | string;
+/**
+ * Creates a `VNode` node with a normal object return value.
+ * Can be run directly in the browser and is mainly used to write applications in non-compiled environments.
+ * ```js
+ * import { h } from 'gyron'
+ *
+ * const App = h(() => {
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api global
+ * @param type The type of node to be created, either a tag name or a function.
+ * @param props Can be a string or an object, if it is a string it will be treated as `children`.
+ * @param children A child node, either a VNode node or a string.
+ * @returns VNode
+ */
+declare function h<T extends VNodeType>(type: T | T[], props?: UtilComponentProps<T, HProps>, children?: VNodeChildren): VNode;
+
+/**
+ * Determine if the incoming parameter is a virtual node
+ * ```js
+ * import { isVNode, h } from 'gyron'
+ *
+ * const App = h(() => {
+ *   return h('div', 'async anchor')
+ * })
+ *
+ * isVNode(App) // true
+ * ```
+ * @api global
+ * @returns boolean
+ */
+declare function isVNode(n: any): n is VNode;
+declare function isVNodeElement(n: VNode): n is VNode<typeof Element$1>;
+declare function isVNodeText(n: VNode): n is VNode<typeof Text>;
+declare function isVNodeComment(n: VNode): n is VNode<typeof Comment>;
+declare function isVNodeFragment(n: VNode): n is VNode<typeof Fragment>;
+/**
+ * Determine if the incoming parameter is a component node
+ * ```js
+ * import { isVNodeComponent, h } from 'gyron'
+ *
+ * const App = h(() => {
+ *   return h('div', 'async anchor')
+ * })
+ *
+ * isVNodeComponent(App) // true
+ * ```
+ * @api global
+ * @returns boolean
+ */
+declare function isVNodeComponent(n: VNode): n is VNode<ComponentSetupFunction>;
+
+declare function warn(err: Error | string, component: Component | null, type: string): void;
+declare function error(err: Error, component: Component | null, type: string): any;
+
+interface Plugin<D extends object, E = any> {
+    data: D;
+    extra?: E;
+    name?: string;
+}
+/**
+ * Return all registered plugins
+ * ```js
+ * import { getPlugins } from 'gyron'
+ * const plugins = getPlugins()
+ * ```
+ * @api global
+ * @returns Map
+ */
+declare function getPlugins(): Map<any, any>;
+
+/**
+ * Perform component hot update
+ * @deprecated Only allowed for internal use, such as vite or other packaging tools
+ */
+declare function rerender(id: string, type: ComponentSetupFunction): void;
+
+declare function provide(component: Component, name: string | symbol, data: unknown): void;
+declare function inject<T = unknown>(component: Component, name: string | symbol, shouldWarn?: boolean): T;
+/**
+ * Inject any data into all child components, either deep components or sibling components.
+ * ```js
+ * import { h, useProvide } from 'gyron'
+ *
+ * const App = h(() => {
+ *   const provide = useProvide()
+ *   provide('data', 0)
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api context
+ */
+declare function useProvide<T = unknown>(): (name: string | symbol, data: T) => void;
+/**
+ * After the upper level component has used `useProvide`, the injected data is retrieved via `useInject`.
+ * ```js
+ * import { h, useInject } from 'gyron'
+ *
+ * const Child = h(() => {
+ *   const inject = useInject()
+ *   const data = inject('data') // 0
+ *   return h('div', data)
+ * })
+ *
+ * const App = h(() => {
+ *   const provide = useProvide()
+ *   provide('data', 0)
+ *   return h(Child)
+ * })
+ * ```
+ * @api context
+ */
+declare function useInject(): <T>(name: string | symbol) => T;
+/**
+ * Gets information about the `context` in the current component and contains the `provide` and `inject` functions.
+ * ```javascript
+ * import { h, useComponentContext } from 'gyron'
+ *
+ * const Child = h(() => {
+ *   const context = useComponentContext()
+ *   context['data'] // 0
+ *   return h('div', 'child')
+ * })
+ *
+ * const App = h(() => {
+ *   const { context } = useComponentContext()
+ *   context['data'] = 0
+ *   return h(Child)
+ * })
+ * ```
+ * @api context
+ * @returns object
+ */
+declare function useComponentContext(): {
+    context: Record<string | symbol, unknown>;
+    provide: (name: string | symbol, data: unknown) => void;
+    inject: <T>(name: string | symbol) => T;
+};
+
+interface SSRInstance extends Instance {
+    root: VNode;
+}
+/**
+ * Create a server-side application. The parameter `isSSR` is always true for all components in the server-side application.
+ * ```javascript
+ * import { h, createSSRInstance, renderToString } from 'gyron'
+ *
+ * const App = h(() => {
+ *   return h('div', 'hello world')
+ * })
+ *
+ * const { root } = createSSRInstance(h(App))
+ *
+ * renderToString(root).then((html) => {
+ *   console.log(html)
+ *   // <div>hello world</div>
+ * })
+ * ```
+ * @api global
+ * @param vnode Virtual node
+ * @returns return SSRInstance object
+ * @deprecated createSSRInstance is deprecated and may be removed in a future version, please use createSSRContext instead
+ */
+declare function createSSRInstance(vnode: VNode): SSRInstance;
+interface SSRMessage {
+    [key: string]: Record<string, any>;
+}
+interface SSRContext {
+    message: SSRMessage;
+}
+/**
+ * When creating the server rendering context, you can obtain the props based on the component URI at the initial rendering to enable the client to hydrate.
+ * @api global
+ * @param context The initial state of the context
+ * @returns Returns an object, including the render function for "hydrate"
+ */
+declare function createSSRContext(context: SSRContext): {
+    render: (vnode: VNode, containerOrSelector: string | HTMLElement) => VNode<VNodeType, VNodeProps>;
+};
+
+declare type BoundariesHandlerParamsType = 'Error' | 'Warn';
+declare type BoundariesHandlerParams = Partial<{
+    message: string;
+    component: Component;
+    stack: string;
+    type: BoundariesHandlerParamsType;
+}>;
+declare type BoundariesHandler = (params: BoundariesHandlerParams) => void;
+/**
+ * Register an event listener for errors and the registered callback function
+ * will be executed when an error occurs in the component.
+ * ```js
+ * import { registerErrorHandler, h } from 'gyron'
+ * const App = h(() => {
+ *   registerErrorHandler(({ message }) => {
+ *     message // Uncaught exceptions
+ *   })
+ *   throw new Error('Uncaught exceptions')
+ * })
+ * ```
+ * @api boundaries
+ * @param handler Handling functions.
+ */
+declare function registerErrorHandler(handler: BoundariesHandler): void;
+/**
+ * Register an event listener for warnings, the registered callback function
+ * will be executed when a warning occurs on the component.
+ * ```js
+ * import { registerWarnHandler, useInject, h } from 'gyron'
+ *
+ * const App = h(() => {
+ *   registerWarnHandler(({ message }) => {
+ *     message // Contextual information not obtained ...
+ *   })
+ *   useInject()('a')
+ *   return h('div', 'hello world')
+ * })
+ *```
+ * @api boundaries
+ * @param handler Handling functions.
+ */
+declare function registerWarnHandler(handler: BoundariesHandler): void;
+/**
+ * Proactive triggering of event callbacks registered via the registerErrorHandler method.
+ * ```js
+ * import { manualErrorHandler, h } from 'gyron'
+ *
+ * const App = h(() => {
+ *   Promise.reject('Error: Uncaught exceptions').catch((e) => {
+ *     manualErrorHandler(e, component)
+ *   })
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api boundaries
+ * @param error Error log message
+ * @param component The component instance, which can be obtained via the second parameter of the component function.
+ */
+declare function manualErrorHandler(error: Error | unknown, component: Component): any;
+/**
+ * Proactive triggering of event callbacks registered via the registerWarnHandler method
+ * ```js
+ * import { manualWarnHandler, h } from 'gyron'
+ *
+ * const App = h(() => {
+ *   manualWarnHandler('Warn: performance is not defined', component)
+ *   return h('div', 'hello world')
+ * })
+ * ```
+ * @api boundaries
+ * @param warn Warning log message.
+ * @param component The component instance, which can be obtained via the second parameter of the component function.
+ */
+declare function manualWarnHandler(warn: string, component: Component): any;
+
+/**
+ * Hydrate static resources to ensure ssr client responsiveness
+ * @api global
+ * @param node Node in a document
+ * @param vnode Virtual node
+ */
+declare function hydrate(node: RenderElement, vnode: VNode, parentComponent?: Component, ssrMessage?: SSRMessage): RenderElement;
+
+export { AsyncComponentFunction, BoundariesHandlerParams, Children, Comment, Component, ComponentDefaultProps, ComponentFunction, ComponentSetupFunction, Computed, Effect, Element$1 as Element, ErrorBoundary, FC, FCA, Fragment, Instance, Plugin, Primitive, RenderElement, Text, Transition, UserRef, UtilComponentProps, VNode, VNodeChildren, VNodeDefaultProps, VNodeProps, VNodeType, WrapperFunction, asyncTrackEffect, cleanupTrackEffect, clearCacheComponent, clearTrackEffect, cloneVNode, createComponentInstance, createContext, createInstance, createRef, createSSRContext, createSSRInstance, createVNode, createVNodeComment, defineProps, enableTrack, error, exposeComponent, forceUpdate, getCurrentComponent, getPlugins, h, hydrate, inject, isResponsive, isVNode, isVNodeComment, isVNodeComponent, isVNodeElement, isVNodeFragment, isVNodeText, keepComponent, manualErrorHandler, manualWarnHandler, mergeVNode, nextRender, normalizeChildrenVNode, normalizeVNode, normalizeVNodeWithLink, onAfterMount, onAfterUpdate, onBeforeMount, onBeforeUpdate, onDestroyed, pauseTrack, provide, registerErrorHandler, registerWarnHandler, removeBuiltInProps, render, renderComponent, rerender, toRaw, useAccrued, useComponentContext, useComputed, useDeferred, useEffect, useInject, useMemo, useProvide, useReactive, useValue, useWatch, warn };

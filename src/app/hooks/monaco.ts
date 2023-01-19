@@ -6,6 +6,7 @@ export async function initialMonacoJSX(
   monacoEditor: editor.IStandaloneCodeEditor
 ) {
   const {
+    // @ts-ignore
     default: { default: traverse },
   } = await import('@babel/traverse')
   const {
@@ -21,8 +22,11 @@ export async function initialMonacoJSX(
     traverse,
     monacoEditor
   )
+
   monacoJSXHighlighter.highlightOnDidChangeModelContent()
   monacoJSXHighlighter.addJSXCommentCommand()
+
+  console.log(monacoJSXHighlighter)
 
   JSXTypes.JSXText.options.inlineClassName = 'token.plain-text'
   JSXTypes.JSXBracket.options.inlineClassName = 'token.punctuation'
@@ -35,7 +39,7 @@ export async function initialMonacoJSX(
 export async function initialMonaco() {
   window.MonacoEnvironment = {
     getWorkerUrl(_, label) {
-      if (label === 'css') {
+      if (label === 'css' || label === 'less') {
         return '/assets/css.worker.js'
       }
       return '/assets/editor.worker.js'

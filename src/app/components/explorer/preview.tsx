@@ -1,12 +1,5 @@
-import {
-  createRef,
-  exposeComponent,
-  FC,
-  onAfterMount,
-  onDestroyed,
-  useValue,
-} from 'gyron'
-import { transform, visitor } from '@gyron/babel-plugin-jsx'
+import { createRef, exposeComponent, FC, onDestroyed, useValue } from 'gyron'
+import { transform, visitor, insertVisitor } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
@@ -15,12 +8,25 @@ import { useStandaloneNamespace } from './tab'
 import { EditorType } from './editor'
 import type { NodePath } from '@babel/core'
 import type { ImportDeclaration } from '@babel/types'
+import transformTypescript from '@babel/plugin-transform-typescript'
+import classNames from 'classnames'
+import less from 'less'
+
+const t = transformTypescript(
+  {
+    assertVersion() {},
+    types: {
+      tsInstantiationExpression: false,
+    },
+  },
+  {}
+)
 
 export interface PreviewExpose {
   start: () => void
 }
 
-export type TransformInValidate = (ret: {
+export type TransformInValidate = (ret?: {
   name: string
   parent: string
   type: EditorType
@@ -41,7 +47,7 @@ function generateHelper(code: string, id: string, namespace: string) {
   const _helperCallback = window['$${namespace}']
   window.addEventListener('error', e => _helperCallback && _helperCallback(e.error))
 
-  ${code}
+${code}
   
   try {
     createInstance(<APP />).render(document.getElementById('${id}'))
@@ -78,59 +84,73 @@ function insertStyle(cssResource: Source[], namespace: string) {
     cssResource.forEach((css) => {
       const style = document.createElement('style')
       style.id = css.uuid
-      style.type = 'text/css'
       style.className = name
+      style.setAttribute('type', 'text/css')
       style.setAttribute('data-name', css.name)
-      style.appendChild(document.createTextNode(css.code))
-      document.head.append(style)
+      less.render(`.${namespace}{${css.code}}`).then(({ css }) => {
+        style.appendChild(document.createTextNode(css))
+        document.head.append(style)
+      })
     })
   }
 }
 
 function startEditorRuntime(
-  code: string,
+  main: Source,
   containerId: string,
   fileMap: Record<string, Source>,
   namespace: string,
   onTransformInValidate: PreviewProps['onTransformInValidate']
 ) {
+  let hasRuntimeError = false
   const cssResource: Source[] = []
-  const ret = transform(generateHelper(code, containerId, namespace), visitor, {
-    setup: true,
-    root: 'Comp.tsx',
-    transformLocalImportHelper: (path, parent) => {
-      const source = path.node.source.value.replace(/^\.\//, '')
-      const ret = fileMap[source]
-      if (!ret) {
-        onTransformInValidate({
-          name: source,
-          path: path,
-          parent: parent.replace(/^\.\//, ''),
-          type: source.endsWith('.css') ? 'css' : 'typescript',
-        })
+  const visitors = insertVisitor(t.visitor)
+
+  const ret = transform(
+    generateHelper(main.code, containerId, namespace),
+    visitors,
+    {
+      setup: true,
+      rootFileName: main.name,
+      importSourceMap: {
+        gyron: 'https://unpkg.com/gyron/dist/browser/index.js',
+      },
+      transformLocalImportHelper: (path, parent) => {
+        const source = path.node.source.value.replace(/^\.\//, '')
+        const ret = fileMap[source]
+        if (!ret) {
+          hasRuntimeError = true
+          onTransformInValidate({
+            name: source,
+            path: path,
+            parent: parent.replace(/^\.\//, ''),
+            type: source.endsWith('.less') ? 'less' : 'typescript',
+          })
+          return {
+            shouldTransform: false,
+            code: null,
+          }
+        }
+        if (source.endsWith('.less')) {
+          if (ret) {
+            cssResource.push(ret)
+          }
+          return {
+            shouldTransform: false,
+            code: null,
+          }
+        }
         return {
-          shouldTransform: false,
-          code: null,
+          shouldTransform: path.node.source.value.endsWith('.tsx'),
+          code: ret.code,
         }
-      }
-      if (source.endsWith('.css')) {
-        if (ret) {
-          cssResource.push(ret)
-        }
-        return {
-          shouldTransform: false,
-          code: null,
-        }
-      }
-      return {
-        shouldTransform: path.node.source.value.endsWith('.tsx'),
-        code: ret.code,
-      }
-    },
-    importSourceMap: {
-      gyron: 'https://unpkg.com/gyron/dist/browser/index.js',
-    },
-  })
+      },
+    }
+  )
+
+  if (!hasRuntimeError) {
+    onTransformInValidate()
+  }
 
   insertStyle(cssResource, namespace)
   insertScript(ret, namespace)
@@ -159,7 +179,7 @@ export const Preview = FC<PreviewProps>(
           prev[curr.name] = curr
           return prev
         }, {})
-      startEditorRuntime(main.code, id, map, namespace, onTransformInValidate)
+      startEditorRuntime(main, id, map, namespace, onTransformInValidate)
     }
 
     exposeComponent({
@@ -178,7 +198,11 @@ export const Preview = FC<PreviewProps>(
             <Loading class="w-8" />
           </div>
         )}
-        <div class="h-full" id={id} ref={container}></div>
+        <div
+          class={classNames('h-full overflow-auto', namespace)}
+          id={id}
+          ref={container}
+        ></div>
       </div>
     )
   }

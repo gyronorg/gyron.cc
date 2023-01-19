@@ -15,12 +15,9 @@ export function useElementSizeChange(
 
 export function useElementMutationObserver(
   ref: UserRef<Element>,
-  method: () => void
+  method: MutationCallback
 ) {
-  const callback: MutationCallback = (mutationsList, observer) => {
-    method()
-  }
-  const observer = new MutationObserver(callback)
+  const observer = new MutationObserver(method)
   const config = { attributes: true, childList: true, subtree: true }
 
   onAfterMount(() => {

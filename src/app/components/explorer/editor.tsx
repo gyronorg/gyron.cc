@@ -6,13 +6,13 @@ import {
   onAfterMount,
   Primitive,
   useEffect,
-  useWatch,
 } from 'gyron'
 import { debounce } from 'lodash-es'
 import { CompilerError } from './wrapper'
-import jsx from './jsx.d.ts.txt'
+import jsxDts from './jsx.d.ts.txt'
+import gyronDts from './gyron.d.ts.txt'
 
-export type EditorType = 'typescript' | 'css'
+export type EditorType = 'typescript' | 'less'
 
 interface EditorProps {
   name: string
@@ -27,7 +27,8 @@ const ThemeName = 'DOCS'
 async function initialEditor(
   container: HTMLElement,
   code: string,
-  language: 'typescript' | 'css'
+  language: EditorType,
+  name: string
 ) {
   const monaco = await initialMonaco()
   const { editor } = monaco
@@ -40,7 +41,7 @@ async function initialEditor(
     noEmit: true,
     esModuleInterop: true,
     jsx: monaco.languages.typescript.JsxEmit.React,
-    reactNamespace: 'React',
+    reactNamespace: 'Gyron',
     allowJs: true,
     typeRoots: ['node_modules/@types'],
   })
@@ -51,9 +52,24 @@ async function initialEditor(
   })
 
   monaco.languages.typescript.typescriptDefaults.addExtraLib(
-    jsx,
-    `/assets/jsx.d.ts`
+    jsxDts,
+    'file:///node_modules/@types/jsx/index.d.ts'
   )
+
+  monaco.languages.typescript.typescriptDefaults.addExtraLib(
+    `declare module 'gyron' { ${gyronDts} }`,
+    'file:///node_modules/@types/gyron/index.d.ts'
+  )
+
+  monaco.languages.typescript.typescriptDefaults.addExtraLib(
+    `declare const Gyron`,
+    'file:///node_modules/@types/GyronJSX/index.d.ts'
+  )
+
+  const ts = editor.getModel(monaco.Uri.parse(`file:///${name}`))
+  if (ts) {
+    ts.dispose()
+  }
 
   editor.defineTheme(ThemeName, {
     base: 'vs-dark',
@@ -62,8 +78,12 @@ async function initialEditor(
     colors: {},
   })
   const instance = editor.create(container, {
+    model: editor.createModel(
+      code,
+      language,
+      monaco.Uri.parse(`file:///${name}`)
+    ),
     language: language,
-    value: code,
     theme: ThemeName,
     minimap: { enabled: false },
     selectOnLineNumbers: false,
@@ -110,7 +130,8 @@ export const Editor = FC<EditorProps>(
         const { instance, editor } = await initialEditor(
           container.current,
           code,
-          type
+          type,
+          name
         )
 
         const model = instance.getModel()
@@ -121,11 +142,14 @@ export const Editor = FC<EditorProps>(
         model.onDidChangeContent(onCodeChange)
 
         useEffect(() => {
-          if (name === 'Comp.tsx' && compilerTsxError.value.length) {
+          const error = compilerTsxError.value.filter(
+            (item) => item.parent === name
+          )
+          if (error.length) {
             editor.setModelMarkers(
               model,
               'Link',
-              compilerTsxError.value.map((item) => {
+              error.map((item) => {
                 return {
                   severity: 8,
                   message: item.message,

@@ -22,3 +22,7 @@ declare module '@docsearch/js' {
   }
   export default function docsearch(props: DocSearchProps): void
 }
+
+declare const less: {
+  render(code: string): Promise<{ css: string }>
+}

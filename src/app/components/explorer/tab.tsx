@@ -3,8 +3,8 @@ import { Dropdown, DropdownItem } from './dropdown'
 import { EditorType } from './editor'
 import { Source } from './wrapper'
 import { CloseIcon, CodeIcon } from '../icons'
-import classnames from 'classnames'
 import { Explorer } from './constant'
+import classnames from 'classnames'
 
 interface TabProps {
   name: string
@@ -81,10 +81,10 @@ const TabEdit = FC<TabEditProps>(
         {label || name}
         {shouldRemove && (
           <div
-            class="h-full text-xs group-edit opacity-0 hover:text-rose-700 transition-opacity absolute -right-3 flex items-center"
+            class="h-full text-xs group-edit opacity-0 hover:text-rose-700 transition-opacity absolute -right-4 flex items-center p-2"
             onClick={onRemove}
           >
-            <CloseIcon class="w-2 h-2" />
+            <CloseIcon class="w-1.5 h-1.5" />
           </div>
         )}
       </span>
@@ -146,8 +146,8 @@ export const Tabs = FC<TabsProps>(
         (item) => item.props.uuid === Explorer.Preview
       )
       return (
-        <div class="h-[400px] relative">
-          <div class="flex relative z-30">
+        <div class="h-full relative">
+          <div class="flex">
             {children.map((item, index) => {
               const { name, label, fixed, uuid } = item.props
               return (
@@ -178,11 +178,16 @@ export const Tabs = FC<TabsProps>(
             })}
             <Dropdown onClick={onAddTab}>
               <DropdownItem name="typescript">TSX</DropdownItem>
-              <DropdownItem name="css">CSS</DropdownItem>
+              <DropdownItem name="less">LESS</DropdownItem>
             </Dropdown>
           </div>
           <div
-            class="cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full border-slate-400 border border-t-0 rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[80px]"
+            class={classnames(
+              'cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full border-slate-400 border border-t-0 rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[80px]',
+              {
+                'left-full': !splitScreen.value,
+              }
+            )}
             onClick={onCodeRun}
           >
             <CodeIcon c1="#fff" c2="#000" />

@@ -148,7 +148,7 @@ export const MenuIcon = FC<IconProps>(({ class: className, expand }) => (
 export const CloseIcon = FC<IconProps>(({ class: className }) => (
   <svg
     viewBox="0 0 10 10"
-    class={classnames('w-2.5 h-2.5 overflow-visible', className)}
+    class={classnames('overflow-visible', className)}
   >
     <path
       d="M0 0L10 10M10 0L0 10"

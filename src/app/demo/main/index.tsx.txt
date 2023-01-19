@@ -1,0 +1,25 @@
+import { useValue, FC } from "gyron";
+import "./index.less";
+
+const APP = FC(() => {
+  const list = useValue<number[]>([]);
+  function add() {
+    list.value.push(Date.now());
+  }
+  function remove(item: number) {
+    const index = list.value.findIndex((value) => value === item);
+    list.value.splice(index, 1);
+  }
+  return (
+    <>
+      <ul>
+        {list.value.map((item) => (
+          <li>
+            {item} <button onClick={() => remove(item)}>-</button>
+          </li>
+        ))}
+      </ul>
+      <button onClick={add} class="add">+</button>
+    </>
+  );
+});

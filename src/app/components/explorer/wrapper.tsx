@@ -1,6 +1,6 @@
 import { generateSafeUuid } from '@/utils/uuid'
 import { createRef, FC, useValue } from 'gyron'
-import { Explorer } from './constant'
+import { Explorer, MAIN_FILE } from './constant'
 import { Editor, EditorType } from './editor'
 import { Preview, PreviewExpose, TransformInValidate } from './preview'
 import { Tabs, Tab } from './tab'
@@ -9,10 +9,11 @@ export interface Source {
   code: string
   name: string
   type: EditorType
-  uuid: string
+  uuid?: string
 }
 
 export interface CompilerError {
+  parent: string
   name: string
   loc: {
     start: {
@@ -30,25 +31,42 @@ export interface CompilerError {
 let _uid = 1
 const sourceName: Record<EditorType, string> = {
   typescript: 'Comp',
-  css: 'Style',
+  less: 'Style',
 }
 const sourceSuffixName: Record<EditorType, string> = {
   typescript: '.tsx',
-  css: '.css',
+  less: '.less',
 }
 
-export const WrapperEditor = FC(() => {
+function normalizedSource(sources: Source[]): Source[] {
+  return sources.map((item) => {
+    return {
+      ...item,
+      uuid: generateSafeUuid(),
+    }
+  })
+}
+
+export interface WrapperEditorProps {
+  sources?: Source[]
+}
+
+export const WrapperEditor = FC<WrapperEditorProps>(({ sources: _sources }) => {
   const namespace = generateSafeUuid()
 
   const preview = createRef<PreviewExpose>()
-  const sources = useValue<Source[]>([
-    {
-      name: 'Comp.tsx',
-      type: 'typescript',
-      code: '',
-      uuid: generateSafeUuid(),
-    },
-  ])
+
+  const sourcesDefault = _sources
+    ? normalizedSource(_sources)
+    : [
+        {
+          name: MAIN_FILE,
+          type: 'typescript',
+          code: '',
+          uuid: generateSafeUuid(),
+        } as const,
+      ]
+  const sources = useValue<Source[]>(sourcesDefault)
   const compilerTsxError = useValue<CompilerError[]>([])
 
   function onActiveChange(uuid: string, name: string) {
@@ -120,11 +138,16 @@ export const WrapperEditor = FC(() => {
     return nextUuid
   }
 
-  function onTransformInValidate(ret: Parameters<TransformInValidate>[0]) {
-    compilerTsxError.value.push({
-      name: ret.name,
-      loc: ret.path.node.loc,
-      message: `File "${ret.name}" is not defined in the local editor, but "${ret.name}" is found imported in the "${ret.parent}" module`,
-    })
+  function onTransformInValidate(ret?: Parameters<TransformInValidate>[0]) {
+    if (ret) {
+      compilerTsxError.value.push({
+        parent: ret.parent,
+        name: ret.name,
+        loc: ret.path.node.loc,
+        message: `File "${ret.name}" is not defined in the local editor, but "${ret.name}" is found imported in the "${ret.parent}" module`,
+      })
+    } else {
+      compilerTsxError.value = []
+    }
   }
 })
