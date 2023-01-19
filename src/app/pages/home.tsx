@@ -1,40 +1,7 @@
 import { Link } from '@gyron/router'
 import { FC } from 'gyron'
 import { Nav } from '@/components/nav'
-import { DOCS_NAV, CORE_NAV } from '@/pages'
-import { CodeHighlight, EditorWindowProps } from '@/components/window'
-
-const CodeExample: EditorWindowProps['content'] = [
-  {
-    type: 'tsx',
-    name: 'index.tsx',
-    value: `import { createInstance, useValue, FC } from "gyron";
-const APP = FC(() => {
-  const list = useValue([]);
-  function add() {
-    list.value.push(Date.now());
-  }
-  function remove(item) {
-    const index = list.value.findIndex((value) => value === item);
-    list.value.splice(index, 1);
-  }
-  return (
-    <>
-      <ul>
-        {list.value.map((item) => (
-          <li>
-            {item} <button onClick={() => remove(item)}>-</button>
-          </li>
-        ))}
-      </ul>
-      <button onClick={add}>+</button>
-    </>
-  );
-});
-
-createInstance(<APP />).render("#root");`,
-  },
-]
+import { DOCS_NAV, CORE_NAV, Explorer } from '@/pages'
 
 export const Home = FC(() => {
   return (
@@ -67,7 +34,9 @@ export const Home = FC(() => {
             </Link>
           </div>
           <div class="mt-8 mb-2">
-            <Link to="/explorer" className="underline">在线编辑(online playground)</Link>
+            <Link to="/explorer" className="underline">
+              在线编辑(online playground)
+            </Link>
           </div>
           <div class="container mt-16 mx-auto">
             <ul class="flex justify-around space-x-6 sm:space-x-8 md:space-x-12 lg:space-x-16">
@@ -98,12 +67,9 @@ export const Home = FC(() => {
             如果同一时间发生多次组件更新，并且更新时间大于5ms时或者有用户在输入时，更新将暂停，直至宿主有空闲或者用户输入完成才会继续。
           </div>
         </div>
-        <CodeHighlight content={CodeExample} />
-        <div class="max-w-3xl text-xs ml-auto mr-auto mt-4">
-          以上示例来自
-          <a href="https://codesandbox.io/s/todo-list-b1kdmq?file=/src/components/Home.tsx:54-529">
-            codesandbox
-          </a>
+        <Explorer />
+        <div class="text-xs ml-auto mr-auto mt-4 pl-4">
+          在线使用，在左边编辑完成后点击运行按钮即可预览效果。
         </div>
       </main>
       <footer class="pt-28 pb-10 border-slate-200 text-slate-500 dark:border-slate-200/5 text-center">

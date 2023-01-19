@@ -191,7 +191,7 @@ export const Preview = FC<PreviewProps>(
           </div>
         )}
         <div
-          class={classNames('h-full overflow-auto', namespace)}
+          class={classNames('h-full overflow-auto text-cyan-100', namespace)}
           id={id}
           ref={container}
         ></div>

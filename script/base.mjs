@@ -4,9 +4,9 @@ import { renderConfig } from './config.mjs'
 import { fork } from 'child_process'
 import esbuild from 'esbuild'
 import fs from 'fs-extra'
-import plugin from 'node-stdlib-browser/helpers/esbuild/plugin';
-import stdLibBrowser from 'node-stdlib-browser';
-import path from 'path';
+import plugin from 'node-stdlib-browser/helpers/esbuild/plugin'
+import stdLibBrowser from 'node-stdlib-browser'
+import path from 'path'
 
 let task
 /**
@@ -63,10 +63,10 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
       platform: 'node',
       watch: watch
         ? {
-          onRebuild(err, result) {
-            runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
-          },
-        }
+            onRebuild(err, result) {
+              runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
+            },
+          }
         : false,
       define: {
         __DEV__: String(watch),
@@ -104,7 +104,11 @@ export async function buildClient(watch, tempPath) {
       format: 'esm',
       splitting: true,
       platform: 'browser',
-      inject: [path.resolve('node_modules/node-stdlib-browser/helpers/esbuild/shim.js')],
+      inject: [
+        path.resolve(
+          'node_modules/node-stdlib-browser/helpers/esbuild/shim.js'
+        ),
+      ],
       define: {
         __DEV__: String(watch),
         __WARN__: String(false),
@@ -115,7 +119,7 @@ export async function buildClient(watch, tempPath) {
           watch ? 'development' : 'production'
         ),
       },
-      plugins: config.plugins.concat(plugin(stdLibBrowser))
+      plugins: config.plugins.concat(plugin(stdLibBrowser)),
     })
     return formatEntryMeta(result.metafile.outputs)
   } catch (e) {
@@ -126,19 +130,26 @@ export async function buildClient(watch, tempPath) {
 
 export async function buildAPP() {
   try {
+    const config = renderConfig(true, false)
     await esbuild.build({
-      ...renderConfig(true, false),
+      ...config,
       entryPoints: ['src/app/index.tsx'],
       outfile: 'dist/app/index.mjs',
       format: 'esm',
       platform: 'browser',
       watch: false,
       external: ['@gyron/runtime', '@gyron/router'],
+      inject: [
+        path.resolve(
+          'node_modules/node-stdlib-browser/helpers/esbuild/shim.js'
+        ),
+      ],
       define: {
         __DEV__: String(false),
         __WARN__: String(false),
         'process.env.NODE_ENV': JSON.stringify('production'),
       },
+      plugins: config.plugins.concat(plugin(stdLibBrowser)),
     })
     const { App, ExposeRoutes } = await import('../dist/app/index.mjs')
     return { App, ExposeRoutes }

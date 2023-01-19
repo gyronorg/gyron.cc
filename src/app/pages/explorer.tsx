@@ -4,8 +4,12 @@ import { decode } from 'js-base64'
 import sourceTSX from '@/demo/main/index.tsx.txt'
 import sourceLESS from '@/demo/main/index.less.txt'
 
-export const Explorer = FC(() => {
-  let sources: Source[] = [
+interface ExplorerProps {
+  sources?: Source[]
+}
+
+export const Explorer = FC<ExplorerProps>(({ sources: _sources }) => {
+  let sources: Source[] = _sources || [
     {
       code: sourceTSX,
       type: 'typescript',

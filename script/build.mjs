@@ -66,7 +66,17 @@ async function render(vnode, url, clientMeta) {
 
 buildClient(false, tempPath).then((appMeta) => {
   // many web standards
-  global.document = new JSDOM().window.document
+  const jsdom = new JSDOM()
+  global.window = jsdom.window
+  global.document = jsdom.window.document
+  global.crypto = {
+    getRandomValues: (array) => {
+      for (let i = 0, l = array.length; i < l; i++) {
+        array[i] = Math.floor(Math.random() * 256)
+      }
+      return array
+    },
+  }
   buildAPP().then(async ({ App, ExposeRoutes }) => {
     const node = ExposeRoutes()
     const routes = await getRoutes(node())
