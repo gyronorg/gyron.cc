@@ -26,8 +26,6 @@ export async function initialMonacoJSX(
   monacoJSXHighlighter.highlightOnDidChangeModelContent()
   monacoJSXHighlighter.addJSXCommentCommand()
 
-  console.log(monacoJSXHighlighter)
-
   JSXTypes.JSXText.options.inlineClassName = 'token.plain-text'
   JSXTypes.JSXBracket.options.inlineClassName = 'token.punctuation'
   JSXTypes.JSXIdentifier.options.inlineClassName = 'token.tag'
