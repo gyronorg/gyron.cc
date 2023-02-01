@@ -1,7 +1,7 @@
 import { FC, nextRender, onDestroyed, useValue, VNode } from 'gyron'
 import { Dropdown, DropdownItem } from './dropdown'
 import { EditorType } from './editor'
-import { Source } from './wrapper'
+import { OnAdd } from './wrapper'
 import { CloseIcon, CodeIcon } from '../icons'
 import { Explorer } from './constant'
 import classnames from 'classnames'
@@ -9,6 +9,9 @@ import classnames from 'classnames'
 interface TabProps {
   name: string
   uuid: string
+  editTitle: boolean
+  editContent: boolean
+  remove: boolean
   label?: string
   fixed?: 'right' | 'left'
 }
@@ -22,9 +25,10 @@ interface TabsProps {
   active?: string
   children: VNode<any, TabProps>[]
   onInputChange?: (id: string, value: string) => void
-  onAdd?: (type: EditorType) => Source
+  onAdd?: OnAdd
   onRemove?: (uuid: string) => string
   onRun?: () => void
+  onChangeActive?: (active: string) => void
 }
 
 interface TabEditProps {
@@ -33,6 +37,7 @@ interface TabEditProps {
   activeUuid: string
   label: string
   shouldRemove: boolean
+  shouldEdit: boolean
   onInputChange: (id: string, value: string) => void
   onActiveChange: (uuid: string | null) => void
   onTabRemove?: (uuid: string) => void
@@ -41,7 +46,7 @@ interface TabEditProps {
 export function useStandaloneNamespace(
   namespace: string,
   callback?: (err?: Error) => void
-) {
+): (err?: Error) => void {
   if (!window[`$${namespace}`]) {
     window[`$${namespace}`] = callback
   }
@@ -60,6 +65,7 @@ const TabEdit = FC<TabEditProps>(
     label,
     uuid,
     shouldRemove,
+    shouldEdit,
     onInputChange,
     onActiveChange,
     onTabRemove,
@@ -94,7 +100,7 @@ const TabEdit = FC<TabEditProps>(
       onActiveChange(null)
     }
     function onDblclick(uuid: string) {
-      if (uuid !== Explorer.Preview) {
+      if (uuid !== Explorer.Preview && shouldEdit) {
         onActiveChange(uuid)
       }
     }
@@ -106,8 +112,16 @@ const TabEdit = FC<TabEditProps>(
 )
 
 export const Tabs = FC<TabsProps>(
-  ({ children, namespace, onAdd, onRemove, onRun, isSSR, active: _active }) => {
-    const active = useValue(_active || children[0]?.props?.uuid)
+  ({
+    children,
+    namespace,
+    onAdd,
+    onRemove,
+    onRun,
+    isSSR,
+    active,
+    onChangeActive,
+  }) => {
     const activeUuid = useValue(null)
     const splitScreen = useValue(true)
     const runtimeErrorMessage = useValue(null)
@@ -118,19 +132,23 @@ export const Tabs = FC<TabsProps>(
       })
     }
 
+    if (children[0]?.props?.uuid) {
+      onChangeActive(children[0].props.uuid)
+    }
+
     function onAddTab(type: EditorType) {
       const { uuid } = onAdd(type)
-      active.value = uuid
+      onChangeActive(uuid)
     }
     function onRemoveTab(uuid: string) {
       const nextUuid = onRemove(uuid)
-      active.value = nextUuid
+      onChangeActive(nextUuid)
     }
     function onActive(uuid: string) {
       if (uuid === Explorer.Preview) {
         splitScreen.value = !splitScreen.value
       } else {
-        active.value = uuid
+        onChangeActive(uuid)
       }
     }
     function onCodeRun() {
@@ -138,10 +156,8 @@ export const Tabs = FC<TabsProps>(
       nextRender(onRun)
     }
 
-    return ({ children, onInputChange }) => {
-      const child = children.filter(
-        (item) => item?.props?.uuid === active.value
-      )
+    return ({ children, active, onInputChange }) => {
+      const child = children.filter((item) => item?.props?.uuid === active)
       const preview = children.find(
         (item) => item.props.uuid === Explorer.Preview
       )
@@ -149,14 +165,14 @@ export const Tabs = FC<TabsProps>(
         <div class="h-full relative">
           <div class="flex">
             {children.map((item, index) => {
-              const { name, label, fixed, uuid } = item.props
+              const { name, label, fixed, uuid, editTitle, remove } = item.props
               return (
                 <div
                   class={classnames(
                     'px-6 py-1 text-sm cursor-pointer text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
                     {
                       'border-amber-500 border-b-2':
-                        active.value === uuid ||
+                        active === uuid ||
                         (uuid === Explorer.Preview && splitScreen.value),
                       'ml-auto order-last': fixed === 'right',
                     }
@@ -168,7 +184,8 @@ export const Tabs = FC<TabsProps>(
                     label={label}
                     uuid={uuid}
                     activeUuid={activeUuid.value}
-                    shouldRemove={fixed !== 'right' && index !== 0}
+                    shouldRemove={remove}
+                    shouldEdit={editTitle}
                     onInputChange={onInputChange}
                     onActiveChange={(value) => (activeUuid.value = value)}
                     onTabRemove={onRemoveTab}
@@ -202,7 +219,7 @@ export const Tabs = FC<TabsProps>(
               }
             )}
           >
-            <pre>{runtimeErrorMessage.value}</pre>
+            <pre html={runtimeErrorMessage.value}></pre>
           </div>
           <div class="h-[calc(100%-36px)] relative z-40 flex">
             <div

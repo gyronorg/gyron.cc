@@ -50,3 +50,13 @@ export async function initialMonaco() {
   await import('monaco-editor/esm/vs/basic-languages/css/css.contribution')
   return await import('monaco-editor')
 }
+
+export async function initialService() {
+  const { StandaloneServices } = await import(
+    'monaco-editor/esm/vs/editor/standalone/browser/standaloneServices'
+  )
+  const { ICodeEditorService } = await import(
+    'monaco-editor/esm/vs/editor/browser/services/codeEditorService'
+  )
+  return StandaloneServices.get(ICodeEditorService)
+}

@@ -15,6 +15,7 @@ import tailwindcss from 'tailwindcss'
 import syntax from 'postcss-syntax'
 import less from 'less'
 import postcssNested from 'postcss-nested'
+import fetch from 'node-fetch'
 
 /**
  * @param {string} uri
@@ -129,6 +130,32 @@ function Mdx() {
   })
 }
 
+function HttpResource() {
+  const namespace = 'esbuild:http'
+  return {
+    name: namespace,
+    /** @type {import('esbuild').Plugin['setup']} */
+    setup(build) {
+      build.onResolve({ filter: /^https:\/\// }, ({ path }) => ({ path, namespace }));
+      build.onResolve({ filter: /.*/, namespace }, ({ path, importer }) => ({ path: new URL(path.replace(/\?.*/, ""), importer).toString(), namespace }));
+      build.onLoad({ filter: /.*/, namespace }, async (args) => {
+        return fetch(args.path, {
+          headers: {
+            'pragma': 'no-cache',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+          }
+        }).then(res => res.text()).then((res) => {
+          return {
+            contents: res,
+            loader: 'text'
+          }
+        })
+      })
+    }
+  }
+}
+
 /**
  * @param {boolean} watch
  */
@@ -144,6 +171,7 @@ export function renderConfig(watch, __DEV__) {
       LoadHtml(),
       Postcss(),
       Mdx(),
+      HttpResource(),
       babelESBuildJsx({
         hmr: Boolean(__DEV__),
         setup: true,

@@ -1,5 +1,6 @@
 declare const __DEV__: boolean
 
+declare module 'https:*'
 declare module '*.txt'
 declare module '*.html' {
   const A = ''
@@ -21,8 +22,4 @@ declare module '@docsearch/js' {
     environment?: typeof window
   }
   export default function docsearch(props: DocSearchProps): void
-}
-
-declare const less: {
-  render(code: string): Promise<{ css: string }>
 }

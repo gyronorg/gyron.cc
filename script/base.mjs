@@ -63,14 +63,14 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
       platform: 'node',
       watch: watch
         ? {
-            onRebuild(err, result) {
-              runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
-            },
-          }
+          onRebuild(err, result) {
+            runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
+          },
+        }
         : false,
       define: {
-        __DEV__: String(watch),
-        __WARN__: String(false),
+        __DEV__: watch,
+        __WARN__: false,
         __TMP__: JSON.stringify(watch ? tempPath : '../'),
         __CLIENT__: JSON.stringify(clientMetaFile),
       },
@@ -110,8 +110,8 @@ export async function buildClient(watch, tempPath) {
         ),
       ],
       define: {
-        __DEV__: String(watch),
-        __WARN__: String(false),
+        __DEV__: watch,
+        __WARN__: false,
         global: 'global',
         process: 'process',
         Buffer: 'Buffer',

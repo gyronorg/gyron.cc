@@ -14,11 +14,17 @@ export const Explorer = FC<ExplorerProps>(({ sources: _sources }) => {
       code: sourceTSX,
       type: 'typescript',
       name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
     },
     {
       code: sourceLESS,
       type: 'less',
       name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
     },
   ]
 

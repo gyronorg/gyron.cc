@@ -1,5 +1,5 @@
 import { createRef, exposeComponent, FC, onDestroyed, useValue } from 'gyron'
-import { transform, visitor, ts2js } from '@gyron/babel-plugin-jsx'
+import { initialBabelBundle } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
@@ -8,6 +8,7 @@ import { useStandaloneNamespace } from './tab'
 import { EditorType } from './editor'
 import type { NodePath } from '@babel/core'
 import type { ImportDeclaration } from '@babel/types'
+import type { BuildResult } from 'esbuild-wasm'
 import classNames from 'classnames'
 import less from 'less'
 
@@ -15,36 +16,16 @@ export interface PreviewExpose {
   start: () => void
 }
 
-export type TransformInValidate = (ret?: {
-  name: string
-  parent: string
-  type: EditorType
-  path: NodePath<ImportDeclaration>
-}) => void
+export type TransformInValidate = (
+  ret?: {
+    name: string
+    type: EditorType
+  }[]
+) => void
 
 interface PreviewProps {
   source: Source[]
   namespace: string
-  onTransformInValidate: TransformInValidate
-}
-
-// TODO
-// 所有ast中的节点都需要把起始行数按照如下规则进行更新
-function generateHelper(code: string, id: string, namespace: string) {
-  return `import { createInstance } from 'https://unpkg.com/gyron/dist/browser/index.js'
-  
-  const _helperCallback = window['$${namespace}']
-  window.addEventListener('error', e => _helperCallback && _helperCallback(e.error))
-
-${code}
-  
-  try {
-    createInstance(<APP />).render(document.getElementById('${id}'))
-    _helperCallback && _helperCallback()
-  } catch(e) {
-    _helperCallback && _helperCallback(e)
-  }
-`
 }
 
 function removeStandalone(namespace: string, cls: string) {
@@ -52,150 +33,127 @@ function removeStandalone(namespace: string, cls: string) {
   new Array(...clsElement).forEach((item) => item.remove())
 }
 
-function insertScript(ret: any, namespace: string) {
-  const name = `script_${namespace}`
-  removeStandalone(namespace, name)
+function initialRuntime(namespace: string) {
+  removeStandalone(namespace, `script_${namespace}`)
+  removeStandalone(namespace, `style_${namespace}`)
+}
 
+function insertScript(ret: BuildResult, namespace: string) {
+  const name = `script_${namespace}`
   const script = document.createElement('script')
   script.setAttribute('type', 'module')
   script.id = 'standalone'
   script.async = true
-  script.innerHTML = ret.code
+  script.innerHTML = ret.outputFiles[0].text
   script.className = name
   document.body.append(script)
 }
 
-function insertStyle(cssResource: Source[], namespace: string) {
-  const name = `style_${namespace}`
-  removeStandalone(namespace, name)
-
-  if (cssResource.length) {
-    cssResource.forEach((css) => {
-      const style = document.createElement('style')
-      style.id = css.uuid
-      style.className = name
-      style.setAttribute('type', 'text/css')
-      style.setAttribute('data-name', css.name)
-      less.render(`.${namespace}{${css.code}}`).then(({ css }) => {
-        style.appendChild(document.createTextNode(css))
-        document.head.append(style)
-      })
-    })
-  }
-}
-
+let build: (main: any, config: any) => Promise<BuildResult<any>>
 async function startEditorRuntime(
   main: Source,
   containerId: string,
-  fileMap: Record<string, Source>,
-  namespace: string,
-  onTransformInValidate: PreviewProps['onTransformInValidate']
+  sources: Source[],
+  namespace: string
 ) {
-  let hasRuntimeError = false
-  const cssResource: Source[] = []
+  !build && (build = await initialBabelBundle('/assets/esbuild.wasm'))
 
-  const ret = transform(
-    generateHelper(main.code, containerId, namespace),
-    visitor,
+  sources = sources.map((item) => ({
+    ...item,
+    loader: item.type === 'less' ? 'css' : 'tsx',
+  }))
+
+  for (let i = 0; i < sources.length; i++) {
+    const source = sources[i]
+    if (source.type === 'less') {
+      const css = (await less.render(`.${namespace}{${source.code}}`)).css
+      source.code = `var style = document.createElement('style')
+      style.id = '${source.uuid}'
+      style.className = 'style_${namespace}'
+      style.setAttribute('type', 'text/css')
+      style.setAttribute('data-name', '${source.name}')
+      style.appendChild(document.createTextNode(${JSON.stringify(css)}))
+      document.head.append(style)`
+      source.type = 'typescript'
+      source.name = source.name + '.ts'
+    }
+  }
+
+  const code = `import { APP } from './${main.name}';
+import { createInstance } from 'gyron'
+const _helperCallback = window['$${namespace}']
+window.addEventListener('error', e => _helperCallback && _helperCallback(e.error))
+
+try {
+  createInstance(<APP />).render(document.getElementById('${containerId}'))
+  _helperCallback && _helperCallback()
+} catch(e) {
+  _helperCallback && _helperCallback(e)
+}`
+
+  const ret = await build(
     {
+      code: code,
+      name: '_app.tsx',
+      loader: 'tsx',
+      rootFileName: '_app.tsx',
       setup: true,
-      rootFileName: main.name,
       importSourceMap: {
         gyron: 'https://unpkg.com/gyron/dist/browser/index.js',
       },
-      transformLocalImportHelper: (path, parent) => {
-        const source = path.node.source.value.replace(/^\.\//, '')
-        const ret = fileMap[source]
-        if (!ret) {
-          hasRuntimeError = true
-          onTransformInValidate({
-            name: source,
-            path: path,
-            parent: parent.replace(/^\.\//, ''),
-            type: source.endsWith('.less') ? 'less' : 'typescript',
-          })
-          return {
-            shouldTransform: false,
-            code: null,
-          }
-        }
-        if (source.endsWith('.less')) {
-          if (ret) {
-            cssResource.push(ret)
-          }
-          return {
-            shouldTransform: false,
-            code: null,
-          }
-        }
-        return {
-          shouldTransform: path.node.source.value.endsWith('.tsx'),
-          code: ret.code,
-        }
-      },
+      external: [],
+    },
+    {
+      sources: sources,
     }
   )
 
-  const { default: plugin } = await import('@babel/plugin-transform-typescript')
-
-  ret.code = ts2js(ret.code, plugin).code
-
-  if (!hasRuntimeError) {
-    onTransformInValidate()
+  if (ret.warnings.length) {
   }
 
-  insertStyle(cssResource, namespace)
+  initialRuntime(namespace)
   insertScript(ret, namespace)
 }
 
-export const Preview = FC<PreviewProps>(
-  ({ source, namespace, isSSR, onTransformInValidate }) => {
-    const loading = useValue(false)
-    const id = generateSafeUuid()
-    const container = createRef<Element>()
+export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
+  const loading = useValue(false)
+  const id = generateSafeUuid()
+  const container = createRef<Element>()
 
-    const wrapperError = !isSSR && useStandaloneNamespace(namespace)
-
-    !isSSR &&
-      useElementMutationObserver(container, () => {
-        loading.value = false
-      })
-
-    function start() {
-      container.current.innerHTML = ''
-      loading.value = true
-      const main = source[0]
-      const map = source
-        .slice(1)
-        .reduce<Record<string, Source>>((prev, curr) => {
-          prev[curr.name] = curr
-          return prev
-        }, {})
-      startEditorRuntime(main, id, map, namespace, onTransformInValidate)
-    }
-
-    exposeComponent({
-      start: start,
+  !isSSR &&
+    useElementMutationObserver(container, () => {
+      loading.value = false
     })
 
-    onDestroyed(() => {
-      removeStandalone(namespace, `script_${namespace}`)
-      removeStandalone(namespace, `style_${namespace}`)
-    })
+  function start() {
+    container.current.innerHTML = ''
+    loading.value = true
+    const main = source[0]
 
-    return (
-      <div class="h-full bg-[#1e293b] dark:bg-[#00000080] p-4">
-        {loading.value && (
-          <div class="h-full flex items-center justify-center">
-            <Loading class="w-8" />
-          </div>
-        )}
-        <div
-          class={classNames('h-full overflow-auto text-cyan-100', namespace)}
-          id={id}
-          ref={container}
-        ></div>
-      </div>
-    )
+    startEditorRuntime(main, id, source, namespace)
   }
-)
+
+  exposeComponent({
+    start: start,
+  })
+
+  onDestroyed(() => {
+    removeStandalone(namespace, `script_${namespace}`)
+    removeStandalone(namespace, `style_${namespace}`)
+  })
+
+  return (
+    <div class="h-full bg-[#1e293b] dark:bg-[#00000080] p-4">
+      {loading.value && (
+        <div class="h-full flex items-center justify-center">
+          <Loading class="w-8" />
+        </div>
+      )}
+      <div
+        class={classNames('h-full overflow-auto text-cyan-100', namespace)}
+        id={id}
+        ref={container}
+      ></div>
+    </div>
+  )
+})
