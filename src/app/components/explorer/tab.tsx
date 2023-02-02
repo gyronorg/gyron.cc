@@ -4,6 +4,7 @@ import { EditorType } from './editor'
 import { OnAdd } from './wrapper'
 import { CloseIcon, CodeIcon } from '../icons'
 import { Explorer } from './constant'
+import { last } from 'lodash-es'
 import classnames from 'classnames'
 
 interface TabProps {
@@ -111,18 +112,69 @@ const TabEdit = FC<TabEditProps>(
   }
 )
 
-export const Tabs = FC<TabsProps>(
+interface TabEditContainerProps {
+  active: string
+  uuid: string
+  name: string
+  label: string
+  activeUuid: string
+  fixed?: string
+  splitScreen: boolean
+  shouldRemove: boolean
+  editTitle: boolean
+  onActive: (uuid: string) => void
+  onInputChange: (id: string, value: string) => void
+  onActiveChange: (id: string) => void
+  onRemoveTab: (uuid: string) => void
+}
+
+const TabEditContainer = FC<TabEditContainerProps>(
   ({
-    children,
-    namespace,
-    onAdd,
-    onRemove,
-    onRun,
-    isSSR,
     active,
-    onChangeActive,
+    uuid,
+    splitScreen,
+    name,
+    label,
+    activeUuid,
+    shouldRemove,
+    editTitle,
+    fixed,
+    onActive,
+    onInputChange,
+    onActiveChange,
+    onRemoveTab,
   }) => {
-    const activeUuid = useValue(null)
+    return (
+      <div
+        class={classnames(
+          'px-6 py-1 text-sm cursor-pointer text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
+          {
+            'border-amber-500 border-b-2':
+              active === uuid || (uuid === Explorer.Preview && splitScreen),
+            'ml-auto order-last': fixed === 'right',
+          }
+        )}
+        onClick={() => onActive(uuid)}
+      >
+        <TabEdit
+          name={name}
+          label={label}
+          uuid={uuid}
+          activeUuid={activeUuid}
+          shouldRemove={shouldRemove}
+          shouldEdit={editTitle}
+          onInputChange={onInputChange}
+          onActiveChange={onActiveChange}
+          onTabRemove={onRemoveTab}
+        />
+      </div>
+    )
+  }
+)
+
+export const Tabs = FC<TabsProps>(
+  ({ children, namespace, onAdd, onRemove, onRun, isSSR, onChangeActive }) => {
+    const activeEditTitleId = useValue(null)
     const splitScreen = useValue(true)
     const runtimeErrorMessage = useValue(null)
 
@@ -161,42 +213,57 @@ export const Tabs = FC<TabsProps>(
       const preview = children.find(
         (item) => item.props.uuid === Explorer.Preview
       )
+      const tabPreview = last(children)
       return (
         <div class="h-full relative">
-          <div class="flex">
-            {children.map((item, index) => {
-              const { name, label, fixed, uuid, editTitle, remove } = item.props
-              return (
-                <div
-                  class={classnames(
-                    'px-6 py-1 text-sm cursor-pointer text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
-                    {
-                      'border-amber-500 border-b-2':
-                        active === uuid ||
-                        (uuid === Explorer.Preview && splitScreen.value),
-                      'ml-auto order-last': fixed === 'right',
-                    }
-                  )}
-                  onClick={() => onActive(uuid)}
-                >
-                  <TabEdit
+          <div class="flex gap-2">
+            <div class="flex overflow-x-auto flex-1">
+              {children.slice(0, -1).map((item, index) => {
+                const { name, label, fixed, uuid, editTitle, remove } =
+                  item.props
+                return (
+                  <TabEditContainer
+                    active={active}
+                    activeUuid={activeEditTitleId.value}
                     name={name}
                     label={label}
                     uuid={uuid}
-                    activeUuid={activeUuid.value}
+                    fixed={fixed}
+                    editTitle={editTitle}
                     shouldRemove={remove}
-                    shouldEdit={editTitle}
+                    splitScreen={splitScreen.value}
+                    onActive={onActive}
                     onInputChange={onInputChange}
-                    onActiveChange={(value) => (activeUuid.value = value)}
-                    onTabRemove={onRemoveTab}
+                    onActiveChange={(value: string) =>
+                      (activeEditTitleId.value = value)
+                    }
+                    onRemoveTab={onRemoveTab}
                   />
-                </div>
-              )
-            })}
-            <Dropdown onClick={onAddTab}>
-              <DropdownItem name="typescript">TSX</DropdownItem>
-              <DropdownItem name="less">LESS</DropdownItem>
-            </Dropdown>
+                )
+              })}
+              <Dropdown onClick={onAddTab}>
+                <DropdownItem name="typescript">TSX</DropdownItem>
+                <DropdownItem name="less">LESS</DropdownItem>
+              </Dropdown>
+            </div>
+            <div class="ml-auto order-last min-w-[92px]">
+              <TabEditContainer
+                active={active}
+                activeUuid={activeEditTitleId.value}
+                name={tabPreview.props.name}
+                label={tabPreview.props.label}
+                uuid={tabPreview.props.uuid}
+                editTitle={tabPreview.props.editTitle}
+                shouldRemove={tabPreview.props.remove}
+                splitScreen={splitScreen.value}
+                onActive={onActive}
+                onInputChange={onInputChange}
+                onActiveChange={(value: string) =>
+                  (activeEditTitleId.value = value)
+                }
+                onRemoveTab={onRemoveTab}
+              />
+            </div>
           </div>
           <div
             class={classnames(

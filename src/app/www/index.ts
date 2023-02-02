@@ -1,5 +1,6 @@
 import jsxDts from 'https://unpkg.com/gyron/dist/index.d.ts'
 import gyronDts from 'https://unpkg.com/@gyron/runtime/dist/index.d.ts'
+import csstype from 'https://unpkg.com/csstype/index.d.ts'
 
 interface ExtraLibItem {
   path: string
@@ -89,14 +90,22 @@ const generateDTS = async () => {
           path: '/@gyron/runtime/dist/index.d.ts',
           origin: 'https://unpkg.com',
           name: 'gyron.d.ts',
-          text: `declare module 'gyron' { ${gyronDts} }
-      declare const Gyron`,
+          text:
+            `declare module 'gyron' {\n${gyronDts}\n}\n` +
+            `declare module '@gyron/runtime' {\n${gyronDts}\n}\n` +
+            `declare const Gyron`,
         },
         '/gyron/dist/index.d.ts': {
           path: '/gyron/dist/index.d.ts',
           origin: 'https://unpkg.com',
           name: 'jsx.d.ts',
           text: jsxDts,
+        },
+        '/csstype/index.d.ts': {
+          path: '/csstype/index.d.ts',
+          origin: 'https://unpkg.com',
+          name: 'csstype.d.ts',
+          text: `declare module 'csstype' {\n${csstype}\n}`,
         },
       },
       originLibs

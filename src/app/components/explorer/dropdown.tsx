@@ -28,7 +28,7 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
     })
   }
   return (
-    <div class="px-4 bg-slate-700 select-none">
+    <div class="px-4 bg-slate-700 select-none sticky right-0">
       <div
         class="h-full flex items-center justify-center cursor-pointer"
         ref={target}

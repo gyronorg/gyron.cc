@@ -66,6 +66,11 @@ async function _initialEditor({
     monaco.Uri.parse(dts.gyron.origin + dts.gyron.path).toString()
   )
 
+  monaco.languages.typescript.typescriptDefaults.addExtraLib(
+    dts.csstype.text,
+    monaco.Uri.parse(dts.csstype.origin + dts.csstype.path).toString()
+  )
+
   const ts = editor.getModel(uri)
   if (ts) {
     ts.dispose()
