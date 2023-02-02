@@ -12,13 +12,12 @@ class ExtraLib {
   [key: string]: ExtraLibItem
   constructor(record: Record<string, ExtraLibItem>) {
     Reflect.ownKeys(record).forEach((key: string) => {
+      this[record[key].name] = record[key]
       this[record[key].name.slice(0, -5)] = record[key]
       this[key] = record[key]
     })
   }
 }
-
-const cache = {}
 
 const generateDTS = async () => {
   const libs = [
@@ -64,10 +63,11 @@ const generateDTS = async () => {
     'lib.webworker.d.ts',
   ].map(async (key) => {
     const text =
-      cache[key] ||
-      (cache[key] = await fetch('https://unpkg.com/typescript/lib/' + key).then(
-        (res) => res.text()
+      sessionStorage.getItem(key) ||
+      (await fetch('https://unpkg.com/typescript/lib/' + key).then((res) =>
+        res.text()
       ))
+    sessionStorage.setItem(key, text)
     return {
       path: '/typescript/lib/' + key,
       origin: 'https://unpkg.com',

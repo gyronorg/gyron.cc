@@ -4,7 +4,7 @@ import { createRef, FC, nextRender, useValue } from 'gyron'
 import type { IRange } from 'monaco-editor'
 import { Explorer, MAIN_FILE } from './constant'
 import { Editor, EditorType } from './editor'
-import { useEditor } from './hook'
+import { useEditor, useEditorResolve } from './hook'
 import { Preview, PreviewExpose } from './preview'
 import { Tabs, Tab } from './tab'
 
@@ -182,12 +182,15 @@ export const WrapperEditor = FC<WrapperEditorProps>(
     function onChangeActive(v: string, range?: IRange) {
       active.value = v
       if (range) {
-        nextRender(() => {
-          const instance = useEditor()
-          if (instance) {
-            instance.setSelection(range)
-          }
-        })
+        nextRender(() =>
+          useEditorResolve().then(() => {
+            const instance = useEditor()
+            if (instance) {
+              instance.revealLineInCenter(range.startLineNumber, 0)
+              instance.setSelection(range)
+            }
+          })
+        )
       }
     }
   }

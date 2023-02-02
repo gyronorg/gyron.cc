@@ -5,6 +5,7 @@ import { OnAdd, Source } from './wrapper'
 import generateDTS from '@/www'
 
 let _instance: editor.IStandaloneCodeEditor
+let _resolve: Promise<any> = Promise.resolve()
 
 const ThemeName = 'DOCS'
 
@@ -33,6 +34,7 @@ async function _initialEditor({
   const service = await initialService()
   const dts = await generateDTS()
   const scheme = 'file'
+  const uri = monaco.Uri.parse(`${scheme}:///${name}`)
 
   const { editor } = monaco
 
@@ -64,7 +66,7 @@ async function _initialEditor({
     monaco.Uri.parse(dts.gyron.origin + dts.gyron.path).toString()
   )
 
-  const ts = editor.getModel(monaco.Uri.parse(`${scheme}:///${name}`))
+  const ts = editor.getModel(uri)
   if (ts) {
     ts.dispose()
   }
@@ -88,34 +90,39 @@ async function _initialEditor({
     }
   }
   const editorService = {
-    openCodeEditor: async (input: Input, editor) => {
+    openCodeEditor: async (input: Input, _: editor.IStandaloneCodeEditor) => {
+      const range = _.getPosition()
       const { resource, options } = input
+      const { startColumn, endColumn } = _.getModel().getWordAtPosition(range)
+      const selection = Object.assign(options.selection, {
+        endColumn: options.selection.startColumn + endColumn - startColumn,
+      })
 
       const source = sources.find((source) => {
         if (resource.scheme === scheme) {
           return source.name === resource.path.slice(1)
         }
-        return dts[source.name]?.origin === resource.path
+
+        return (
+          dts[resource.path]?.name === source.name ||
+          dts[source.name]?.origin === resource.path
+        )
       })
       if (source) {
-        onChangeActive(source.uuid, options.selection)
+        onChangeActive(source.uuid, selection)
       } else {
         const { name, text } = dts[resource.path]
         const source = onAdd('typescript', name, text, false, false)
-        onChangeActive(source.uuid, options.selection)
+        onChangeActive(source.uuid, selection)
       }
-      return editor
+      return _
     },
   }
 
   const instance = editor.create(
     container,
     {
-      model: editor.createModel(
-        code,
-        language,
-        monaco.Uri.parse(`${scheme}:///${name}`)
-      ),
+      model: editor.createModel(code, language, uri),
       readOnly: !editContent,
       language: language,
       theme: ThemeName,
@@ -161,7 +168,8 @@ async function _initialEditor({
 export async function initialEditor(
   ...params: Parameters<typeof _initialEditor>
 ) {
-  const { editor, monaco, instance } = await _initialEditor(...params)
+  _resolve = _initialEditor(...params)
+  const { editor, monaco, instance } = await _resolve
 
   _instance = instance
 
@@ -174,4 +182,8 @@ export async function initialEditor(
 
 export function useEditor() {
   return _instance
+}
+
+export function useEditorResolve() {
+  return _resolve
 }

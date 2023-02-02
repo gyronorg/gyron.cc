@@ -136,10 +136,11 @@ function HttpResource() {
     name: namespace,
     /** @type {import('esbuild').Plugin['setup']} */
     setup(build) {
+      const cache = {}
       build.onResolve({ filter: /^https:\/\// }, ({ path }) => ({ path, namespace }));
       build.onResolve({ filter: /.*/, namespace }, ({ path, importer }) => ({ path: new URL(path.replace(/\?.*/, ""), importer).toString(), namespace }));
       build.onLoad({ filter: /.*/, namespace }, async (args) => {
-        return fetch(args.path, {
+        return cache[args.path] || fetch(args.path, {
           headers: {
             'pragma': 'no-cache',
             'sec-fetch-site': 'same-origin',
@@ -150,6 +151,9 @@ function HttpResource() {
             contents: res,
             loader: 'text'
           }
+        }).then(value => {
+          cache[args.path] = value
+          return value
         })
       })
     }

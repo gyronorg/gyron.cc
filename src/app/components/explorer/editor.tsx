@@ -1,10 +1,7 @@
-import { useDark } from '@/hooks/dark'
-import { initialMonaco, initialMonacoJSX, initialService } from '@/hooks/monaco'
-import { createRef, exposeComponent, FC, onAfterMount } from 'gyron'
+import { createRef, FC, onAfterMount, useValue } from 'gyron'
 import { debounce } from 'lodash-es'
 import { OnAdd, Source } from './wrapper'
 import type { IRange } from 'monaco-editor'
-import generateDTS from '@/www'
 import { initialEditor } from './hook'
 
 export type EditorType = 'typescript' | 'less'
@@ -23,7 +20,6 @@ interface EditorProps {
   onChangeActive?: (active: string, range?: IRange) => void
 }
 
-
 export const Editor = FC<EditorProps>(
   ({
     isSSR,
@@ -37,11 +33,12 @@ export const Editor = FC<EditorProps>(
     onChangeActive,
   }) => {
     const container = createRef<HTMLDivElement>()
-    const isDark = useDark(isSSR)
+    const loading = useValue(true)
     const owner = 'Link'
 
     onAfterMount(async () => {
       if (!isSSR) {
+        loading.value = true
         const { instance, editor } = await initialEditor({
           container: container.current,
           language: type,
@@ -52,6 +49,7 @@ export const Editor = FC<EditorProps>(
           onAdd,
           onChangeActive,
         })
+        loading.value = false
 
         const model = instance.getModel()
         const onCodeChange = debounce(() => {
@@ -65,10 +63,17 @@ export const Editor = FC<EditorProps>(
     })
 
     return (
-      <div
-        class="h-full bg-[#1e293b] dark:bg-[#00000080]"
-        ref={container}
-      ></div>
+      <div class="h-full relative">
+        {loading.value && (
+          <div class="absolute left-0 top-0 w-full h-full text-white flex items-center justify-center">
+            资源加载中...
+          </div>
+        )}
+        <div
+          class="h-full bg-[#1e293b] dark:bg-[#00000080]"
+          ref={container}
+        ></div>
+      </div>
     )
   }
 )
