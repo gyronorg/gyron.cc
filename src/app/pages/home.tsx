@@ -1,7 +1,12 @@
 import { Link } from '@gyron/router'
-import { FC } from 'gyron'
+import { FC, FCA } from 'gyron'
 import { Nav } from '@/components/nav'
-import { DOCS_NAV, CORE_NAV, Explorer } from '@/pages'
+import { DOCS_NAV, CORE_NAV } from '@/pages'
+import { Skeleton } from '@/components/skeleton'
+
+const AsyncExplorer = FCA(() =>
+  import('@/pages/explorer').then(({ Explorer }) => <Explorer />)
+)
 
 export const Home = FC(() => {
   return (
@@ -67,7 +72,7 @@ export const Home = FC(() => {
             如果同一时间发生多次组件更新，并且更新时间大于5ms时或者有用户在输入时，更新将暂停，直至宿主有空闲或者用户输入完成才会继续。
           </div>
         </div>
-        <Explorer />
+        <AsyncExplorer fallback={<Skeleton length={3} />} />
         <div class="text-xs ml-auto mr-auto mt-4 pl-4">
           在线使用，在左边编辑完成后点击运行按钮即可预览效果。
         </div>

@@ -1,0 +1,23 @@
+import { useValue, FC, Transition } from 'gyron'
+import './index.less'
+
+export const APP = FC(() => {
+  const visible = useValue(true)
+  const count = useValue(0)
+  function onChange() {
+    visible.value = !visible.value
+    count.value++
+  }
+  return (
+    <div class="container">
+      <button onClick={onChange}>toggle</button>
+      <Transition name="fade">
+        {visible.value ? (
+          <div>{count.value}</div>
+        ) : (
+          <div>{count.value}</div>
+        )}
+      </Transition>
+    </div>
+  )
+})

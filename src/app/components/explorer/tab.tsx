@@ -175,7 +175,8 @@ const TabEditContainer = FC<TabEditContainerProps>(
 export const Tabs = FC<TabsProps>(
   ({ children, namespace, onAdd, onRemove, onRun, isSSR, onChangeActive }) => {
     const activeEditTitleId = useValue(null)
-    const splitScreen = useValue(true)
+    // 是否开启预览窗口
+    const splitScreen = useValue(false)
     const runtimeErrorMessage = useValue(null)
 
     if (!isSSR) {
@@ -217,7 +218,7 @@ export const Tabs = FC<TabsProps>(
       return (
         <div class="h-full relative">
           <div class="flex gap-2">
-            <div class="flex overflow-x-auto flex-1">
+            <div class="flex overflow-x-auto overflow-y-hidden flex-1">
               {children.slice(0, -1).map((item, index) => {
                 const { name, label, fixed, uuid, editTitle, remove } =
                   item.props
@@ -267,7 +268,7 @@ export const Tabs = FC<TabsProps>(
           </div>
           <div
             class={classnames(
-              'cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full border-slate-400 border border-t-0 rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[80px]',
+              'cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full border-slate-400 border border-t-0 rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[92px]',
               {
                 'left-full': !splitScreen.value,
               }
