@@ -14,7 +14,9 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
   const visible = useValue(false)
 
   onAfterMount(() => {
-    const popper = createPopper(target.current, source.current, {})
+    const popper = createPopper(target.current, source.current, {
+      placement: 'top'
+    })
   })
 
   function onVisible() {

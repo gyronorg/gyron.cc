@@ -218,30 +218,32 @@ export const Tabs = FC<TabsProps>(
       return (
         <div class="h-full relative">
           <div class="flex gap-2">
-            <div class="flex overflow-x-auto overflow-y-hidden flex-1">
-              {children.slice(0, -1).map((item, index) => {
-                const { name, label, fixed, uuid, editTitle, remove } =
-                  item.props
-                return (
-                  <TabEditContainer
-                    active={active}
-                    activeUuid={activeEditTitleId.value}
-                    name={name}
-                    label={label}
-                    uuid={uuid}
-                    fixed={fixed}
-                    editTitle={editTitle}
-                    shouldRemove={remove}
-                    splitScreen={splitScreen.value}
-                    onActive={onActive}
-                    onInputChange={onInputChange}
-                    onActiveChange={(value: string) =>
-                      (activeEditTitleId.value = value)
-                    }
-                    onRemoveTab={onRemoveTab}
-                  />
-                )
-              })}
+            <div class="flex max-w-[calc(100%-134px)]">
+              <div class="flex overflow-x-auto overflow-y-hidden">
+                {children.slice(0, -1).map((item, index) => {
+                  const { name, label, fixed, uuid, editTitle, remove } =
+                    item.props
+                  return (
+                    <TabEditContainer
+                      active={active}
+                      activeUuid={activeEditTitleId.value}
+                      name={name}
+                      label={label}
+                      uuid={uuid}
+                      fixed={fixed}
+                      editTitle={editTitle}
+                      shouldRemove={remove}
+                      splitScreen={splitScreen.value}
+                      onActive={onActive}
+                      onInputChange={onInputChange}
+                      onActiveChange={(value: string) =>
+                        (activeEditTitleId.value = value)
+                      }
+                      onRemoveTab={onRemoveTab}
+                    />
+                  )
+                })}
+              </div>
               <Dropdown onClick={onAddTab}>
                 <DropdownItem name="typescript">TSX</DropdownItem>
                 <DropdownItem name="less">LESS</DropdownItem>
