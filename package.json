@@ -1,6 +1,6 @@
 {
   "name": "@gyron/docs",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -37,6 +37,7 @@
     "monaco-editor": "0.34.1",
     "nocache": "^3.0.3",
     "node-stdlib-browser": "^1.2.0",
+    "ora": "^6.1.2",
     "postcss": "^8.4.13",
     "postcss-less": "^6.0.0",
     "postcss-nested": "^5.0.6",
@@ -50,11 +51,11 @@
     "uuid": "^9.0.0"
   },
   "dependencies": {
-    "@gyron/babel-plugin-jsx": "^0.0.28",
-    "@gyron/dom-server": "^0.0.28",
-    "@gyron/jsx-runtime": "^0.0.28",
-    "@gyron/router": "^0.0.28",
-    "gyron": "^0.0.28"
+    "@gyron/babel-plugin-jsx": "^0.0.29",
+    "@gyron/dom-server": "^0.0.29",
+    "@gyron/jsx-runtime": "^0.0.29",
+    "@gyron/router": "^0.0.29",
+    "gyron": "^0.0.29"
   },
   "prettier": {
     "semi": false,

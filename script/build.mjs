@@ -11,7 +11,9 @@ import fs from 'fs-extra'
 import path from 'path'
 import chalk from 'chalk'
 import ProgressBar from 'progress'
+import ora from 'ora'
 
+const spinner = ora('Building...');
 const tempPath = 'dist'
 
 async function getRoutes(vnode) {
@@ -64,6 +66,7 @@ async function render(vnode, url, clientMeta) {
     )
 }
 
+spinner.start()
 buildClient(false, tempPath).then((appMeta) => {
   // many web standards
   const jsdom = new JSDOM()
@@ -104,5 +107,6 @@ buildClient(false, tempPath).then((appMeta) => {
     fs.copySync('public/sitemap', `${tempPath}/sitemap`)
     fs.copySync('public/assets', `${tempPath}/assets`)
     fs.rmSync('dist/app', { recursive: true, force: true })
+    spinner.succeed(chalk.green('Build Complete!'))
   })
 })
