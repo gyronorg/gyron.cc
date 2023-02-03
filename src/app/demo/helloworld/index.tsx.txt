@@ -1,0 +1,19 @@
+import { useReactive, FC } from 'gyron'
+import './index.less'
+
+export const APP = FC(() => {
+  const count = useReactive({
+    count: 1
+  });
+  function onIncrement() {
+    count.count++
+  }
+  return (
+    <div class="container">
+      <img src="https://gyron.netlify.app/assets/image/logo-sm.png" alt="gyron logo" />
+      <h1 onClick={onIncrement}>
+        {`Hello, Gyron (${count.count})`}
+      </h1>
+    </div>
+  );
+})
