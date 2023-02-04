@@ -270,7 +270,7 @@ export const Tabs = FC<TabsProps>(
           </div>
           <div
             class={classnames(
-              'cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full border-slate-400 border border-t-0 rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[92px]',
+              'cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full bg-[#7a9fbf2e] rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[92px]',
               {
                 'left-full': !splitScreen.value,
               }
@@ -299,11 +299,13 @@ export const Tabs = FC<TabsProps>(
             >
               {child}
             </div>
-            {splitScreen.value && (
-              <div class={classnames('flex-1, w-1/2 border-l border-zinc-400')}>
-                {preview}
-              </div>
-            )}
+            <div
+              class={classnames('flex-1, w-1/2 border-l border-zinc-400', {
+                hidden: !splitScreen.value,
+              })}
+            >
+              {preview}
+            </div>
           </div>
         </div>
       )

@@ -16,3 +16,13 @@
     }
   }
 }
+button {
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 4px 16px;
+  &.add {
+    width: 100%;
+    border: 1px solid #4ea7a5;
+    margin-top: 10px;
+  }
+}

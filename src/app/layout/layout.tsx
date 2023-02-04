@@ -1,6 +1,7 @@
 import { FC } from 'gyron'
 import { useRouter } from '@gyron/router'
 import { Header } from '@/components/header'
+import { isUesLightTheme } from '@/hooks/light'
 import classnames from 'classnames'
 
 export const Layout = FC(({ children }) => {
@@ -11,7 +12,7 @@ export const Layout = FC(({ children }) => {
         'text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900',
         {
           'background-linear': true,
-          'background-linear-full': router.path === '/',
+          'background-linear-full': isUesLightTheme(router.path),
         }
       )}
     >

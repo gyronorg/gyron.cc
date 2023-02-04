@@ -4,6 +4,7 @@ import { DarkToggle } from '@/components/dark'
 import { CloseIcon, GithubIcon, LogoIcon, MenuIcon } from '@/components/icons'
 import { Nav } from './nav'
 import { DOCS_NAV, CORE_NAV } from '@/pages'
+import { isUesLightTheme } from '@/hooks/light'
 import pkg from '../../../package.json'
 import classnames from 'classnames'
 import docsearch from '@docsearch/js'
@@ -35,12 +36,12 @@ export const Header = FC(() => {
   })
 
   return (
-    <header class="sticky top-0 z-30 h-[58px] border-b border-solid border-gray-200 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75">
+    <header class="sticky top-0 z-50 h-[58px] border-b border-solid border-gray-200 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75">
       <div
         class={classnames(
           'container mr-auto ml-auto flex items-center justify-between sm-down:max-w-none dark:text-slate-200',
           {
-            'text-slate-200': router.path === '/',
+            'text-slate-200': isUesLightTheme(router.path),
           }
         )}
       >
@@ -50,7 +51,9 @@ export const Header = FC(() => {
           className={classnames(
             'hidden md:block overflow-hidden w-0 h-0 md:w-auto md:h-auto items-center',
             {
-              'text-primary-400 dark:text-slate-200': router.path !== '/',
+              'text-primary-400 dark:text-slate-200': !isUesLightTheme(
+                router.path
+              ),
             }
           )}
         >
@@ -130,7 +133,7 @@ export const Header = FC(() => {
           </div>
           <div
             class={classnames('w-15 sm:w-[199px] doc-light-search', {
-              'doc-home-search': router.path === '/',
+              'doc-home-search': isUesLightTheme(router.path),
             })}
           >
             <div

@@ -44,7 +44,7 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
       <div
         class={classnames(
           visible.value ? 'opacity-100' : 'opacity-0 pointer-events-none',
-          'absolute shadow-gray-800 shadow-xl bg-[#1e293b] dark:bg-black z-50'
+          'absolute shadow-gray-800 shadow-xl bg-[#1e293b] dark:bg-black z-50 text-yellow-400'
         )}
         ref={source}
         onClick={onItemClick}
