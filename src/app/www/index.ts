@@ -58,7 +58,7 @@ const generateDTS = async () => {
     'lib.es2019.object.d.ts',
     'lib.es2019.string.d.ts',
     'lib.es2019.symbol.d.ts',
-    'lib.2020.bigint.d.ts',
+    'lib.es2020.bigint.d.ts',
     'lib.es2020.d.ts',
     'lib.es2020.date.d.ts',
     'lib.es2020.full.d.ts',
