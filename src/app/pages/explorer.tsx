@@ -41,7 +41,7 @@ export const Explorer = FC<ExplorerProps>(
     return (
       <div
         class={classNames('h-[calc(100vh-58px)]', {
-          'p-4': hasPadding,
+          'p-4 pt-10': hasPadding,
         })}
         style={{ height: height + 'px' }}
       >

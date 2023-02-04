@@ -15,7 +15,7 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
 
   onAfterMount(() => {
     const popper = createPopper(target.current, source.current, {
-      placement: 'top'
+      placement: 'right-end'
     })
   })
 
@@ -69,7 +69,7 @@ interface DropdownItemProps {
 
 export const DropdownItem = FC<DropdownItemProps>(({ children, name }) => {
   return (
-    <div data-name={name} class="cursor-pointer py-1 px-3 hover:bg-slate-800">
+    <div data-name={name} class="cursor-pointer py-1 px-3 hover:bg-slate-600">
       {children}
     </div>
   )
