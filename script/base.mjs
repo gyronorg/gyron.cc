@@ -104,6 +104,7 @@ export async function buildClient(watch, tempPath) {
       format: 'esm',
       splitting: true,
       platform: 'browser',
+      minify: !watch,
       inject: [
         path.resolve(
           'node_modules/node-stdlib-browser/helpers/esbuild/shim.js'
@@ -138,6 +139,7 @@ export async function buildAPP() {
       format: 'esm',
       platform: 'browser',
       watch: false,
+      minify: true,
       external: ['@gyron/runtime', '@gyron/router'],
       inject: [
         path.resolve(

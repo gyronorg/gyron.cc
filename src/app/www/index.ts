@@ -1,6 +1,6 @@
-import jsxDts from 'https://unpkg.com/gyron/dist/index.d.ts'
-import gyronDts from 'https://unpkg.com/@gyron/runtime/dist/index.d.ts'
-import csstype from 'https://unpkg.com/csstype/index.d.ts'
+import jsxDts from 'https://cdn.jsdelivr.net/npm/gyron/dist/index.d.ts'
+import gyronDts from 'https://cdn.jsdelivr.net/npm/@gyron/runtime/dist/index.d.ts'
+import csstype from 'https://cdn.jsdelivr.net/npm/csstype/index.d.ts'
 
 interface ExtraLibItem {
   path: string
@@ -55,23 +55,53 @@ const generateDTS = async () => {
     'lib.es2019.d.ts',
     'lib.es2019.full.d.ts',
     'lib.es2019.intl.d.ts',
+    'lib.es2019.object.d.ts',
+    'lib.es2019.string.d.ts',
+    'lib.es2019.symbol.d.ts',
+    'lib.2020.bigint.d.ts',
     'lib.es2020.d.ts',
+    'lib.es2020.date.d.ts',
+    'lib.es2020.full.d.ts',
+    'lib.es2020.intl.d.ts',
+    'lib.es2020.number.d.ts',
+    'lib.es2020.promise.d.ts',
+    'lib.es2020.sharedmemory.d.ts',
+    'lib.es2020.string.d.ts',
+    'lib.es2020.symbol.wellknown.d.ts',
     'lib.es2021.d.ts',
+    'lib.es2021.full.d.ts',
+    'lib.es2021.intl.d.ts',
+    'lib.es2021.promise.d.ts',
+    'lib.es2021.string.d.ts',
+    'lib.es2021.weakref.d.ts',
     'lib.es2022.d.ts',
+    'lib.es2022.array.d.ts',
+    'lib.es2022.error.d.ts',
+    'lib.es2022.full.d.ts',
+    'lib.es2022.intl.d.ts',
+    'lib.es2022.object.d.ts',
+    'lib.es2022.regexp.d.ts',
+    'lib.es2022.sharedmemory.d.ts',
+    'lib.es2022.string.d.ts',
+    'lib.esnext.d.ts',
+    'lib.esnext.full.d.ts',
+    'lib.esnext.intl.d.ts',
+    'lib.scripthost.d.ts',
     'lib.es5.d.ts',
     'lib.es6.d.ts',
-    'lib.esnext.d.ts',
     'lib.webworker.d.ts',
+    'lib.webworker.importscripts.d.ts',
+    'lib.webworker.iterable.d.ts',
   ].map(async (key) => {
     const text =
       sessionStorage.getItem(key) ||
-      (await fetch('https://unpkg.com/typescript/lib/' + key).then((res) =>
+      (await fetch('/assets/lib/' + key).then((res) =>
         res.text()
       ))
     sessionStorage.setItem(key, text)
     return {
       path: '/typescript/lib/' + key,
-      origin: 'https://unpkg.com',
+      origin: 'https://cdn.jsdelivr.net/npm',
       name: key,
       text: text,
     }
@@ -86,24 +116,24 @@ const generateDTS = async () => {
     Object.assign(
       {},
       {
-        '/@gyron/runtime/dist/index.d.ts': {
+        '/npm/@gyron/runtime/dist/index.d.ts': {
           path: '/@gyron/runtime/dist/index.d.ts',
-          origin: 'https://unpkg.com',
+          origin: 'https://cdn.jsdelivr.net/npm',
           name: 'gyron.d.ts',
           text:
             `declare module 'gyron' {\n${gyronDts}\n}\n` +
             `declare module '@gyron/runtime' {\n${gyronDts}\n}\n` +
             `declare const Gyron`,
         },
-        '/gyron/dist/index.d.ts': {
+        '/npm/gyron/dist/index.d.ts': {
           path: '/gyron/dist/index.d.ts',
-          origin: 'https://unpkg.com',
+          origin: 'https://cdn.jsdelivr.net/npm',
           name: 'jsx.d.ts',
           text: jsxDts,
         },
-        '/csstype/index.d.ts': {
+        '/npm/csstype/index.d.ts': {
           path: '/csstype/index.d.ts',
-          origin: 'https://unpkg.com',
+          origin: 'https://cdn.jsdelivr.net/npm',
           name: 'csstype.d.ts',
           text: `declare module 'csstype' {\n${csstype}\n}`,
         },
