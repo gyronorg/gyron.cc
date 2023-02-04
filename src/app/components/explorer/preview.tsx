@@ -99,7 +99,7 @@ try {
       rootFileName: '_app.tsx',
       setup: true,
       importSourceMap: {
-        gyron: 'https://unpkg.com/gyron/dist/browser/index.js',
+        gyron: location.origin + '/assets/gyron/index.js',
       },
       external: [],
     },
