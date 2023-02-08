@@ -79,7 +79,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
     function onActiveChange(uuid: string, name: string) {
       sources.value.forEach((item) => {
         if (item.uuid === uuid) {
-          item.name = name
+          item.label = item.name = name
         }
       })
     }

@@ -18,6 +18,23 @@ interface TabProps {
   source: Source
 }
 
+const AMap: Record<
+  SourceType,
+  {
+    suffix: string
+    Component: WrapperFunction<any>
+  }
+> = {
+  less: {
+    suffix: '.less',
+    Component: LessIcon,
+  },
+  typescript: {
+    suffix: '.tsx',
+    Component: TsxIcon,
+  },
+}
+
 export const Tab = FC<TabProps>(({ children }) => {
   return children
 })
@@ -58,20 +75,20 @@ export function useStandaloneNamespace(
 
 const TabEdit = FC<TabEditProps>(
   ({ source, activeUuid, onInputChange, onActiveChange, onTabRemove }) => {
-    const { uuid, name, label, remove, editTitle } = source
+    const { uuid, name, label, remove, editTitle, type } = source
     const _name = (label || name).replace(/\.(less|tsx)$/, '')
     return activeUuid === uuid ? (
       <input
         type="text"
-        class="border focus:outline-cyan-500 border-amber-400 p-1 text-zinc-700 dark:text-white"
+        class="border focus:outline-cyan-500 border-amber-400 p-1 text-zinc-700 dark:text-white relative z-10"
         value={_name}
-        onChange={(e: any) => onInputChange(uuid, e.target.value)}
+        onChange={(e: any) => onInputChange(uuid, `${e.target.value}${AMap[type].suffix}`)}
         onBlur={onBlur}
         autoFocus
       />
     ) : (
       <span
-        class="px-2 select-none flex items-center gap-4 relative"
+        class="px-2 select-none flex items-center gap-4 relative z-10"
         onDblclick={() => onDblclick(uuid)}
       >
         {_name}
@@ -123,17 +140,13 @@ const TabEditContainer = FC<TabEditContainerProps>(
     onActiveChange,
     onRemoveTab,
   }) => {
-    const AMap: Record<SourceType, WrapperFunction<any>> = {
-      less: LessIcon,
-      typescript: TsxIcon,
-    }
     return () => {
       const { uuid, type } = source
-      const Icon = AMap[type]
+      const { Component } = AMap[type]
       return (
         <div
           class={classnames(
-            'border-b-2 border-transparent px-6 py-1 text-sm cursor-pointer fill-white text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
+            'backdrop-blur border-b-2 border-transparent relative px-6 py-1 text-sm cursor-pointer fill-white text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
             {
               'border-amber-500':
                 active === uuid || (uuid === Explorer.Preview && splitScreen),
@@ -149,7 +162,7 @@ const TabEditContainer = FC<TabEditContainerProps>(
             onActiveChange={onActiveChange}
             onTabRemove={onRemoveTab}
           />
-          {uuid !== Explorer.Preview && <Icon />}
+          {uuid !== Explorer.Preview && <Component class="fill-white/5 absolute left-1/2 -translate-x-1/2 h-10" />}
         </div>
       )
     }
