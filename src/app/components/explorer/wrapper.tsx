@@ -3,13 +3,13 @@ import { generateSafeUuid } from '@/utils/uuid'
 import { createRef, FC, nextRender, useValue } from 'gyron'
 import type { IRange } from 'monaco-editor'
 import { Explorer, MAIN_FILE } from './constant'
-import { Editor, EditorType } from './editor'
+import { Editor, SourceType } from './editor'
 import { useEditor, useEditorResolve } from './hook'
 import { Preview, PreviewExpose } from './preview'
 import { Tabs, Tab } from './tab'
 
 export type OnAdd = (
-  type: EditorType,
+  type: SourceType,
   name?: string,
   code?: string,
   editTitle?: boolean,
@@ -21,7 +21,8 @@ export type OnAdd = (
 export interface Source {
   code: string
   name: string
-  type: EditorType
+  label: string
+  type: SourceType
   editTitle: boolean
   editContent: boolean
   remove: boolean
@@ -30,11 +31,11 @@ export interface Source {
 }
 
 let _uid = 1
-const sourceName: Record<EditorType, string> = {
+const sourceName: Record<SourceType, string> = {
   typescript: 'Comp',
   less: 'Style',
 }
-const sourceSuffixName: Record<EditorType, string> = {
+const sourceSuffixName: Record<SourceType, string> = {
   typescript: '.tsx',
   less: '.less',
 }
@@ -64,6 +65,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       : [
           {
             name: MAIN_FILE,
+            label: MAIN_FILE,
             type: 'typescript',
             code: '',
             uuid: generateSafeUuid(),
@@ -110,21 +112,10 @@ export const WrapperEditor = FC<WrapperEditorProps>(
         onChangeActive={onChangeActive}
       >
         {sources.value.map((item) => (
-          <Tab
-            name={item.name}
-            label={item.name}
-            uuid={item.uuid}
-            editTitle={item.editTitle}
-            editContent={item.editContent}
-            remove={item.remove}
-          >
+          <Tab source={item}>
             <Editor
               key={item.uuid}
-              name={item.name}
-              code={item.code}
-              type={item.type}
-              editTitle={item.editTitle}
-              editContent={item.editContent}
+              source={item}
               active={active.value}
               sources={sources.value}
               onChange={(value) => (item.code = value)}
@@ -135,13 +126,16 @@ export const WrapperEditor = FC<WrapperEditorProps>(
           </Tab>
         ))}
         <Tab
-          name={Explorer.Preview}
-          label="预览"
-          fixed="right"
-          uuid={Explorer.Preview}
-          editTitle={false}
-          editContent={false}
-          remove={false}
+          source={{
+            name: Explorer.Preview,
+            label: '预览',
+            uuid: Explorer.Preview,
+            editContent: false,
+            editTitle: false,
+            remove: false,
+            code: '',
+            type: 'less',
+          }}
         >
           <Preview source={sources.value} namespace={namespace} ref={preview} />
         </Tab>
@@ -149,7 +143,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
     )
 
     function add(
-      type: EditorType,
+      type: SourceType,
       name = '',
       code = '',
       editTitle = true,
@@ -157,9 +151,12 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       remove = true,
       extra: {}
     ) {
+      const _name =
+        name || `${sourceName[type]}${_uid++}${sourceSuffixName[type]}`
       const source = {
         code: code,
-        name: name || `${sourceName[type]}${_uid++}${sourceSuffixName[type]}`,
+        name: _name,
+        label: _name,
         type: type,
         editTitle: editTitle,
         editContent: editContent,

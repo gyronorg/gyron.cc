@@ -3,6 +3,10 @@
 import { buildClient, buildServer } from './base.mjs'
 import tmp from 'tmp'
 import fs from 'fs-extra'
+import ora from 'ora'
+
+const spinner = ora('Building...')
+spinner.start()
 
 const tempPath = tmp.dirSync().name
 
@@ -14,6 +18,6 @@ process.on('SIGINT', () => {
 buildClient(true, tempPath).then((clientMetafile) => {
   buildServer(true, tempPath, clientMetafile).then(() => {
     fs.copySync('public/assets', `${tempPath}/assets`)
-    console.log(tempPath)
+    spinner.succeed('Build Complete.', tempPath)
   })
 })

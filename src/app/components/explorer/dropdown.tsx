@@ -1,11 +1,11 @@
 import { createRef, FC, onAfterMount, onDestroyed, useValue } from 'gyron'
 import { AddIcon } from '../icons'
 import { createPopper } from '@popperjs/core/lib/popper-lite.js'
-import { EditorType } from './editor'
+import { SourceType } from './editor'
 import classnames from 'classnames'
 
 interface DropdownProps {
-  onClick?: (type: EditorType) => void
+  onClick?: (type: SourceType) => void
 }
 
 export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
@@ -57,14 +57,14 @@ export const Dropdown = FC<DropdownProps>(({ children, onClick, isSSR }) => {
   function onItemClick(e: Event) {
     e.stopPropagation()
     const el = e.target as HTMLDivElement
-    const type = el.dataset['name'] as EditorType
+    const type = el.dataset['name'] as SourceType
     onClick(type)
     onVisible()
   }
 })
 
 interface DropdownItemProps {
-  name: EditorType
+  name: SourceType
 }
 
 export const DropdownItem = FC<DropdownItemProps>(({ children, name }) => {

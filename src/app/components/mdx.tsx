@@ -72,7 +72,7 @@ export const MdxContainer = FC<MdxContainerProps>(({ children, menu }) => {
         <meta itemProp="url" content="https://github.com/Linkontoask" />
       </span>
       <meta itemProp="image" content="/assets/image/logo-sm.png" />
-      <Guidance navigations={menu.anchor} />
+      <Guidance navigation={menu.anchor} />
       <div class="prose prose-slate mt-8 dark:prose-invert max-w-none">
         {children}
       </div>

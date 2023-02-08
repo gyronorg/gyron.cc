@@ -4,15 +4,11 @@ import { OnAdd, Source } from './wrapper'
 import type { IRange } from 'monaco-editor'
 import { initialEditor } from './hook'
 
-export type EditorType = 'typescript' | 'less'
+export type SourceType = 'typescript' | 'less'
 
 interface EditorProps {
-  name: string
-  code: string
-  type: EditorType
+  source: Source
   sources: Source[]
-  editTitle: boolean
-  editContent: boolean
   active?: string
   onChange: (code: string) => void
   onAdd?: OnAdd
@@ -21,17 +17,7 @@ interface EditorProps {
 }
 
 export const Editor = FC<EditorProps>(
-  ({
-    isSSR,
-    code,
-    type,
-    name,
-    sources,
-    editContent,
-    onChange,
-    onAdd,
-    onChangeActive,
-  }) => {
+  ({ isSSR, sources, source, onChange, onAdd, onChangeActive }) => {
     const container = createRef<HTMLDivElement>()
     const loading = useValue(true)
     const owner = 'Link'
@@ -39,12 +25,13 @@ export const Editor = FC<EditorProps>(
     onAfterMount(async () => {
       if (!isSSR) {
         loading.value = true
+        const { type, code, name, editContent } = source
         const { instance, editor } = await initialEditor({
           container: container.current,
           language: type,
+          sources,
           code,
           name,
-          sources,
           editContent,
           onAdd,
           onChangeActive,

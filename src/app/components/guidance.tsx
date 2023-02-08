@@ -22,7 +22,7 @@ export interface NavigationBar {
 }
 
 export interface GuidanceProps {
-  navigations: Navigation
+  navigation: Navigation
 }
 
 function useScroll(isSSR: boolean) {
@@ -48,35 +48,35 @@ const loaded: Navigation[] = []
 
 export const Guidance = FC<GuidanceProps>(({ isSSR }) => {
   const props = defineProps<GuidanceProps>()
-  const navigations = useValue<NavigationBar[]>([])
+  const navigation = useValue<NavigationBar[]>([])
   const loading = useValue(true)
   const scroll = useScroll(isSSR)
   const position = storeState.guidance
   const fuzzyAccuracy = 2
 
-  const activename = useComputed(() => {
+  const activeName = useComputed(() => {
     const top = Object.keys(position)
       .reverse()
       .find((top) => scroll.top >= Number(top) - fuzzyAccuracy)
     return position[top]
   }, [() => scroll.top])
 
-  function updateNavigations() {
-    if (!loaded.includes(props.navigations)) {
-      loaded.push(props.navigations)
+  function updateNavigation() {
+    if (!loaded.includes(props.navigation)) {
+      loaded.push(props.navigation)
       loading.value = true
     }
-    invokeWithGetMdxAnchor(props.navigations).then((value) => {
-      navigations.value = value
+    invokeWithGetMdxAnchor(props.navigation).then((value) => {
+      navigation.value = value
       loading.value = false
     })
   }
 
   onAfterRouteUpdate(() => {
-    nextRender(updateNavigations)
+    nextRender(updateNavigation)
   })
 
-  updateNavigations()
+  updateNavigation()
 
   return (
     <div
@@ -91,7 +91,7 @@ export const Guidance = FC<GuidanceProps>(({ isSSR }) => {
         {loading.value ? (
           <Skeleton length={2} />
         ) : (
-          navigations.value.map((navigation) => (
+          navigation.value.map((navigation) => (
             <li
               class={classnames('pl-0', {
                 'ml-4': navigation.type === 'h3',
@@ -101,7 +101,7 @@ export const Guidance = FC<GuidanceProps>(({ isSSR }) => {
                 href={`#${navigation.name}`}
                 class={classnames(
                   'flex py-1',
-                  activename.value === navigation.name
+                  activeName.value === navigation.name
                     ? 'font-medium text-sky-500 dark:text-sky-400'
                     : 'group items-start no-underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300'
                 )}

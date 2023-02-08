@@ -1,6 +1,6 @@
 import { initialMonaco, initialService, initialMonacoJSX } from '@/hooks/monaco'
 import type { editor, IRange } from 'monaco-editor'
-import { EditorType } from './editor'
+import { SourceType } from './editor'
 import { OnAdd, Source } from './wrapper'
 import generateDTS from '@/www'
 
@@ -12,7 +12,7 @@ const ThemeName = 'DOCS'
 interface InitialEditor {
   container: HTMLElement
   code: string
-  language: EditorType
+  language: SourceType
   name: string
   editContent: boolean
   sources: Source[]

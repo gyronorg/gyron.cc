@@ -13,7 +13,7 @@ import chalk from 'chalk'
 import ProgressBar from 'progress'
 import ora from 'ora'
 
-const spinner = ora('Building...');
+const spinner = ora('Building...')
 const tempPath = 'dist'
 
 async function getRoutes(vnode) {

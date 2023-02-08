@@ -1,20 +1,21 @@
-import { FC, nextRender, onDestroyed, useValue, VNode } from 'gyron'
+import {
+  FC,
+  nextRender,
+  onDestroyed,
+  useValue,
+  VNode,
+  WrapperFunction,
+} from 'gyron'
 import { Dropdown, DropdownItem } from './dropdown'
-import { EditorType } from './editor'
-import { OnAdd } from './wrapper'
-import { CloseIcon, CodeIcon } from '../icons'
+import { SourceType } from './editor'
+import { OnAdd, Source } from './wrapper'
+import { CloseIcon, CodeIcon, LessIcon, TsxIcon } from '../icons'
 import { Explorer } from './constant'
 import { last } from 'lodash-es'
 import classnames from 'classnames'
 
 interface TabProps {
-  name: string
-  uuid: string
-  editTitle: boolean
-  editContent: boolean
-  remove: boolean
-  label?: string
-  fixed?: 'right' | 'left'
+  source: Source
 }
 
 export const Tab = FC<TabProps>(({ children }) => {
@@ -33,12 +34,8 @@ interface TabsProps {
 }
 
 interface TabEditProps {
-  name: string
-  uuid: string
+  source: Source
   activeUuid: string
-  label: string
-  shouldRemove: boolean
-  shouldEdit: boolean
   onInputChange: (id: string, value: string) => void
   onActiveChange: (uuid: string | null) => void
   onTabRemove?: (uuid: string) => void
@@ -60,22 +57,14 @@ export function useStandaloneNamespace(
 }
 
 const TabEdit = FC<TabEditProps>(
-  ({
-    name,
-    activeUuid,
-    label,
-    uuid,
-    shouldRemove,
-    shouldEdit,
-    onInputChange,
-    onActiveChange,
-    onTabRemove,
-  }) => {
+  ({ source, activeUuid, onInputChange, onActiveChange, onTabRemove }) => {
+    const { uuid, name, label, remove, editTitle } = source
+    const _name = (label || name).replace(/\.(less|tsx)$/, '')
     return activeUuid === uuid ? (
       <input
         type="text"
         class="border focus:outline-cyan-500 border-amber-400 p-1 text-zinc-700 dark:text-white"
-        value={name}
+        value={_name}
         onChange={(e: any) => onInputChange(uuid, e.target.value)}
         onBlur={onBlur}
         autoFocus
@@ -85,8 +74,8 @@ const TabEdit = FC<TabEditProps>(
         class="px-2 select-none flex items-center gap-4 relative"
         onDblclick={() => onDblclick(uuid)}
       >
-        {label || name}
-        {shouldRemove && (
+        {_name}
+        {remove && (
           <div
             class="h-full text-xs group-edit opacity-0 hover:text-rose-700 transition-opacity absolute -right-4 flex items-center p-2"
             onClick={onRemove}
@@ -101,7 +90,7 @@ const TabEdit = FC<TabEditProps>(
       onActiveChange(null)
     }
     function onDblclick(uuid: string) {
-      if (uuid !== Explorer.Preview && shouldEdit) {
+      if (uuid !== Explorer.Preview && editTitle) {
         onActiveChange(uuid)
       }
     }
@@ -113,15 +102,10 @@ const TabEdit = FC<TabEditProps>(
 )
 
 interface TabEditContainerProps {
+  source: Source
   active: string
-  uuid: string
-  name: string
-  label: string
   activeUuid: string
-  fixed?: string
   splitScreen: boolean
-  shouldRemove: boolean
-  editTitle: boolean
   onActive: (uuid: string) => void
   onInputChange: (id: string, value: string) => void
   onActiveChange: (id: string) => void
@@ -131,44 +115,44 @@ interface TabEditContainerProps {
 const TabEditContainer = FC<TabEditContainerProps>(
   ({
     active,
-    uuid,
     splitScreen,
-    name,
-    label,
     activeUuid,
-    shouldRemove,
-    editTitle,
-    fixed,
+    source,
     onActive,
     onInputChange,
     onActiveChange,
     onRemoveTab,
   }) => {
-    return (
-      <div
-        class={classnames(
-          'px-6 py-1 text-sm cursor-pointer text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
-          {
-            'border-amber-500 border-b-2':
-              active === uuid || (uuid === Explorer.Preview && splitScreen),
-            'ml-auto order-last': fixed === 'right',
-          }
-        )}
-        onClick={() => onActive(uuid)}
-      >
-        <TabEdit
-          name={name}
-          label={label}
-          uuid={uuid}
-          activeUuid={activeUuid}
-          shouldRemove={shouldRemove}
-          shouldEdit={editTitle}
-          onInputChange={onInputChange}
-          onActiveChange={onActiveChange}
-          onTabRemove={onRemoveTab}
-        />
-      </div>
-    )
+    const AMap: Record<SourceType, WrapperFunction<any>> = {
+      less: LessIcon,
+      typescript: TsxIcon,
+    }
+    return () => {
+      const { uuid, type } = source
+      const Icon = AMap[type]
+      return (
+        <div
+          class={classnames(
+            'border-b-2 border-transparent px-6 py-1 text-sm cursor-pointer fill-white text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
+            {
+              'border-amber-500':
+                active === uuid || (uuid === Explorer.Preview && splitScreen),
+              'ml-auto order-last': uuid === Explorer.Preview,
+            }
+          )}
+          onClick={() => onActive(uuid)}
+        >
+          <TabEdit
+            source={source}
+            activeUuid={activeUuid}
+            onInputChange={onInputChange}
+            onActiveChange={onActiveChange}
+            onTabRemove={onRemoveTab}
+          />
+          {uuid !== Explorer.Preview && <Icon />}
+        </div>
+      )
+    }
   }
 )
 
@@ -185,11 +169,11 @@ export const Tabs = FC<TabsProps>(
       })
     }
 
-    if (children[0]?.props?.uuid) {
-      onChangeActive(children[0].props.uuid)
+    if (children[0]?.props?.source?.uuid) {
+      onChangeActive(children[0].props.source.uuid)
     }
 
-    function onAddTab(type: EditorType) {
+    function onAddTab(type: SourceType) {
       const { uuid } = onAdd(type)
       onChangeActive(uuid)
     }
@@ -210,29 +194,24 @@ export const Tabs = FC<TabsProps>(
     }
 
     return ({ children, active, onInputChange }) => {
-      const child = children.filter((item) => item?.props?.uuid === active)
+      const child = children.filter(
+        (item) => item?.props?.source?.uuid === active
+      )
       const preview = children.find(
-        (item) => item.props.uuid === Explorer.Preview
+        (item) => item.props.source.uuid === Explorer.Preview
       )
       const tabPreview = last(children)
       return (
-        <div class="h-full relative">
+        <div class="h-full relative shadow-lg shadow-slate-800">
           <div class="flex gap-2">
             <div class="flex max-w-[calc(100%-134px)]">
               <div class="flex overflow-x-auto overflow-y-hidden">
                 {children.slice(0, -1).map((item, index) => {
-                  const { name, label, fixed, uuid, editTitle, remove } =
-                    item.props
                   return (
                     <TabEditContainer
+                      source={item.props.source}
                       active={active}
                       activeUuid={activeEditTitleId.value}
-                      name={name}
-                      label={label}
-                      uuid={uuid}
-                      fixed={fixed}
-                      editTitle={editTitle}
-                      shouldRemove={remove}
                       splitScreen={splitScreen.value}
                       onActive={onActive}
                       onInputChange={onInputChange}
@@ -251,13 +230,9 @@ export const Tabs = FC<TabsProps>(
             </div>
             <div class="ml-auto order-last min-w-[92px]">
               <TabEditContainer
+                source={tabPreview.props.source}
                 active={active}
                 activeUuid={activeEditTitleId.value}
-                name={tabPreview.props.name}
-                label={tabPreview.props.label}
-                uuid={tabPreview.props.uuid}
-                editTitle={tabPreview.props.editTitle}
-                shouldRemove={tabPreview.props.remove}
                 splitScreen={splitScreen.value}
                 onActive={onActive}
                 onInputChange={onInputChange}
@@ -300,7 +275,7 @@ export const Tabs = FC<TabsProps>(
               {child}
             </div>
             <div
-              class={classnames('flex-1, w-1/2 border-l border-zinc-400', {
+              class={classnames('flex-1, w-1/2 border-l border-transparent', {
                 hidden: !splitScreen.value,
               })}
             >

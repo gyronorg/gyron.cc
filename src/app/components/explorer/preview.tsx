@@ -5,7 +5,7 @@ import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
 import { useElementMutationObserver } from '@/utils/dom'
 import { useStandaloneNamespace } from './tab'
-import { EditorType } from './editor'
+import { SourceType } from './editor'
 import type { NodePath } from '@babel/core'
 import type { ImportDeclaration } from '@babel/types'
 import type { BuildResult } from 'esbuild-wasm'
@@ -19,7 +19,7 @@ export interface PreviewExpose {
 export type TransformInValidate = (
   ret?: {
     name: string
-    type: EditorType
+    type: SourceType
   }[]
 ) => void
 

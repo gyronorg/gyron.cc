@@ -8,6 +8,7 @@ import plugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import stdLibBrowser from 'node-stdlib-browser'
 import path from 'path'
 
+/** @type {import('child_process').ChildProcess} */
 let task
 /**
  * @param {string} tempPath
@@ -51,6 +52,7 @@ function formatEntryMeta(outputs) {
  * @param {boolean} watch
  * @param {string} tempPath
  * @param {{ js: string; css: string; }} clientMetaFile
+ * @param {import('ora').Ora} spinner
  */
 export async function buildServer(watch, tempPath, clientMetaFile) {
   // server
