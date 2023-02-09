@@ -1,3 +1,5 @@
+import { Explorer } from '@/pages'
+
 ## Hello World
 
 此页面是展示如何使用 Gyron.js JSX 语法创建一个 Hello World 节点，以及最终节点的内容。
@@ -15,19 +17,33 @@ const App = jsx('h1', {
 
 如果你需要知道项目如何初始化，可以来这里[（初始化）](/docs/tutorial#创建一个新的%20Gyron%20应用)阅读更多信息。
 
-<div class="max-w-6xl mx-auto mt-32">
-  <p
-    class="codepen"
-    data-preview="true"
-    data-height="500"
-    data-slug-hash="ExQNxGR"
-    data-user="linkontoask"
-  ></p>
-  <script
-    async
-    src="https://cpwebassets.codepen.io/assets/embed/ei.js"
-  ></script>
-</div>
+下面是一个在线体验编辑器，它支持本地实时编辑预览等功能，只需要点击运行按钮即可。接下来由它来呈现我们编写的代码。
+
+import sourceTSX from '@/demo/helloworld/index.tsx.txt'
+import sourceLESS from '@/demo/helloworld/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={400}
+  sources={[
+    {
+      code: sourceTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
+    },
+  ]}
+/>
 
 扩展阅读：
 
