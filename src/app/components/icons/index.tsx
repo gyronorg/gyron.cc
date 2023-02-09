@@ -179,8 +179,8 @@ export const CodeIcon = FC<IconProps>(({ class: className, c1, c2 }) => (
     ></path>
   </svg>
 ))
-export const LessIcon = FC(() => (
-  <svg class={classnames('h-3')} viewBox="0 0 235.91 101.62">
+export const LessIcon = FC<IconProps>(({ class: className }) => (
+  <svg class={classnames('h-3', className)} viewBox="0 0 235.91 101.62">
     <g>
       <path d="M18.7,20.55h8.07v64.59h32.29v8.07H18.7V20.55z" />
       <path d="M67.14,20.55h40.37v8.07H75.22v24.22h24.22v8.07H75.22v24.22h32.29v8.07H67.14V20.55z" />
@@ -193,8 +193,8 @@ export const LessIcon = FC(() => (
     </g>
   </svg>
 ))
-export const TsxIcon = FC(() => (
-  <svg class={classnames('h-3')} viewBox="0 0 174.64 101.62">
+export const TsxIcon = FC<IconProps>(({ class: className }) => (
+  <svg class={classnames('h-3', className)} viewBox="0 0 174.64 101.62">
     <g>
       <path d="M13.09,19.79h40.37v8.07H37.31v64.59h-8.07V27.86H13.09V19.79z" />
       <path
