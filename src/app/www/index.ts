@@ -94,11 +94,9 @@ const generateDTS = async () => {
     'lib.webworker.iterable.d.ts',
   ].map(async (key) => {
     const text =
-      sessionStorage.getItem(key) ||
-      (await fetch('/assets/lib/' + key).then((res) =>
-        res.text()
-      ))
-    sessionStorage.setItem(key, text)
+      localStorage.getItem(key) ||
+      (await fetch('/assets/lib/' + key).then((res) => res.text()))
+    localStorage.setItem(key, text)
     return {
       path: '/typescript/lib/' + key,
       origin: 'https://cdn.jsdelivr.net/npm',
