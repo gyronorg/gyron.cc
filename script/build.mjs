@@ -5,6 +5,7 @@ global.__WARN__ = true
 import { createSSRInstance, nextRender, h } from '@gyron/runtime'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, generateNestedRoutes, Router } from '@gyron/router'
+import { escape } from '@gyron/shared'
 import { buildClient, buildAPP } from './base.mjs'
 import { JSDOM } from 'jsdom'
 import DOMPurify from 'dompurify'
@@ -78,7 +79,7 @@ async function render(vnode, url, clientMeta) {
       '<!--client-entry-js-->',
       `<script async type="module" src="/client/${clientMeta.js}"></script>`
     )
-    .replaceAll('{%description%}', sanitize(description.replace(/\n/g, '')))
+    .replaceAll('{%description%}', sanitize(escape(description)))
 }
 
 spinner.start()
