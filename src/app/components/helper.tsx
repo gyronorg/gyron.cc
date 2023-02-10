@@ -114,7 +114,8 @@ const Pre = FC(({ children }) => {
     mouse: false,
   })
 
-  const copy = (content: string) => {
+  const copy = () => {
+    const content = meta?.content
     try {
       copyState.copying = true
       if (content) {
@@ -150,9 +151,11 @@ const Pre = FC(({ children }) => {
         class={classnames(
           'w-4 h-4 text-slate-100 absolute right-5 top-4 cursor-pointer opacity-20 group-hover:opacity-100 transition-opacity select-none'
         )}
-        onClick={() => copy(meta?.content)}
         onMouseleave={() => (copyState.copying = false)}
-        onMousedown={() => (copyState.mouse = true)}
+        onMousedown={() => {
+          copyState.mouse = true
+          copy()
+        }}
         onMouseup={() => (copyState.mouse = false)}
       >
         <CopyIcon
