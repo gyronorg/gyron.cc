@@ -46,6 +46,34 @@ function useScroll(isSSR: boolean) {
 
 const loaded: Navigation[] = []
 
+interface ItemProps {
+  navigation: NavigationBar
+  activeName: string
+}
+
+function Item({ navigation, activeName }: ItemProps) {
+  return (
+    <li
+      class={classnames('pl-0', {
+        'ml-4': navigation.type === 'h3',
+      })}
+    >
+      <a
+        href={`#${navigation.name}`}
+        class={classnames(
+          'flex py-1',
+          activeName === navigation.name
+            ? 'font-medium text-sky-500 dark:text-sky-400'
+            : 'group items-start no-underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300'
+        )}
+      >
+        {navigation.type === 'h3' && <ArrowRightIcon />}
+        {navigation.name}
+      </a>
+    </li>
+  )
+}
+
 export const Guidance = FC<GuidanceProps>(({ isSSR }) => {
   const props = defineProps<GuidanceProps>()
   const navigation = useValue<NavigationBar[]>([])
@@ -92,24 +120,7 @@ export const Guidance = FC<GuidanceProps>(({ isSSR }) => {
           <Skeleton length={2} />
         ) : (
           navigation.value.map((navigation) => (
-            <li
-              class={classnames('pl-0', {
-                'ml-4': navigation.type === 'h3',
-              })}
-            >
-              <a
-                href={`#${navigation.name}`}
-                class={classnames(
-                  'flex py-1',
-                  activeName.value === navigation.name
-                    ? 'font-medium text-sky-500 dark:text-sky-400'
-                    : 'group items-start no-underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300'
-                )}
-              >
-                {navigation.type === 'h3' && <ArrowRightIcon />}
-                {navigation.name}
-              </a>
-            </li>
+            <Item navigation={navigation} activeName={activeName.value} />
           ))
         )}
       </ul>

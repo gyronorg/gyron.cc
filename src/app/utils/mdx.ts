@@ -1,5 +1,5 @@
 import { NavigationBar } from '@/components/guidance'
-import { VNode, FCA } from 'gyron'
+import { VNode, FCA, isVNode, isVNodeText } from 'gyron'
 
 export async function invokeWithGetMdxAnchor(
   mdx: () => Promise<typeof import('*.mdx')>
@@ -8,9 +8,13 @@ export async function invokeWithGetMdxAnchor(
   const anchor = (content.default({}).children as VNode[])
     .map((item) => {
       if (['h2', 'h3'].includes(item?.tag)) {
+        let name = item.children[0]
+        if (isVNode(name)) {
+          name = name.children[0]
+        }
         return {
           type: item.tag as 'h2' | 'h3',
-          name: item.children[0],
+          name: name,
         }
       }
     })
