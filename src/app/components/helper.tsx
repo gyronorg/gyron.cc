@@ -1,5 +1,12 @@
 import { storeState } from '@/store'
-import { createRef, FC, nextRender, onAfterMount, useReactive } from 'gyron'
+import {
+  createRef,
+  FC,
+  isVNode,
+  nextRender,
+  onAfterMount,
+  useReactive,
+} from 'gyron'
 import { omit } from '@gyron/shared'
 import { Link } from '@gyron/router'
 import { AnchorIcon, CopyIcon } from './icons'
@@ -46,24 +53,30 @@ export const H2 = FC(({ children }) => {
     })
   })
 
-  return (
-    <h2
-      itemProp="headline name"
-      class="group flex items-center whitespace-pre-wrap -ml-4 pl-4 relative guidance"
-      id={children[0]}
-      ref={ref}
-    >
-      <a
-        href={`#${children[0]}`}
-        class="absolute -ml-10 flex items-center opacity-0 border-0 group-hover:opacity-100"
+  return () => {
+    let name = children[0]
+    if (isVNode(name)) {
+      name = name.children[0]
+    }
+    return (
+      <h2
+        itemProp="headline name"
+        class="group flex items-center whitespace-pre-wrap -ml-4 pl-4 relative guidance"
+        id={name}
+        ref={ref}
       >
-        <div class="cursor-pointer w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700 dark:bg-slate-700 dark:text-slate-300 dark:shadow-none dark:ring-0">
-          {<AnchorIcon />}
-        </div>
-      </a>
-      <span>{children}</span>
-    </h2>
-  )
+        <a
+          href={`#${name}`}
+          class="absolute -ml-10 flex items-center opacity-0 border-0 group-hover:opacity-100"
+        >
+          <div class="cursor-pointer w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700 dark:bg-slate-700 dark:text-slate-300 dark:shadow-none dark:ring-0">
+            {<AnchorIcon />}
+          </div>
+        </a>
+        <span>{children}</span>
+      </h2>
+    )
+  }
 })
 
 export const H3 = FC(({ children }) => {
@@ -78,23 +91,29 @@ export const H3 = FC(({ children }) => {
     })
   })
 
-  return (
-    <h3
-      class="group flex items-center whitespace-pre-wrap -ml-4 pl-4 relative guidance"
-      id={children[0]}
-      ref={ref}
-    >
-      <a
-        href={`#${children[0]}`}
-        class="absolute -ml-10 flex items-center opacity-0 border-0 group-hover:opacity-100"
+  return () => {
+    let name = children[0]
+    if (isVNode(name)) {
+      name = name.children[0]
+    }
+    return (
+      <h3
+        class="group flex items-center whitespace-pre-wrap -ml-4 pl-4 relative guidance"
+        id={name}
+        ref={ref}
       >
-        <div class="cursor-pointer w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700 dark:bg-slate-700 dark:text-slate-300 dark:shadow-none dark:ring-0">
-          {<AnchorIcon />}
-        </div>
-      </a>
-      <span>{children}</span>
-    </h3>
-  )
+        <a
+          href={`#${name}`}
+          class="absolute -ml-10 flex items-center opacity-0 border-0 group-hover:opacity-100"
+        >
+          <div class="cursor-pointer w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700 dark:bg-slate-700 dark:text-slate-300 dark:shadow-none dark:ring-0">
+            {<AnchorIcon />}
+          </div>
+        </a>
+        <span>{children}</span>
+      </h3>
+    )
+  }
 })
 
 const Pre = FC(({ children }) => {
