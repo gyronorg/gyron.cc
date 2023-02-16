@@ -3,3 +3,7 @@
 ### jsx-runtime 和 babel-plugin-jsx 有什么区别？
 
 jsx-runtime 是为了适配支持 `pragma` 配置的编译器，所有转换都使用标准的 jsx 语法进行转换。而 babel-plugin-jsx 是 gyron 官方的 babel 插件，会比 jsx-runtime 运行时多一些功能。
+
+### 为什么状态不更新？
+
+请检查对应的打包配置是否设置了 setup 参数。请将其设置为 true，然后再次尝试。

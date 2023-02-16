@@ -21,23 +21,66 @@ yarn add -D @gyron/babel-plugin-jsx
 
 ### 使用
 
-你可以在任何接入 babel 的平台上使用，比如在 webpack 插件`babel-loader`中使用。
+- 你可以在任何接入 babel 的平台上使用，比如在 webpack 插件`babel-loader`中使用。
 
 ```js
-module: {
-  rules: [
-    {
-      test: /\.m?js$/,
-      exclude: /(node_modules|bower_components)/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: ['@babel/preset-env'],
-          plugins: ['@gyron/babel-plugin-jsx'],
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(j|t)sx$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            plugins: [
+              [
+                '@babel/plugin-transform-typescript',
+                {
+                  isTSX: true,
+                },
+              ],
+              [
+                '@gyron/babel-plugin-jsx',
+                {
+                  setup: true,
+                },
+              ],
+            ],
+          },
         },
       },
-    },
-  ]
+    ],
+  },
+}
+```
+
+- 或者直接使用`@gyron/babel-plugin-jsx`导出的`babelWebpack`方法来进行转换。
+
+首先，编写如下配置文件将`babelWebpack`进行一个默认导出。
+
+```js filename=gyron.config.js
+module.exports = require('./index').babelWebpack
+```
+
+然后在 webpack 中进行如下配置。
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(j|t)sx$/,
+        use: [
+          {
+            loader: './gyron.config.js',
+            options: {
+              setup: true,
+            },
+          },
+        ],
+      },
+    ],
+  },
 }
 ```
 
