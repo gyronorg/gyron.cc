@@ -1,6 +1,6 @@
 import { initialMonaco } from '@/hooks/monaco'
 import { generateSafeUuid } from '@/utils/uuid'
-import { createRef, FC, nextRender, useValue } from 'gyron'
+import { createRef, FC, nextRender, useComputed, useValue } from 'gyron'
 import type { IRange } from 'monaco-editor'
 import { Explorer, MAIN_FILE } from './constant'
 import { Editor, SourceType } from './editor'
@@ -56,7 +56,7 @@ export interface WrapperEditorProps {
 export const WrapperEditor = FC<WrapperEditorProps>(
   ({ sources: _sources, isSSR }) => {
     const namespace = generateSafeUuid()
-    const active = useValue(null)
+    
 
     const preview = createRef<PreviewExpose>()
 
@@ -72,9 +72,11 @@ export const WrapperEditor = FC<WrapperEditorProps>(
             editTitle: false,
             editContent: true,
             remove: false,
-          } as const,
+          },
         ]
-    const sources = useValue<Source[]>(sourcesDefault)
+    const sources = useValue<Source[]>(sourcesDefault as Source[])
+    const activeId = useValue<string>(sourcesDefault[0].uuid)
+    const activeSource = useComputed(() => sources.value.find(item => item.uuid === activeId.value))
 
     function onActiveChange(uuid: string, name: string) {
       sources.value.forEach((item) => {
@@ -94,39 +96,38 @@ export const WrapperEditor = FC<WrapperEditorProps>(
     !isSSR &&
       sources.value.slice(1).forEach((source) => {
         initialMonaco().then((monaco) => {
-          const model = monaco.Uri.parse(
-            `file:///${source.name}?${namespace}`
-          )
+          const model = monaco.Uri.parse(`file:///${namespace}/${source.name}`)
           const t = monaco.editor.getModel(model)
-          t && t.dispose()
-          monaco.editor.createModel(source.code, source.type, model)
+          if (!t) {
+            monaco.editor.createModel(source.code, source.type, model)
+          }
         })
       })
 
     return (
       <Tabs
         namespace={namespace}
-        active={active.value}
+        active={activeId.value}
         onInputChange={onActiveChange}
         onAdd={onAdd}
         onRemove={onRemove}
         onRun={onRun}
         onChangeActive={onChangeActive}
+        content={
+          <Editor
+            namespace={namespace}
+            source={activeSource}
+            active={activeId}
+            sources={sources.value}
+            onChange={(value) => (activeSource.value.code = value)}
+            onChangeActive={onChangeActive}
+            onAdd={onAdd}
+            onRemove={onRemove}
+          />
+        }
       >
         {sources.value.map((item) => (
-          <Tab source={item}>
-            <Editor
-              key={item.uuid}
-              namespace={namespace}
-              source={item}
-              active={active.value}
-              sources={sources.value}
-              onChange={(value) => (item.code = value)}
-              onChangeActive={onChangeActive}
-              onAdd={onAdd}
-              onRemove={onRemove}
-            />
-          </Tab>
+          <Tab source={item}></Tab>
         ))}
         <Tab
           source={{
@@ -175,12 +176,13 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       const index = sources.value.findIndex((source) => source.uuid === uuid)
       const nextIndex = index === 0 ? 1 : index - 1
       const nextUuid = sources.value[nextIndex]?.uuid
+      activeId.value = nextUuid
       sources.value.splice(index, 1)
       return nextUuid
     }
 
     function onChangeActive(v: string, range?: IRange) {
-      active.value = v
+      activeId.value = v
       if (range) {
         nextRender(() =>
           useEditorResolve().then(() => {

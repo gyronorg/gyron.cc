@@ -14,8 +14,6 @@ class ExtraLib {
   constructor(record: Record<string, ExtraLibItem>) {
     Reflect.ownKeys(record).forEach((key: string) => {
       this[record[key].name] = record[key]
-      this[record[key].name.slice(0, -5)] = record[key]
-      this[key] = record[key]
     })
   }
 }
@@ -119,8 +117,14 @@ const generateDTS = async () => {
           origin: 'https://unpkg.com',
           name: 'gyron.d.ts',
           text:
-            `declare module 'gyron' {\n${gyronDts}\n}\n` +
-            `declare module '@gyron/runtime' {\n${gyronDts}\n}\n` +
+            `declare module 'gyron' {\n  ${gyronDts
+              .replace(/declare/g, '')
+              .split('\n')
+              .join('\n  ')}\n}\n` +
+            `declare module '@gyron/runtime' {\n  ${gyronDts
+              .replace(/declare/g, '')
+              .split('\n')
+              .join('\n  ')}\n}\n` +
             `declare const Gyron`,
         },
         '/gyron/dist/index.d.ts': {

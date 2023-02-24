@@ -42,6 +42,7 @@ export const Tab = FC<TabProps>(({ children }) => {
 interface TabsProps {
   namespace: string
   active?: string
+  content: VNode
   children: VNode<any, TabProps>[]
   onInputChange?: (id: string, value: string) => void
   onAdd?: OnAdd
@@ -170,7 +171,7 @@ const TabEditContainer = FC<TabEditContainerProps>(
 )
 
 export const Tabs = FC<TabsProps>(
-  ({ children, namespace, onAdd, onRemove, onRun, isSSR, onChangeActive }) => {
+  ({ children, content, namespace, onAdd, onRemove, onRun, isSSR, onChangeActive }) => {
     const activeEditTitleId = useValue(null)
     // 是否开启预览窗口
     const splitScreen = useValue(false)
@@ -207,9 +208,6 @@ export const Tabs = FC<TabsProps>(
     }
 
     return ({ children, active, onInputChange }) => {
-      const child = children.filter(
-        (item) => item?.props?.source?.uuid === active
-      )
       const preview = children.find(
         (item) => item.props.source.uuid === Explorer.Preview
       )
@@ -285,7 +283,7 @@ export const Tabs = FC<TabsProps>(
                 'w-1/2': splitScreen.value,
               })}
             >
-              {child}
+              {content}
             </div>
             <div
               class={classnames('flex-1, w-1/2 border-l border-transparent', {

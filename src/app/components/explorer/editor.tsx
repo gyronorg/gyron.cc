@@ -1,4 +1,12 @@
-import { createRef, FC, onAfterMount, useValue } from 'gyron'
+import {
+  Computed,
+  createRef,
+  FC,
+  onAfterMount,
+  Primitive,
+  useValue,
+  useWatch,
+} from 'gyron'
 import { debounce } from 'lodash-es'
 import { OnAdd, Source } from './wrapper'
 import type { IRange } from 'monaco-editor'
@@ -8,9 +16,9 @@ export type SourceType = 'typescript' | 'less'
 
 interface EditorProps {
   namespace: string
-  source: Source
+  source: Computed<Source>
   sources: Source[]
-  active?: string
+  active?: Primitive<string>
   onChange: (code: string) => void
   onAdd?: OnAdd
   onRemove?: (uuid: string) => string
@@ -18,16 +26,40 @@ interface EditorProps {
 }
 
 export const Editor = FC<EditorProps>(
-  ({ isSSR, namespace, sources, source, onChange, onAdd, onChangeActive }) => {
-    const container = createRef<HTMLDivElement>()
+  ({
+    isSSR,
+    namespace,
+    sources,
+    source,
+    active,
+    onChange,
+    onAdd,
+    onChangeActive,
+  }) => {
+    const container = createRef<HTMLDivElement & { __editor__: any }>()
     const loading = useValue(true)
     const owner = 'Link'
+
+    let instance, editor, monaco
+    useWatch(() => {
+      if (!isSSR) {
+        if (instance) {
+          const url = `file:///${namespace}/${source.value.name}`
+          const uri = monaco.Uri.parse(url)
+          const model = editor.getModel(uri)
+          instance.setModel(
+            model ||
+              editor.getModel(monaco.Uri.parse(`file:///${source.value.name}`))
+          )
+        }
+      }
+    }, [() => source.value])
 
     onAfterMount(async () => {
       if (!isSSR) {
         loading.value = true
-        const { type, code, name, editContent } = source
-        const { instance, editor } = await initialEditor({
+        const { type, code, name, editContent } = source.value
+        const codeEditor = await initialEditor({
           container: container.current,
           language: type,
           namespace,
@@ -35,6 +67,15 @@ export const Editor = FC<EditorProps>(
           code,
           name,
           editContent,
+          onAdd,
+          onChangeActive,
+        })
+        instance = codeEditor.instance
+        editor = codeEditor.editor
+        monaco = codeEditor.monaco
+        container.current.__editor__ = Object.assign({}, codeEditor, {
+          sources,
+          namespace,
           onAdd,
           onChangeActive,
         })

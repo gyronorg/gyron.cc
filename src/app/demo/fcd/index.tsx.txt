@@ -9,7 +9,7 @@ export const APP = FC(() => {
       <input
         type="text"
         value={content.value}
-        onInput={(e) => (content.value = e.target.value)}
+        onInput={(e: any) => (content.value = e.target.value)}
       />
       <SlowList text={content.value} />
     </div>
