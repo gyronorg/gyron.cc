@@ -1,6 +1,6 @@
-import jsxDts from 'https://cdn.jsdelivr.net/npm/gyron/dist/index.d.ts'
-import gyronDts from 'https://cdn.jsdelivr.net/npm/@gyron/runtime/dist/index.d.ts'
-import csstype from 'https://cdn.jsdelivr.net/npm/csstype/index.d.ts'
+import jsxDts from 'https://unpkg.com/gyron/dist/index.d.ts'
+import gyronDts from 'https://unpkg.com/@gyron/runtime/dist/index.d.ts'
+import csstype from 'https://unpkg.com/csstype/index.d.ts'
 
 interface ExtraLibItem {
   path: string
@@ -99,7 +99,7 @@ const generateDTS = async () => {
     localStorage.setItem(key, text)
     return {
       path: '/typescript/lib/' + key,
-      origin: 'https://cdn.jsdelivr.net/npm',
+      origin: 'https://unpkg.com',
       name: key,
       text: text,
     }
@@ -114,24 +114,24 @@ const generateDTS = async () => {
     Object.assign(
       {},
       {
-        '/npm/@gyron/runtime/dist/index.d.ts': {
+        '/@gyron/runtime/dist/index.d.ts': {
           path: '/@gyron/runtime/dist/index.d.ts',
-          origin: 'https://cdn.jsdelivr.net/npm',
+          origin: 'https://unpkg.com',
           name: 'gyron.d.ts',
           text:
             `declare module 'gyron' {\n${gyronDts}\n}\n` +
             `declare module '@gyron/runtime' {\n${gyronDts}\n}\n` +
             `declare const Gyron`,
         },
-        '/npm/gyron/dist/index.d.ts': {
+        '/gyron/dist/index.d.ts': {
           path: '/gyron/dist/index.d.ts',
-          origin: 'https://cdn.jsdelivr.net/npm',
+          origin: 'https://unpkg.com',
           name: 'jsx.d.ts',
           text: jsxDts,
         },
-        '/npm/csstype/index.d.ts': {
+        '/csstype/index.d.ts': {
           path: '/csstype/index.d.ts',
-          origin: 'https://cdn.jsdelivr.net/npm',
+          origin: 'https://unpkg.com',
           name: 'csstype.d.ts',
           text: `declare module 'csstype' {\n${csstype}\n}`,
         },

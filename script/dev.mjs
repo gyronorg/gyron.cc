@@ -18,6 +18,8 @@ process.on('SIGINT', () => {
 buildClient(true, tempPath).then((clientMetafile) => {
   buildServer(true, tempPath, clientMetafile).then(() => {
     fs.copySync('public/assets', `${tempPath}/assets`)
+    fs.copySync('node_modules/gyron/dist/browser', `${tempPath}/assets/gyron`)
+    fs.copyFile('node_modules/esbuild-wasm/esbuild.wasm', `${tempPath}/assets/esbuild.wasm`)
     spinner.succeed('Build Complete.', tempPath)
   })
 })

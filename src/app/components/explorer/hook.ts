@@ -10,6 +10,7 @@ let _resolve: Promise<any> = Promise.resolve()
 const ThemeName = 'DOCS'
 
 interface InitialEditor {
+  namespace: string
   container: HTMLElement
   code: string
   language: SourceType
@@ -21,6 +22,7 @@ interface InitialEditor {
 }
 
 async function _initialEditor({
+  namespace,
   container,
   code,
   language,
@@ -34,7 +36,7 @@ async function _initialEditor({
   const service = await initialService()
   const dts = await generateDTS()
   const scheme = 'file'
-  const uri = monaco.Uri.parse(`${scheme}:///${name}`)
+  const uri = monaco.Uri.parse(`${scheme}:///${name}?${namespace}`)
 
   const { editor } = monaco
 

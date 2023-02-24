@@ -7,6 +7,7 @@ import { initialEditor } from './hook'
 export type SourceType = 'typescript' | 'less'
 
 interface EditorProps {
+  namespace: string
   source: Source
   sources: Source[]
   active?: string
@@ -17,7 +18,7 @@ interface EditorProps {
 }
 
 export const Editor = FC<EditorProps>(
-  ({ isSSR, sources, source, onChange, onAdd, onChangeActive }) => {
+  ({ isSSR, namespace, sources, source, onChange, onAdd, onChangeActive }) => {
     const container = createRef<HTMLDivElement>()
     const loading = useValue(true)
     const owner = 'Link'
@@ -29,6 +30,7 @@ export const Editor = FC<EditorProps>(
         const { instance, editor } = await initialEditor({
           container: container.current,
           language: type,
+          namespace,
           sources,
           code,
           name,

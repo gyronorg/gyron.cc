@@ -1,0 +1,12 @@
+import { FC } from 'gyron'
+import { SlowItem } from './item'
+
+export const SlowList = FC<{ text: string }>(({ text }) => {
+  return () => {
+    let items = []
+    for (let i = 0; i < 250; i++) {
+      items.push(<SlowItem key={i} text={text} />)
+    }
+    return <ul className="items">{items}</ul>
+  };
+});

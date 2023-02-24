@@ -1,0 +1,17 @@
+import { useValue, FC } from 'gyron'
+import { SlowList } from './list'
+import './index.less'
+
+export const APP = FC(() => {
+  const content = useValue('')
+  return (
+    <div class="container">
+      <input
+        type="text"
+        value={content.value}
+        onInput={(e) => (content.value = e.target.value)}
+      />
+      <SlowList text={content.value} />
+    </div>
+  )
+})

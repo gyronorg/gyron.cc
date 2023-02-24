@@ -1,0 +1,11 @@
+import { FCD } from 'gyron'
+
+export const SlowItem = FCD<{ text: string }>(({ text }) => {
+  return () => {
+    let startTime = performance.now()
+    while (performance.now() - startTime < 1) {
+      // ...
+    }
+    return <li className="item">Text: {text}</li>
+  }
+})

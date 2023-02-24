@@ -140,13 +140,16 @@ function HttpResource() {
       build.onResolve({ filter: /^https:\/\// }, ({ path }) => ({ path, namespace }));
       build.onResolve({ filter: /.*/, namespace }, ({ path, importer }) => ({ path: new URL(path.replace(/\?.*/, ""), importer).toString(), namespace }));
       build.onLoad({ filter: /.*/, namespace }, async (args) => {
-        return cache[args.path] || fetch(args.path, {
-          headers: {
-            'pragma': 'no-cache',
-            'sec-fetch-site': 'same-origin',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+        const { pathname } = new URL(args.path)
+        try {
+          const text = await fs.promises.readFile(`node_modules${pathname}`)
+          return {
+            contents: text,
+            loader: 'text'
           }
-        }).then(res => res.text()).then((res) => {
+        } catch { }
+
+        return cache[args.path] || fetch(args.path).then(res => res.text()).then((res) => {
           return {
             contents: res,
             loader: 'text'

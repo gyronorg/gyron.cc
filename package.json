@@ -1,6 +1,6 @@
 {
   "name": "@gyron/docs",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -27,7 +27,6 @@
     "cookie-parser": "^1.4.6",
     "dompurify": "^2.4.3",
     "esbuild": "^0.14.49",
-    "esbuild-wasm": "^0.17.3",
     "express": "^4.18.0",
     "fs-extra": "^10.1.0",
     "hast-util-to-html": "^8.0.3",
@@ -52,11 +51,11 @@
     "uuid": "^9.0.0"
   },
   "dependencies": {
-    "@gyron/babel-plugin-jsx": "^0.0.29",
-    "@gyron/dom-server": "^0.0.29",
-    "@gyron/jsx-runtime": "^0.0.29",
-    "@gyron/router": "^0.0.29",
-    "gyron": "^0.0.29"
+    "@gyron/babel-plugin-jsx": "^0.0.30",
+    "@gyron/dom-server": "^0.0.30",
+    "@gyron/jsx-runtime": "^0.0.30",
+    "@gyron/router": "^0.0.30",
+    "gyron": "^0.0.30"
   },
   "prettier": {
     "semi": false,

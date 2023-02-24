@@ -122,6 +122,8 @@ buildClient(false, tempPath).then((appMeta) => {
     }
     fs.copySync('public/sitemap', `${tempPath}/sitemap`)
     fs.copySync('public/assets', `${tempPath}/assets`)
+    fs.copySync('node_modules/gyron/dist/browser', `${tempPath}/assets/gyron`)
+    fs.copyFile('node_modules/esbuild-wasm/esbuild.wasm', `${tempPath}/assets/esbuild.wasm`)
     fs.rmSync('dist/app', { recursive: true, force: true })
     spinner.succeed(chalk.green('Build Complete!'))
   })

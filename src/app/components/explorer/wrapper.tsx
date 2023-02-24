@@ -94,7 +94,9 @@ export const WrapperEditor = FC<WrapperEditorProps>(
     !isSSR &&
       sources.value.slice(1).forEach((source) => {
         initialMonaco().then((monaco) => {
-          const model = monaco.Uri.parse(`file:///${source.name}`)
+          const model = monaco.Uri.parse(
+            `file:///${source.name}?${namespace}`
+          )
           const t = monaco.editor.getModel(model)
           t && t.dispose()
           monaco.editor.createModel(source.code, source.type, model)
@@ -106,7 +108,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
         namespace={namespace}
         active={active.value}
         onInputChange={onActiveChange}
-        onAdd={add}
+        onAdd={onAdd}
         onRemove={onRemove}
         onRun={onRun}
         onChangeActive={onChangeActive}
@@ -115,12 +117,13 @@ export const WrapperEditor = FC<WrapperEditorProps>(
           <Tab source={item}>
             <Editor
               key={item.uuid}
+              namespace={namespace}
               source={item}
               active={active.value}
               sources={sources.value}
               onChange={(value) => (item.code = value)}
               onChangeActive={onChangeActive}
-              onAdd={add}
+              onAdd={onAdd}
               onRemove={onRemove}
             />
           </Tab>
@@ -142,7 +145,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       </Tabs>
     )
 
-    function add(
+    function onAdd(
       type: SourceType,
       name = '',
       code = '',

@@ -1,3 +1,5 @@
+import { Explorer } from '@/pages'
+
 ## 组件
 
 组件是构建页面元素的重要部分，它允许您创建可重用的元素和模块，与 web component 类似，可以做的事情有很多，这部分值得你的探索。
@@ -39,7 +41,7 @@ const App = FC(() => {
 
 ### Setup 和 Render
 
-如果你是按照脚手架的方式或者使用了我们的 babel plugin 就不需要再阅读这块文档，如果你是第三方开发者可能需要阅读这块内容。
+> 如果你是按照脚手架的方式或者使用了我们的 babel plugin 就不需要再阅读这块文档，如果你是第三方开发者可能需要阅读这块内容。
 
 函数组件分为两个区域，一个是 setup scope，另外一个是 render scope。
 setup scope 区域在组件渲染的流程中只会被执行一次，只有在销毁组件后再次渲染才会被执行。
@@ -77,7 +79,7 @@ const HelloWorld = FC(() => {
 })
 ```
 
-上述高亮行部分就是 render 区域。也就是我们所熟知的 html，当组件发生更新时这个区域会一直更新。
+上述高亮行部分就是 render 区域。也就是我们所熟知的 html 标签，当组件发生更新时这个区域会一直更新。
 
 ```jsx
 import { FC } from 'gyron'
@@ -192,7 +194,7 @@ const App = FC(() => {
 
 ### TypesSript
 
-Gyron.js 是完全支持 TypesSript 类型系统的，但是要接入 JSX，还需要用一个包裹函数 FC，它完全不改变组件的行为，只是提供了一个类型提示，在编写组件和使用组件的时候可以提示用户。
+Gyron.js 是完全支持 TypesSript 类型系统的，但是要接入 JSX 语法，还需要用包裹函数 FC、FCA、FCD 等，它完全不改变组件的行为，只是提供了一个类型提示，在编写组件和使用组件的时候可以提示用户。
 
 ```jsx
 import { FC } from 'gyron'
@@ -291,7 +293,7 @@ const HelloWorld = FC(({ message }) => {
 })
 ```
 
-我们可以通过改变`state.allowUpdate`的值来告诉 Gyron，此次数据变更是否需要自动更新。这样，即使`state.x`或者`state.y`发生变更也是可控的。
+我们可以通过改变`state.allowUpdate`的值来告诉 Gyron 框架，此次数据变更是否需要自动更新。这样，即使`state.x`或者`state.y`发生变更也是可控的。
 
 ### 有状态组件 和 无状态组件
 
@@ -360,3 +362,114 @@ clearCacheComponent(App)
 异步组件可以用在页面的懒加载上面，以减少首页需要加载的资源。
 
 异步组件还可以做一些其它的事情，高级教程中会详细介绍。[异步组件](/docs/async-component)
+
+## FCD
+
+`FCD`是用来定义延迟更新组件。顾名思义，用 FCD 定义的组件，更新不会阻塞 UI 的渲染和用户的行为。
+
+使用方法和 FC 一样，用 FCD 定义一个组件。
+
+```tsx line=1
+const SlowItem = FCD<{ text: string }>(({ text }) => {
+  const startTime = performance.now()
+  while (performance.now() - startTime < 1) {
+    // ...
+  }
+
+  return <li>Text: {text}</li>
+})
+```
+
+当我们组件更新很耗时的情况下，可以使用 FCD 来定义组件。下面用两个实际例子来看看 FC 和 FCD 的区别。
+
+import sourceFCDTSX from '@/demo/fcd/index.tsx.txt'
+import sourceFCDListTSX from '@/demo/fcd/list.tsx.txt'
+import sourceFCDItemTSX from '@/demo/fcd/item.tsx.txt'
+import sourceFCDLESS from '@/demo/fcd/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={400}
+  sources={[
+    {
+      code: sourceFCDTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCDListTSX,
+      type: 'typescript',
+      name: 'list.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCDItemTSX,
+      type: 'typescript',
+      name: 'item.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCDLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
+    },
+  ]}
+/>
+
+上面那个例子是使用 FCD 定义了一个组件，然后每修改一次，`SlowItem`的更新任务都会进入一个延迟更新队列，这个队列里面的任务更新超过 5ms 那么下次更新会进入一个空闲队列。
+
+import sourceFCTSX from '@/demo/fc/index.tsx.txt'
+import sourceFCListTSX from '@/demo/fc/list.tsx.txt'
+import sourceFCItemTSX from '@/demo/fc/item.tsx.txt'
+import sourceFCLESS from '@/demo/fc/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={400}
+  sources={[
+    {
+      code: sourceFCTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCListTSX,
+      type: 'typescript',
+      name: 'list.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCItemTSX,
+      type: 'typescript',
+      name: 'item.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
+    },
+  ]}
+/>
+
+对比可以发现，第一个例子中用户的输入时刻都会被浏览器响应，但是在第二个例子中用户每修改一次都有可能导致 UI 卡顿。
