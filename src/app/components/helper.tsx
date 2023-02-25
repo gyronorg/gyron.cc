@@ -203,7 +203,16 @@ const Pre = FC(({ children }) => {
             : ''}
         </div>
       </div>
-      <pre class="bg-slate-50 dark:bg-[#1e293b] text-slate-800 dark:text-slate-100">{code}</pre>
+      <pre
+        class={classnames(
+          'bg-slate-50 dark:bg-[#1e293b] text-slate-800 dark:text-slate-100',
+          {
+            'prism-light': !copyState.isDark,
+          }
+        )}
+      >
+        {code}
+      </pre>
     </div>
   )
 })

@@ -206,7 +206,7 @@ export const Tabs = FC<TabsProps>(
       const { uri } = await getModal(name, namespace)
       const { editor, monaco } = getEditorWithElement(namespace)
       editor.createModel('', type, uri)
-      monaco.languages.typescript.typescriptDefaults.addExtraLib('', uri)
+      monaco.languages.typescript.typescriptDefaults.addExtraLib('', uri.toString())
       onChangeActive(uuid)
     }
     function onRemoveTab(uuid: string) {
