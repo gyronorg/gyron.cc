@@ -1,6 +1,7 @@
 import {
   Computed,
   createRef,
+  exposeComponent,
   FC,
   onAfterMount,
   Primitive,
@@ -10,7 +11,7 @@ import {
 import { debounce } from 'lodash-es'
 import { OnAdd, Source } from './wrapper'
 import type { IRange } from 'monaco-editor'
-import { initialEditor } from './hook'
+import { getModal, initialEditor } from './hook'
 
 export type SourceType = 'typescript' | 'less'
 
@@ -26,34 +27,24 @@ interface EditorProps {
 }
 
 export const Editor = FC<EditorProps>(
-  ({
-    isSSR,
-    namespace,
-    sources,
-    source,
-    active,
-    onChange,
-    onAdd,
-    onChangeActive,
-  }) => {
+  ({ isSSR, namespace, sources, source, onChange, onAdd, onChangeActive }) => {
     const container = createRef<HTMLDivElement & { __editor__: any }>()
     const loading = useValue(true)
     const owner = 'Link'
 
-    let instance, editor, monaco
-    useWatch(() => {
+    let instance: any, editor: any, monaco: any
+    const onChangeModel = debounce(async () => {
       if (!isSSR) {
         if (instance) {
-          const url = `file:///${namespace}/${source.value.name}`
-          const uri = monaco.Uri.parse(url)
-          const model = editor.getModel(uri)
+          const { model } = await getModal(source.value.name, namespace)
           instance.setModel(
             model ||
               editor.getModel(monaco.Uri.parse(`file:///${source.value.name}`))
           )
         }
       }
-    }, [() => source.value])
+    }, 100)
+    useWatch(onChangeModel, [() => source.value])
 
     onAfterMount(async () => {
       if (!isSSR) {
@@ -73,6 +64,7 @@ export const Editor = FC<EditorProps>(
         instance = codeEditor.instance
         editor = codeEditor.editor
         monaco = codeEditor.monaco
+
         container.current.__editor__ = Object.assign({}, codeEditor, {
           sources,
           namespace,

@@ -3,11 +3,7 @@ import type { editor, IRange } from 'monaco-editor'
 import { SourceType } from './editor'
 import { OnAdd, Source } from './wrapper'
 import generateDTS from '@/www'
-import { last } from 'lodash-es'
 import { nextRender } from 'gyron'
-
-let _instance: editor.IStandaloneCodeEditor
-let _resolve: Promise<any> = Promise.resolve()
 
 const ThemeName = 'DOCS'
 
@@ -124,10 +120,8 @@ async function _initialEditor({
 
     for (const key in dts) {
       const { name, text } = dts[key]
-      const url = `file:///${name}`
-      const uri = monaco.Uri.parse(url)
-      const ts = editor.getModel(uri)
-      if (!ts) {
+      const { model, uri } = await getModal(name)
+      if (!model) {
         editor.createModel(text, 'typescript', uri)
       }
     }
@@ -151,9 +145,8 @@ async function _initialEditor({
         const selection = Object.assign(options.selection, {
           endColumn: options.selection.startColumn + endColumn - startColumn,
         })
-        const url = `${scheme}:///${resource.path.slice(1)}`
-        const uri = monaco.Uri.parse(url)
-        const model = editor.getModel(uri)
+
+        const { model } = await getModal(resource.path.slice(1))
         _.setModel(model)
 
         const { instance, namespace, sources, onAdd, onChangeActive } = (
@@ -178,10 +171,6 @@ async function _initialEditor({
           const { name, text } = dts[path.slice(1)]
           const source = onAdd('typescript', name, text, false, false)
           onChangeActive(source.uuid)
-          nextRender(() => {
-            instance.revealLineInCenter(selection.startLineNumber, 0)
-            instance.setSelection(selection)
-          })
         }
 
         return _
@@ -200,10 +189,7 @@ async function _initialEditor({
 export async function initialEditor(
   ...params: Parameters<typeof _initialEditor>
 ) {
-  _resolve = _initialEditor(...params)
-  const { editor, monaco, instance } = await _resolve
-
-  _instance = instance
+  const { editor, monaco, instance } = await _initialEditor(...params)
 
   return {
     editor,
@@ -212,10 +198,19 @@ export async function initialEditor(
   }
 }
 
-export function useEditor() {
-  return _instance
+export async function getModal(name: string, namespace?: string) {
+  const monaco = await initialMonaco()
+  const url = namespace ? `file:///${namespace}/${name}` : `file:///${name}`
+  const uri = monaco.Uri.parse(url)
+  const model = monaco.editor.getModel(uri)
+  return {
+    uri,
+    model,
+  }
 }
 
-export function useEditorResolve() {
-  return _resolve
+export async function getModals() {
+  const monaco = await initialMonaco()
+  const models = monaco.editor.getModels()
+  return models
 }

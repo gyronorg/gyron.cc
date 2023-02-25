@@ -108,6 +108,13 @@ const generateDTS = async () => {
     return prev
   }, {})
 
+  function format(text: string) {
+    return text
+      .replace(/declare\s/g, '')
+      .split('\n')
+      .join('\n  ')
+  }
+
   return new ExtraLib(
     Object.assign(
       {},
@@ -117,14 +124,8 @@ const generateDTS = async () => {
           origin: 'https://unpkg.com',
           name: 'gyron.d.ts',
           text:
-            `declare module 'gyron' {\n  ${gyronDts
-              .replace(/declare/g, '')
-              .split('\n')
-              .join('\n  ')}\n}\n` +
-            `declare module '@gyron/runtime' {\n  ${gyronDts
-              .replace(/declare/g, '')
-              .split('\n')
-              .join('\n  ')}\n}\n` +
+            `declare module 'gyron' {\n  ${format(gyronDts)}\n}\n` +
+            `declare module '@gyron/runtime' {\n  ${format(gyronDts)}\n}\n` +
             `declare const Gyron`,
         },
         '/gyron/dist/index.d.ts': {
@@ -137,7 +138,7 @@ const generateDTS = async () => {
           path: '/csstype/index.d.ts',
           origin: 'https://unpkg.com',
           name: 'csstype.d.ts',
-          text: `declare module 'csstype' {\n${csstype}\n}`,
+          text: `declare module 'csstype' {\n  ${format(csstype)}\n}`,
         },
       },
       originLibs

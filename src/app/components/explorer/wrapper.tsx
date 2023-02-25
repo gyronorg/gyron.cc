@@ -1,10 +1,9 @@
 import { initialMonaco } from '@/hooks/monaco'
 import { generateSafeUuid } from '@/utils/uuid'
 import { createRef, FC, nextRender, useComputed, useValue } from 'gyron'
-import type { IRange } from 'monaco-editor'
 import { Explorer, MAIN_FILE } from './constant'
 import { Editor, SourceType } from './editor'
-import { useEditor, useEditorResolve } from './hook'
+import { getModal } from './hook'
 import { Preview, PreviewExpose } from './preview'
 import { Tabs, Tab } from './tab'
 
@@ -56,7 +55,6 @@ export interface WrapperEditorProps {
 export const WrapperEditor = FC<WrapperEditorProps>(
   ({ sources: _sources, isSSR }) => {
     const namespace = generateSafeUuid()
-    
 
     const preview = createRef<PreviewExpose>()
 
@@ -76,7 +74,9 @@ export const WrapperEditor = FC<WrapperEditorProps>(
         ]
     const sources = useValue<Source[]>(sourcesDefault as Source[])
     const activeId = useValue<string>(sourcesDefault[0].uuid)
-    const activeSource = useComputed(() => sources.value.find(item => item.uuid === activeId.value))
+    const activeSource = useComputed(() =>
+      sources.value.find((item) => item.uuid === activeId.value)
+    )
 
     function onActiveChange(uuid: string, name: string) {
       sources.value.forEach((item) => {
@@ -95,11 +95,10 @@ export const WrapperEditor = FC<WrapperEditorProps>(
     // 初始化时将所有 model 设置到内存中，给 ctrl + click 提供数据支撑
     !isSSR &&
       sources.value.slice(1).forEach((source) => {
-        initialMonaco().then((monaco) => {
-          const model = monaco.Uri.parse(`file:///${namespace}/${source.name}`)
-          const t = monaco.editor.getModel(model)
-          if (!t) {
-            monaco.editor.createModel(source.code, source.type, model)
+        initialMonaco().then(async (monaco) => {
+          const { model, uri } = await getModal(source.name, namespace)
+          if (!model) {
+            monaco.editor.createModel(source.code, source.type, uri)
           }
         })
       })
@@ -174,6 +173,14 @@ export const WrapperEditor = FC<WrapperEditorProps>(
 
     function onRemove(uuid: string) {
       const index = sources.value.findIndex((source) => source.uuid === uuid)
+      const source = sources.value.find((source) => source.uuid === uuid)
+      if (source) {
+        getModal(source.name, namespace).then(({ model }) => {
+          if (model) {
+            model.dispose()
+          }
+        })
+      }
       const nextIndex = index === 0 ? 1 : index - 1
       const nextUuid = sources.value[nextIndex]?.uuid
       activeId.value = nextUuid
@@ -181,19 +188,8 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       return nextUuid
     }
 
-    function onChangeActive(v: string, range?: IRange) {
-      activeId.value = v
-      if (range) {
-        nextRender(() =>
-          useEditorResolve().then(() => {
-            const instance = useEditor()
-            if (instance) {
-              instance.revealLineInCenter(range.startLineNumber, 0)
-              instance.setSelection(range)
-            }
-          })
-        )
-      }
+    function onChangeActive(uuid: string) {
+      activeId.value = uuid
     }
   }
 )

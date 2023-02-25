@@ -18,7 +18,7 @@ export const Home = FC(() => {
         <div class="container mx-auto text-center my-20 md:mt-32 lg:mt-36 max-w-3xl text-slate-200 dark:text-slate-50">
           <h1 class="text-8xl font-bold">Gyron.js</h1>
           <p class="mt-4 opacity-80 text-base leading-8">
-            一款简单零依赖的响应式框架
+            简单零依赖的响应式框架
           </p>
           <p class="mt-4 opacity-80 text-base leading-8">
             Gyron.js is a minimalist version of the zero-dependency responsive
@@ -43,34 +43,35 @@ export const Home = FC(() => {
               在线编辑(online playground)
             </Link>
           </div>
-          <div class="container mt-16 mx-auto">
-            <ul class="flex justify-around space-x-6 sm:space-x-8 md:space-x-12 lg:space-x-16">
-              <li>
-                <h2 class="text-lg">简单</h2>
-                <p class="mt-4 opacity-80">
-                  只需要了解JavaScript基本语法和jsx语法糖就可以完全构建一个可交互的应用程序。使用脚手架还可以快速开始本地应用。
-                </p>
-              </li>
-              <li>
-                <h2 class="text-lg">组件</h2>
-                <p class="mt-4 opacity-80">
-                  以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。
-                </p>
-              </li>
-              <li>
-                <h2 class="text-lg">小巧</h2>
-                <p class="mt-4 opacity-80">
-                  核心代码仅9kb(gzip)左右，但是功能却十分完善。不仅支持SPA模式，还支持SSR模式，只需要做少许改动就可以让组件支持SSR。
-                </p>
-              </li>
-            </ul>
-          </div>
-          <div class="hidden">
-            <img src="" alt="" />
-            Gyron.js 响应式的核心就是 Proxy
-            对象，在组件运行时会自动捕获它们的依赖关系并生成依赖地图，在发生数据变更时通知依赖组件自动更新。
-            如果同一时间发生多次组件更新，并且更新时间大于5ms时或者有用户在输入时，更新将暂停，直至宿主有空闲或者用户输入完成才会继续。
-          </div>
+        </div>
+        <div class="container mt-16 mb-16 max-w-5xl mx-auto text-slate-200 dark:text-slate-50">
+          <ul class="flex justify-around space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-12">
+            <li class="flex-1">
+              <h2 class="text-lg">简单</h2>
+              <p class="mt-4 opacity-80">
+                只需要了解JavaScript基本语法和jsx语法糖就可以完全构建一个可交互的应用程序。使用脚手架还可以快速开始本地应用。
+              </p>
+            </li>
+            <li class="flex-1">
+              <h2 class="text-lg">组件</h2>
+              <p class="mt-4 opacity-80">
+                以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。
+              </p>
+            </li>
+            <li class="flex-1">
+              <h2 class="text-lg">小巧</h2>
+              <p class="mt-4 opacity-80">
+                核心代码仅9kb(gzip)左右，但是功能却十分完善。不仅支持 SPA
+                模式，还支持 SSR 模式，只需要做少许改动就可以让组件支持 SSR。
+              </p>
+            </li>
+            <li class="flex-1">
+              <h2 class="text-lg">类型</h2>
+              <p class="mt-4 opacity-80">
+                完全支持最新的 Typescript 类型推断，在构建大型项目上更加友好。
+              </p>
+            </li>
+          </ul>
         </div>
         <AsyncExplorer fallback={<Skeleton length={3} />} />
         <div class="text-xs ml-auto mr-auto mt-4 pl-4">
