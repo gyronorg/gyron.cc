@@ -3,9 +3,7 @@ import type { editor, IRange } from 'monaco-editor'
 import { SourceType } from './editor'
 import { OnAdd, Source } from './wrapper'
 import generateDTS from '@/www'
-import { nextRender } from 'gyron'
-
-const ThemeName = 'DOCS'
+import { isDarkTheme } from '../dark'
 
 interface InitialEditor {
   namespace: string
@@ -73,8 +71,8 @@ async function _initialEditor({
       monaco.Uri.parse(csstype.name).toString()
     )
 
-    editor.defineTheme(ThemeName, {
-      base: 'vs-dark',
+    editor.defineTheme('vs-light', {
+      base: 'vs',
       inherit: true,
       rules: [],
       colors: {},
@@ -85,7 +83,7 @@ async function _initialEditor({
     model: editor.getModel(uri) || editor.createModel(code, language, uri),
     readOnly: !editContent,
     language: language,
-    theme: ThemeName,
+    theme: isDarkTheme() ? 'vs-dark' : 'vs-light',
     minimap: { enabled: false },
     selectOnLineNumbers: false,
     scrollBeyondLastLine: false,
@@ -213,4 +211,20 @@ export async function getModals() {
   const monaco = await initialMonaco()
   const models = monaco.editor.getModels()
   return models
+}
+
+export interface Editor {
+  instance: editor.IStandaloneCodeEditor
+  monaco: typeof import('monaco-editor')
+  editor: typeof editor
+  sources: Source[]
+  namespace: string
+  onAdd: OnAdd
+  onChangeActive: (active: string, range?: IRange) => void
+}
+export function getEditorWithElement(namespace: string) {
+  const el = document.querySelector(`.editor-${namespace}`) as HTMLElement & {
+    __editor__: Editor
+  }
+  return el.__editor__
 }

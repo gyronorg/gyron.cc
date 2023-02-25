@@ -14,9 +14,10 @@ li {
   }
 }
 button {
-  border: 1px solid white;
+  border-color: inherit;
   border-radius: 4px;
   padding: 4px 16px;
+  border-width: 1px;
   &.add {
     width: 100%;
     border: 1px solid #4ea7a5;

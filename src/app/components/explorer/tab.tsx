@@ -13,6 +13,7 @@ import { CloseIcon, CodeIcon, LessIcon, TsxIcon } from '../icons'
 import { Explorer } from './constant'
 import { last } from 'lodash-es'
 import classnames from 'classnames'
+import { getEditorWithElement, getModal } from './hook'
 
 interface TabProps {
   source: Source
@@ -83,7 +84,9 @@ const TabEdit = FC<TabEditProps>(
         type="text"
         class="border focus:outline-cyan-500 border-amber-400 p-1 text-zinc-700 dark:text-white relative z-10"
         value={_name}
-        onChange={(e: any) => onInputChange(uuid, `${e.target.value}${AMap[type].suffix}`)}
+        onChange={(e: any) =>
+          onInputChange(uuid, `${e.target.value}${AMap[type].suffix}`)
+        }
         onBlur={onBlur}
         autoFocus
       />
@@ -147,7 +150,7 @@ const TabEditContainer = FC<TabEditContainerProps>(
       return (
         <div
           class={classnames(
-            'backdrop-blur border-b-2 border-transparent relative px-6 py-1 text-sm cursor-pointer fill-white text-white bg-[#1e293b] dark:bg-[#00000080] group-item h-9 flex items-center',
+            'backdrop-blur border-b-2 border-transparent relative px-6 py-1 text-sm cursor-pointer fill-black dark:fill-white dark:text-white bg-slate-100 dark:bg-[#1e293b] group-item h-9 flex items-center',
             {
               'border-amber-500':
                 active === uuid || (uuid === Explorer.Preview && splitScreen),
@@ -163,7 +166,9 @@ const TabEditContainer = FC<TabEditContainerProps>(
             onActiveChange={onActiveChange}
             onTabRemove={onRemoveTab}
           />
-          {uuid !== Explorer.Preview && <Component class="fill-white/5 absolute left-1/2 -translate-x-1/2 h-10" />}
+          {uuid !== Explorer.Preview && (
+            <Component class="fill-black/5 dark:fill-white/5 absolute left-1/2 -translate-x-1/2 h-10" />
+          )}
         </div>
       )
     }
@@ -171,7 +176,16 @@ const TabEditContainer = FC<TabEditContainerProps>(
 )
 
 export const Tabs = FC<TabsProps>(
-  ({ children, content, namespace, onAdd, onRemove, onRun, isSSR, onChangeActive }) => {
+  ({
+    children,
+    content,
+    namespace,
+    onAdd,
+    onRemove,
+    onRun,
+    isSSR,
+    onChangeActive,
+  }) => {
     const activeEditTitleId = useValue(null)
     // 是否开启预览窗口
     const splitScreen = useValue(false)
@@ -187,8 +201,12 @@ export const Tabs = FC<TabsProps>(
       onChangeActive(children[0].props.source.uuid)
     }
 
-    function onAddTab(type: SourceType) {
-      const { uuid } = onAdd(type)
+    async function onAddTab(type: SourceType) {
+      const { uuid, name } = onAdd(type)
+      const { uri } = await getModal(name, namespace)
+      const { editor, monaco } = getEditorWithElement(namespace)
+      editor.createModel('', type, uri)
+      monaco.languages.typescript.typescriptDefaults.addExtraLib('', uri)
       onChangeActive(uuid)
     }
     function onRemoveTab(uuid: string) {
@@ -213,7 +231,7 @@ export const Tabs = FC<TabsProps>(
       )
       const tabPreview = last(children)
       return (
-        <div class="h-full relative shadow-lg shadow-slate-800">
+        <div class="h-full relative shadow-lg dark:shadow-black/25">
           <div class="flex gap-2">
             <div class="flex max-w-[calc(100%-134px)]">
               <div class="flex overflow-x-auto overflow-y-hidden">
@@ -256,7 +274,7 @@ export const Tabs = FC<TabsProps>(
           </div>
           <div
             class={classnames(
-              'cursor-pointer absolute left-1/2 px-4 py-1 bg-slate-800 z-50 -translate-x-full bg-[#7a9fbf2e] rounded-bl-lg text-xs text-white flex items-center gap-2 min-w-[92px]',
+              'cursor-pointer absolute left-1/2 px-4 py-1 dark:bg-slate-800 z-50 -translate-x-full bg-[#7a9fbf2e] rounded-bl-lg text-xs dark:text-white flex items-center gap-2 min-w-[92px]',
               {
                 'left-full': !splitScreen.value,
               }

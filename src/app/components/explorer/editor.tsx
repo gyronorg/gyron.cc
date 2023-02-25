@@ -12,6 +12,9 @@ import { debounce } from 'lodash-es'
 import { OnAdd, Source } from './wrapper'
 import type { IRange } from 'monaco-editor'
 import { getModal, initialEditor } from './hook'
+import { EVENT_TYPES, useEvent } from '@/hooks/event'
+import classNames from 'classnames'
+import { isDarkTheme } from '../dark'
 
 export type SourceType = 'typescript' | 'less'
 
@@ -30,21 +33,35 @@ export const Editor = FC<EditorProps>(
   ({ isSSR, namespace, sources, source, onChange, onAdd, onChangeActive }) => {
     const container = createRef<HTMLDivElement & { __editor__: any }>()
     const loading = useValue(true)
+    const isDark = useValue(isDarkTheme(isSSR))
     const owner = 'Link'
 
-    let instance: any, editor: any, monaco: any
+    let instance: any, editor: any, monaco: any, changeContentHandle
     const onChangeModel = debounce(async () => {
       if (!isSSR) {
         if (instance) {
-          const { model } = await getModal(source.value.name, namespace)
-          instance.setModel(
-            model ||
-              editor.getModel(monaco.Uri.parse(`file:///${source.value.name}`))
+          let { model } = await getModal(source.value.name, namespace)
+          model ||= editor.getModel(
+            monaco.Uri.parse(`file:///${source.value.name}`)
           )
+          instance.setModel(model)
+
+          const onCodeChange = debounce(() => {
+            const value = model.getValue()
+            onChange(value)
+          }, 200)
+          if (changeContentHandle) {
+            changeContentHandle.dispose()
+          }
+          changeContentHandle = model.onDidChangeContent(onCodeChange)
         }
       }
     }, 100)
     useWatch(onChangeModel, [() => source.value])
+    useEvent(EVENT_TYPES.dark, (_isDark) => {
+      isDark.value = _isDark
+      editor.setTheme(_isDark ? 'vs-dark' : 'vs')
+    })
 
     onAfterMount(async () => {
       if (!isSSR) {
@@ -79,20 +96,24 @@ export const Editor = FC<EditorProps>(
           onChange(value)
         }, 200)
         model.onDidChangeContent(onCodeChange)
-
-        editor.setModelMarkers(model, owner, [])
       }
     })
 
     return (
       <div class="h-full relative">
         {loading.value && (
-          <div class="absolute left-0 top-0 w-full h-full text-white flex items-center justify-center">
+          <div class="absolute left-0 top-0 w-full h-full dark:text-white flex items-center justify-center">
             资源加载中...
           </div>
         )}
         <div
-          class="h-full bg-[#1e293b] dark:bg-[#00000080]"
+          class={classNames(
+            'h-full bg-slate-100 dark:bg-[#1e293b]',
+            `editor-${namespace}`,
+            {
+              'monaco-editor-light': !isDark.value,
+            }
+          )}
           ref={container}
         ></div>
       </div>

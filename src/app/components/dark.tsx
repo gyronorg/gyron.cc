@@ -27,8 +27,18 @@ function trigger(add?: boolean) {
   }
 }
 
-export function isDarkTheme() {
+export function isDarkThemeWithWindow() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+export function isDarkTheme(isSSR?: boolean) {
+  if (isSSR) {
+    return true
+  }
+  if (localStorage.getItem('theme')) {
+    return localStorage.getItem('theme') === 'dark'
+  }
+  return isDarkThemeWithWindow()
 }
 
 export const DarkToggle = FC(({ isSSR }) => {
@@ -48,10 +58,12 @@ export const DarkToggle = FC(({ isSSR }) => {
     theme.value = themeName
 
     // 发送主题变更事件
-    event.emit(themeName === 'dark')
+    event.emit(
+      themeName === 'system' ? isDarkThemeWithWindow() : themeName === 'dark'
+    )
 
     if (themeName === 'system') {
-      const mediaDark = isDarkTheme()
+      const mediaDark = isDarkThemeWithWindow()
       trigger()
       if (mediaDark) {
         trigger(true)

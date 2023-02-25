@@ -143,14 +143,14 @@ export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
   })
 
   return (
-    <div class="h-full bg-[#1e293b] dark:bg-[#00000080] p-4">
+    <div class="h-full bg-slate-100 dark:bg-[#1e293b] p-4">
       {loading.value && (
         <div class="h-full flex items-center justify-center">
           <Loading class="w-8" />
         </div>
       )}
       <div
-        class={classNames('h-full overflow-auto text-cyan-100', namespace)}
+        class={classNames('h-full overflow-auto text-slate-800 dark:text-slate-100', namespace)}
         id={id}
         ref={container}
       ></div>

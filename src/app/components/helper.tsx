@@ -10,6 +10,7 @@ import {
 import { omit } from '@gyron/shared'
 import { Link } from '@gyron/router'
 import { AnchorIcon, CopyIcon } from './icons'
+import { EVENT_TYPES, useEvent } from '@/hooks/event'
 import classnames from 'classnames'
 
 export const A = FC<{ href: string }>(({ href, children }) => {
@@ -131,6 +132,10 @@ const Pre = FC(({ children }) => {
     status: true,
     copying: false,
     mouse: false,
+    isDark: false,
+  })
+  const event = useEvent(EVENT_TYPES.dark, (isDark: boolean) => {
+    copyState.isDark = isDark
   })
 
   const copy = () => {
@@ -156,19 +161,22 @@ const Pre = FC(({ children }) => {
 
   return (
     <div
-      class={classnames('relative group', {
-        'mt-12': Boolean(meta?.filename),
-      })}
+      class={classnames(
+        'relative group shadow-lg dark:shadow-lg-dark rounded-lg',
+        {
+          'mt-12': Boolean(meta?.filename),
+        }
+      )}
     >
       {meta && meta.filename && (
-        <span class="absolute -top-[24px] bg-[#1e293b] dark:bg-[#00000080] text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
+        <span class="absolute -top-[24px] bg-slate-100 dark:bg-[#00000080] text-slate-900 dark:text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
           {meta.filename}
         </span>
       )}
       <div
         aria-label="Copy"
         class={classnames(
-          'w-4 h-4 text-slate-100 absolute right-5 top-4 cursor-pointer opacity-20 group-hover:opacity-100 transition-opacity select-none'
+          'w-4 h-4 text-slate-600 dark:text-slate-100 absolute right-5 top-4 cursor-pointer opacity-20 group-hover:opacity-100 transition-opacity select-none'
         )}
         onClick={copy}
         onMouseleave={() => (copyState.copying = false)}
@@ -195,7 +203,7 @@ const Pre = FC(({ children }) => {
             : ''}
         </div>
       </div>
-      <pre>{code}</pre>
+      <pre class="bg-slate-50 dark:bg-[#1e293b] text-slate-800 dark:text-slate-100">{code}</pre>
     </div>
   )
 })

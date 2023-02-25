@@ -118,7 +118,13 @@ export const WrapperEditor = FC<WrapperEditorProps>(
             source={activeSource}
             active={activeId}
             sources={sources.value}
-            onChange={(value) => (activeSource.value.code = value)}
+            onChange={(value) => {
+              sources.value.forEach((item) => {
+                if (item.uuid === activeId.value) {
+                  item.code = value
+                }
+              })
+            }}
             onChangeActive={onChangeActive}
             onAdd={onAdd}
             onRemove={onRemove}
