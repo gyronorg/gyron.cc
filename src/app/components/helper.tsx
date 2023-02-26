@@ -12,6 +12,7 @@ import { Link } from '@gyron/router'
 import { AnchorIcon, CopyIcon } from './icons'
 import { EVENT_TYPES, useEvent } from '@/hooks/event'
 import classnames from 'classnames'
+import { isDarkTheme } from './dark'
 
 export const A = FC<{ href: string }>(({ href, children }) => {
   if (/(\/\/|@)/.test(href)) {
@@ -117,7 +118,7 @@ export const H3 = FC(({ children }) => {
   }
 })
 
-const Pre = FC(({ children }) => {
+const Pre = FC(({ children, isSSR }) => {
   const code = children[0]
 
   let meta = code.props?.meta,
@@ -132,7 +133,7 @@ const Pre = FC(({ children }) => {
     status: true,
     copying: false,
     mouse: false,
-    isDark: false,
+    isDark: isDarkTheme(isSSR),
   })
   const event = useEvent(EVENT_TYPES.dark, (isDark: boolean) => {
     copyState.isDark = isDark

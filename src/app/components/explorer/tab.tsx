@@ -188,7 +188,7 @@ export const Tabs = FC<TabsProps>(
   }) => {
     const activeEditTitleId = useValue(null)
     // 是否开启预览窗口
-    const splitScreen = useValue(false)
+    const splitScreen = useValue(true)
     const runtimeErrorMessage = useValue(null)
 
     if (!isSSR) {
@@ -257,7 +257,7 @@ export const Tabs = FC<TabsProps>(
                 <DropdownItem name="less">LESS</DropdownItem>
               </Dropdown>
             </div>
-            <div class="ml-auto order-last min-w-[92px]">
+            {/* <div class="ml-auto order-last min-w-[92px]">
               <TabEditContainer
                 source={tabPreview.props.source}
                 active={active}
@@ -270,9 +270,9 @@ export const Tabs = FC<TabsProps>(
                 }
                 onRemoveTab={onRemoveTab}
               />
-            </div>
+            </div> */}
           </div>
-          <div
+          {/* <div
             class={classnames(
               'cursor-pointer absolute left-1/2 px-4 py-1 dark:bg-slate-800 z-50 -translate-x-full bg-[#7a9fbf2e] rounded-bl-lg text-xs dark:text-white flex items-center gap-2 min-w-[92px]',
               {
@@ -283,7 +283,7 @@ export const Tabs = FC<TabsProps>(
           >
             <CodeIcon c1="#fff" c2="#000" />
             <span>运行</span>
-          </div>
+          </div> */}
           <div
             class={classnames(
               'absolute bottom-0 right-0 bg-red-900 py-2 px-3 text-red-400 z-50 max-h-40 overflow-auto w-full',

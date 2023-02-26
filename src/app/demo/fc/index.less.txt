@@ -1,7 +1,6 @@
 .container {
   text-align: center;
   input {
-    background-color: #171c23;
     border-radius: 4px;
     padding: 2px 10px;
     outline: none;

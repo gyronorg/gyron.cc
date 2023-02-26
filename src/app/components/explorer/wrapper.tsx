@@ -92,17 +92,6 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       }
     }
 
-    // 初始化时将所有 model 设置到内存中，给 ctrl + click 提供数据支撑
-    !isSSR &&
-      sources.value.slice(1).forEach((source) => {
-        initialMonaco().then(async (monaco) => {
-          const { model, uri } = await getModal(source.name, namespace)
-          if (!model) {
-            monaco.editor.createModel(source.code, source.type, uri)
-          }
-        })
-      })
-
     return (
       <Tabs
         namespace={namespace}
@@ -124,6 +113,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
                   item.code = value
                 }
               })
+              onRun()
             }}
             onChangeActive={onChangeActive}
             onAdd={onAdd}

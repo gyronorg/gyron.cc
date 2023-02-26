@@ -1,9 +1,16 @@
-import { createRef, exposeComponent, FC, onDestroyed, useValue } from 'gyron'
+import {
+  createRef,
+  exposeComponent,
+  FC,
+  onAfterMount,
+  onDestroyed,
+  useValue,
+} from 'gyron'
 import { initialBabelBundle } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
-import { useElementMutationObserver } from '@/utils/dom'
+import { isInViewport, useElementMutationObserver } from '@/utils/dom'
 import { useStandaloneNamespace } from './tab'
 import { SourceType } from './editor'
 import type { NodePath } from '@babel/core'
@@ -130,27 +137,51 @@ export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
     loading.value = true
     const main = source[0]
 
-    startEditorRuntime(main, id, source, namespace)
+    return startEditorRuntime(main, id, source, namespace)
+  }
+
+  let started = false
+  function onScroll() {
+    if (isInViewport(container.current) && !started) {
+      started = true
+      start().then(() => {
+        document.removeEventListener('scroll', onScroll)
+      })
+    }
   }
 
   exposeComponent({
     start: start,
   })
 
+  onAfterMount(() => {
+    if (isInViewport(container.current)) {
+      onScroll()
+    } else {
+      document.addEventListener('scroll', onScroll, {
+        passive: true,
+      })
+    }
+  })
+
   onDestroyed(() => {
     removeStandalone(namespace, `script_${namespace}`)
     removeStandalone(namespace, `style_${namespace}`)
+    document.removeEventListener('scroll', onScroll)
   })
 
   return (
-    <div class="h-full bg-slate-100 dark:bg-[#1e293b] p-4">
+    <div class="h-full bg-gray-200 dark:bg-[#1e293b] p-4">
       {loading.value && (
         <div class="h-full flex items-center justify-center">
           <Loading class="w-8" />
         </div>
       )}
       <div
-        class={classNames('h-full overflow-auto text-slate-800 dark:text-slate-100', namespace)}
+        class={classNames(
+          'h-full overflow-auto text-slate-800 dark:text-slate-100',
+          namespace
+        )}
         id={id}
         ref={container}
       ></div>

@@ -49,7 +49,7 @@ export const Editor = FC<EditorProps>(
           const onCodeChange = debounce(() => {
             const value = model.getValue()
             onChange(value)
-          }, 200)
+          }, 2000)
           if (changeContentHandle) {
             changeContentHandle.dispose()
           }
@@ -94,7 +94,7 @@ export const Editor = FC<EditorProps>(
         const onCodeChange = debounce(() => {
           const value = model.getValue()
           onChange(value)
-        }, 200)
+        }, 2000)
         model.onDidChangeContent(onCodeChange)
       }
     })

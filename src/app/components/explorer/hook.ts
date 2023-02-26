@@ -24,6 +24,7 @@ async function _initialEditor({
   code,
   language,
   name,
+  sources,
   editContent,
 }: InitialEditor) {
   const monaco = await initialMonaco()
@@ -33,6 +34,14 @@ async function _initialEditor({
   const uri = monaco.Uri.parse(`${scheme}:///${namespace}/${name}`)
 
   const { editor } = monaco
+
+  // 初始化时将所有 model 设置到内存中，给 ctrl + click 提供数据支撑
+  for (const source of sources.slice(1)) {
+    const { model, uri } = await getModal(source.name, namespace)
+    if (!model) {
+      monaco.editor.createModel(source.code, source.type, uri)
+    }
+  }
 
   if (!initialed) {
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
