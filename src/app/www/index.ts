@@ -19,7 +19,9 @@ class ExtraLib {
 }
 
 const generateDTS = async () => {
+  // typescript 4.5.5 lib
   const libs = [
+    'lib.d.ts',
     'lib.dom.d.ts',
     'lib.dom.iterable.d.ts',
     'lib.es2015.collection.d.ts',
@@ -52,16 +54,13 @@ const generateDTS = async () => {
     'lib.es2019.array.d.ts',
     'lib.es2019.d.ts',
     'lib.es2019.full.d.ts',
-    'lib.es2019.intl.d.ts',
     'lib.es2019.object.d.ts',
     'lib.es2019.string.d.ts',
     'lib.es2019.symbol.d.ts',
     'lib.es2020.bigint.d.ts',
     'lib.es2020.d.ts',
-    'lib.es2020.date.d.ts',
     'lib.es2020.full.d.ts',
     'lib.es2020.intl.d.ts',
-    'lib.es2020.number.d.ts',
     'lib.es2020.promise.d.ts',
     'lib.es2020.sharedmemory.d.ts',
     'lib.es2020.string.d.ts',
@@ -72,24 +71,19 @@ const generateDTS = async () => {
     'lib.es2021.promise.d.ts',
     'lib.es2021.string.d.ts',
     'lib.es2021.weakref.d.ts',
-    'lib.es2022.d.ts',
-    'lib.es2022.array.d.ts',
-    'lib.es2022.error.d.ts',
-    'lib.es2022.full.d.ts',
-    'lib.es2022.intl.d.ts',
-    'lib.es2022.object.d.ts',
-    'lib.es2022.regexp.d.ts',
-    'lib.es2022.sharedmemory.d.ts',
-    'lib.es2022.string.d.ts',
+    'lib.es5.d.ts',
+    'lib.es6.d.ts',
     'lib.esnext.d.ts',
     'lib.esnext.full.d.ts',
     'lib.esnext.intl.d.ts',
+    'lib.esnext.promise.d.ts',
+    'lib.esnext.string.d.ts',
+    'lib.esnext.weakref.d.ts',
     'lib.scripthost.d.ts',
-    'lib.es5.d.ts',
-    'lib.es6.d.ts',
     'lib.webworker.d.ts',
     'lib.webworker.importscripts.d.ts',
     'lib.webworker.iterable.d.ts',
+    'protocol.d.ts',
   ].map(async (key) => {
     const text =
       localStorage.getItem(key) ||
