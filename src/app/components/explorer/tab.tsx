@@ -48,7 +48,7 @@ interface TabsProps {
   onInputChange?: (id: string, value: string) => void
   onAdd?: OnAdd
   onRemove?: (uuid: string) => string
-  onRun?: () => void
+  onRun?: (source?: Source) => void
   onChangeActive?: (active: string) => void
 }
 

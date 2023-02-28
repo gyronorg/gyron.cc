@@ -86,9 +86,9 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       })
     }
 
-    function onRun() {
+    function onRun(source: Source) {
       if (preview && preview.current) {
-        preview.current.start()
+        preview.current.start(source)
       }
     }
 
@@ -108,12 +108,9 @@ export const WrapperEditor = FC<WrapperEditorProps>(
             active={activeId}
             sources={sources.value}
             onChange={(value) => {
-              sources.value.forEach((item) => {
-                if (item.uuid === activeId.value) {
-                  item.code = value
-                }
-              })
-              onRun()
+              const source = sources.value.find(item => item.uuid === activeId.value)
+              source.code = value
+              onRun(source)
             }}
             onChangeActive={onChangeActive}
             onAdd={onAdd}

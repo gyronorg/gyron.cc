@@ -2,6 +2,7 @@ import {
   createRef,
   exposeComponent,
   FC,
+  Instance,
   onAfterMount,
   onDestroyed,
   useValue,
@@ -11,16 +12,14 @@ import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
 import { isInViewport, useElementMutationObserver } from '@/utils/dom'
-import { useStandaloneNamespace } from './tab'
 import { SourceType } from './editor'
-import type { NodePath } from '@babel/core'
-import type { ImportDeclaration } from '@babel/types'
 import type { BuildResult } from 'esbuild-wasm'
 import classNames from 'classnames'
 import less from 'less'
+import { keys } from 'lodash-es'
 
 export interface PreviewExpose {
-  start: () => void
+  start: (source: Source) => void
 }
 
 export type TransformInValidate = (
@@ -61,7 +60,8 @@ async function startEditorRuntime(
   main: Source,
   containerId: string,
   sources: Source[],
-  namespace: string
+  namespace: string,
+  instanceInner: string
 ) {
   !build && (build = await initialBabelBundle('/assets/esbuild.wasm'))
 
@@ -92,7 +92,7 @@ const _helperCallback = window['$${namespace}']
 window.addEventListener('error', e => _helperCallback && _helperCallback(e.error))
 
 try {
-  createInstance(<APP />).render(document.getElementById('${containerId}'))
+  window['${instanceInner}'] = createInstance(<APP />).render(document.getElementById('${containerId}'))
   _helperCallback && _helperCallback()
 } catch(e) {
   _helperCallback && _helperCallback(e)
@@ -112,6 +112,9 @@ try {
     },
     {
       sources: sources,
+      options: {
+        metafile: true,
+      },
     }
   )
 
@@ -120,24 +123,46 @@ try {
 
   initialRuntime(namespace)
   insertScript(ret, namespace)
+
+  return ret.metafile
 }
 
 export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
   const loading = useValue(false)
   const id = generateSafeUuid()
   const container = createRef<Element>()
+  let metafile: BuildResult['metafile']
+  let app: string
 
   !isSSR &&
     useElementMutationObserver(container, () => {
       loading.value = false
     })
 
-  function start() {
-    container.current.innerHTML = ''
-    loading.value = true
-    const main = source[0]
-
-    return startEditorRuntime(main, id, source, namespace)
+  async function start(_source?: Source) {
+    let shouldRestart = true
+    if (_source && metafile) {
+      const hit = keys(metafile.inputs).find(
+        (item) => item.replace('localModule:./', '') === _source.name
+      )
+      shouldRestart = Boolean(hit)
+    }
+    if (shouldRestart) {
+      app && window[app].destroy()
+      loading.value = true
+      try {
+        app = generateSafeUuid('instance')
+        metafile = await startEditorRuntime(
+          source[0],
+          id,
+          source,
+          namespace,
+          app
+        )
+      } finally {
+        loading.value = false
+      }
+    }
   }
 
   let started = false
