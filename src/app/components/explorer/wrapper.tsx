@@ -1,6 +1,7 @@
 import { initialMonaco } from '@/hooks/monaco'
 import { generateSafeUuid } from '@/utils/uuid'
 import { createRef, FC, nextRender, useComputed, useValue } from 'gyron'
+import { debounce } from 'lodash-es'
 import { Explorer, MAIN_FILE } from './constant'
 import { Editor, SourceType } from './editor'
 import { getModal } from './hook'
@@ -86,11 +87,11 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       })
     }
 
-    function onRun(source: Source) {
+    const onRun = debounce((source: Source) => {
       if (preview && preview.current) {
         preview.current.start(source)
       }
-    }
+    }, 3000)
 
     return (
       <Tabs
@@ -107,8 +108,8 @@ export const WrapperEditor = FC<WrapperEditorProps>(
             source={activeSource}
             active={activeId}
             sources={sources.value}
-            onChange={(value) => {
-              const source = sources.value.find(item => item.uuid === activeId.value)
+            onChange={(value, uuid) => {
+              const source = sources.value.find((item) => item.uuid === uuid)
               source.code = value
               onRun(source)
             }}

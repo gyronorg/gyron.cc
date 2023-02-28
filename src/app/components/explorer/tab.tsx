@@ -62,10 +62,14 @@ interface TabEditProps {
 
 export function useStandaloneNamespace(
   namespace: string,
+  runtimeCallback?: (err?: Error) => void,
   callback?: (err?: Error) => void
 ): (err?: Error) => void {
   if (!window[`$${namespace}`]) {
-    window[`$${namespace}`] = callback
+    window[`$${namespace}`] = {
+      runtime: runtimeCallback,
+      building: callback,
+    }
   }
 
   onDestroyed(() => {
@@ -190,11 +194,18 @@ export const Tabs = FC<TabsProps>(
     // 是否开启预览窗口
     const splitScreen = useValue(true)
     const runtimeErrorMessage = useValue(null)
+    const buildingErrorMessage = useValue(null)
 
     if (!isSSR) {
-      useStandaloneNamespace(namespace, (err) => {
-        runtimeErrorMessage.value = err ? err.stack : null
-      })
+      useStandaloneNamespace(
+        namespace,
+        (err) => {
+          runtimeErrorMessage.value = err ? err.stack : null
+        },
+        (err) => {
+          buildingErrorMessage.value = err ? err.stack : null
+        }
+      )
     }
 
     if (children[0]?.props?.source?.uuid) {
@@ -206,7 +217,10 @@ export const Tabs = FC<TabsProps>(
       const { uri } = await getModal(name, namespace)
       const { editor, monaco } = getEditorWithElement(namespace)
       editor.createModel('', type, uri)
-      monaco.languages.typescript.typescriptDefaults.addExtraLib('', uri.toString())
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        '',
+        uri.toString()
+      )
       onChangeActive(uuid)
     }
     function onRemoveTab(uuid: string) {
@@ -220,16 +234,11 @@ export const Tabs = FC<TabsProps>(
         onChangeActive(uuid)
       }
     }
-    function onCodeRun() {
-      splitScreen.value = true
-      nextRender(onRun)
-    }
 
     return ({ children, active, onInputChange }) => {
       const preview = children.find(
         (item) => item.props.source.uuid === Explorer.Preview
       )
-      const tabPreview = last(children)
       return (
         <div class="h-full relative shadow-lg dark:shadow-black/25">
           <div class="flex gap-2">
@@ -257,43 +266,20 @@ export const Tabs = FC<TabsProps>(
                 <DropdownItem name="less">LESS</DropdownItem>
               </Dropdown>
             </div>
-            {/* <div class="ml-auto order-last min-w-[92px]">
-              <TabEditContainer
-                source={tabPreview.props.source}
-                active={active}
-                activeUuid={activeEditTitleId.value}
-                splitScreen={splitScreen.value}
-                onActive={onActive}
-                onInputChange={onInputChange}
-                onActiveChange={(value: string) =>
-                  (activeEditTitleId.value = value)
-                }
-                onRemoveTab={onRemoveTab}
-              />
-            </div> */}
           </div>
-          {/* <div
-            class={classnames(
-              'cursor-pointer absolute left-1/2 px-4 py-1 dark:bg-slate-800 z-50 -translate-x-full bg-[#7a9fbf2e] rounded-bl-lg text-xs dark:text-white flex items-center gap-2 min-w-[92px]',
-              {
-                'left-full': !splitScreen.value,
-              }
-            )}
-            onClick={onCodeRun}
-          >
-            <CodeIcon c1="#fff" c2="#000" />
-            <span>运行</span>
-          </div> */}
           <div
             class={classnames(
               'absolute bottom-0 right-0 bg-red-900 py-2 px-3 text-red-400 z-50 max-h-40 overflow-auto w-full',
               {
                 'w-1/2': splitScreen.value,
-                hidden: runtimeErrorMessage.value === null,
+                hidden:
+                  runtimeErrorMessage.value === null &&
+                  buildingErrorMessage.value === null,
               }
             )}
           >
             <pre html={runtimeErrorMessage.value}></pre>
+            <pre html={buildingErrorMessage.value}></pre>
           </div>
           <div class="h-[calc(100%-36px)] relative z-40 flex">
             <div

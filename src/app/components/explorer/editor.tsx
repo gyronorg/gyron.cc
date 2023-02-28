@@ -23,7 +23,7 @@ interface EditorProps {
   source: Computed<Source>
   sources: Source[]
   active?: Primitive<string>
-  onChange: (code: string) => void
+  onChange: (code: string, id: string) => void
   onAdd?: OnAdd
   onRemove?: (uuid: string) => string
   onChangeActive?: (active: string, range?: IRange) => void
@@ -46,10 +46,10 @@ export const Editor = FC<EditorProps>(
           )
           instance.setModel(model)
 
-          const onCodeChange = debounce(() => {
+          const onCodeChange = () => {
             const value = model.getValue()
-            onChange(value)
-          }, 2000)
+            onChange(value, source.value.uuid)
+          }
           if (changeContentHandle) {
             changeContentHandle.dispose()
           }
@@ -91,11 +91,11 @@ export const Editor = FC<EditorProps>(
         loading.value = false
 
         const model = instance.getModel()
-        const onCodeChange = debounce(() => {
+        const onCodeChange = () => {
           const value = model.getValue()
-          onChange(value)
-        }, 2000)
-        model.onDidChangeContent(onCodeChange)
+          onChange(value, source.value.uuid)
+        }
+        changeContentHandle = model.onDidChangeContent(onCodeChange)
       }
     })
 

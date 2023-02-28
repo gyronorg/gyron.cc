@@ -89,14 +89,19 @@ async function startEditorRuntime(
   const code = `import { APP } from './${main.name}';
 import { createInstance } from 'gyron'
 const _helperCallback = window['$${namespace}']
-window.addEventListener('error', e => _helperCallback && _helperCallback(e.error))
+window.addEventListener('error', e => _helperCallback && _helperCallback.runtime(e.error))
 
 try {
   window['${instanceInner}'] = createInstance(<APP />).render(document.getElementById('${containerId}'))
-  _helperCallback && _helperCallback()
+  _helperCallback && _helperCallback.runtime()
 } catch(e) {
-  _helperCallback && _helperCallback(e)
+  _helperCallback && _helperCallback.runtime(e)
 }`
+
+  const _helperCallback = window[`$${namespace}`]
+
+  // 清除编译时的错误
+  _helperCallback && _helperCallback.building()
 
   const ret = await build(
     {
@@ -116,15 +121,26 @@ try {
         metafile: true,
       },
     }
-  )
+  ).catch((e) => {
+    _helperCallback && _helperCallback.building(e)
+  })
 
-  if (ret.warnings.length) {
+  if (ret) {
+    if (_helperCallback) {
+      if (ret.warnings.length) {
+        _helperCallback.building(
+          new Error(ret.warnings.map((item) => item.text).join('\n'))
+        )
+      } else {
+        _helperCallback.building()
+      }
+    }
+
+    initialRuntime(namespace)
+    insertScript(ret, namespace)
   }
 
-  initialRuntime(namespace)
-  insertScript(ret, namespace)
-
-  return ret.metafile
+  return ret && ret.metafile
 }
 
 export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
@@ -143,12 +159,14 @@ export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
     let shouldRestart = true
     if (_source && metafile) {
       const hit = keys(metafile.inputs).find(
-        (item) => item.replace('localModule:./', '') === _source.name
+        (item) =>
+          item.replace('localModule:./', '').replace(/\.(tsx|ts)/, '') ===
+          _source.name.replace(/\.(tsx|ts)/, '')
       )
       shouldRestart = Boolean(hit)
     }
     if (shouldRestart) {
-      app && window[app].destroy()
+      window[app] && window[app].destroy()
       loading.value = true
       try {
         app = generateSafeUuid('instance')
