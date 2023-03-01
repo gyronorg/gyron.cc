@@ -44,11 +44,11 @@ interface TabsProps {
   namespace: string
   active?: string
   content: VNode
+  preview: VNode
   children: VNode<any, TabProps>[]
   onInputChange?: (id: string, value: string) => void
   onAdd?: OnAdd
   onRemove?: (uuid: string) => string
-  onRun?: (source?: Source) => void
   onChangeActive?: (active: string) => void
 }
 
@@ -130,7 +130,6 @@ interface TabEditContainerProps {
   source: Source
   active: string
   activeUuid: string
-  splitScreen: boolean
   onActive: (uuid: string) => void
   onInputChange: (id: string, value: string) => void
   onActiveChange: (id: string) => void
@@ -140,7 +139,6 @@ interface TabEditContainerProps {
 const TabEditContainer = FC<TabEditContainerProps>(
   ({
     active,
-    splitScreen,
     activeUuid,
     source,
     onActive,
@@ -156,8 +154,7 @@ const TabEditContainer = FC<TabEditContainerProps>(
           class={classnames(
             'backdrop-blur border-b-2 border-transparent relative px-6 py-1 text-sm cursor-pointer fill-black dark:fill-white dark:text-white bg-slate-100 dark:bg-[#1e293b] group-item h-9 flex items-center',
             {
-              'border-amber-500':
-                active === uuid || (uuid === Explorer.Preview && splitScreen),
+              'border-amber-500': active === uuid || uuid === Explorer.Preview,
               'ml-auto order-last': uuid === Explorer.Preview,
             }
           )}
@@ -186,13 +183,10 @@ export const Tabs = FC<TabsProps>(
     namespace,
     onAdd,
     onRemove,
-    onRun,
     isSSR,
     onChangeActive,
   }) => {
     const activeEditTitleId = useValue(null)
-    // 是否开启预览窗口
-    const splitScreen = useValue(true)
     const runtimeErrorMessage = useValue(null)
     const buildingErrorMessage = useValue(null)
 
@@ -229,16 +223,13 @@ export const Tabs = FC<TabsProps>(
     }
     function onActive(uuid: string) {
       if (uuid === Explorer.Preview) {
-        splitScreen.value = !splitScreen.value
+        // ...
       } else {
         onChangeActive(uuid)
       }
     }
 
-    return ({ children, active, onInputChange }) => {
-      const preview = children.find(
-        (item) => item.props.source.uuid === Explorer.Preview
-      )
+    return ({ preview, active, onInputChange }) => {
       return (
         <div class="h-full relative shadow-lg dark:shadow-black/25">
           <div class="flex gap-2">
@@ -250,7 +241,6 @@ export const Tabs = FC<TabsProps>(
                       source={item.props.source}
                       active={active}
                       activeUuid={activeEditTitleId.value}
-                      splitScreen={splitScreen.value}
                       onActive={onActive}
                       onInputChange={onInputChange}
                       onActiveChange={(value: string) =>
@@ -269,9 +259,8 @@ export const Tabs = FC<TabsProps>(
           </div>
           <div
             class={classnames(
-              'absolute bottom-0 right-0 bg-red-900 py-2 px-3 text-red-400 z-50 max-h-40 overflow-auto w-full',
+              'absolute bottom-0 right-0 bg-red-900 py-2 px-3 text-red-400 z-50 max-h-40 overflow-auto lg:w-1/2 w-full',
               {
-                'w-1/2': splitScreen.value,
                 hidden:
                   runtimeErrorMessage.value === null &&
                   buildingErrorMessage.value === null,
@@ -281,18 +270,14 @@ export const Tabs = FC<TabsProps>(
             <pre html={runtimeErrorMessage.value}></pre>
             <pre html={buildingErrorMessage.value}></pre>
           </div>
-          <div class="h-[calc(100%-36px)] relative z-40 flex">
-            <div
-              class={classnames('h-full flex-1', {
-                'w-1/2': splitScreen.value,
-              })}
-            >
+          <div class="h-[calc(100%-36px)] relative z-40 flex flex-col lg:flex-row">
+            <div class={classnames('h-1/2 lg:h-full flex-1 w-full lg:w-1/2')}>
               {content}
             </div>
             <div
-              class={classnames('flex-1, w-1/2 border-l border-transparent', {
-                hidden: !splitScreen.value,
-              })}
+              class={classnames(
+                'flex-1 w-full lg:w-1/2 h-1/2 lg:h-full border-l border-transparent overflow-auto'
+              )}
             >
               {preview}
             </div>

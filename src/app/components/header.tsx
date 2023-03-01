@@ -72,6 +72,15 @@ export const Header = FC(() => {
           />
           <div
             class={classnames(
+              'fixed inset-0 z-50 bg-black/20 backdrop-blur-sm dark:bg-slate-900/80 w-0 h-[100vh] opacity-0 transition-opacity',
+              {
+                'w-[100vw] opacity-100': expand.value,
+              }
+            )}
+            aria-hidden="true"
+          ></div>
+          <div
+            class={classnames(
               'absolute inset-0 z-50 lg:hidden transition-all w-0 translate-x-0 h-[calc(100vh-env(safe-area-inset-bottom))]',
               {
                 'w-[100vw]': expand.value,
@@ -79,12 +88,8 @@ export const Header = FC(() => {
             )}
             aria-modal="true"
             role="dialog"
+            onClick={onToggleExpand}
           >
-            <div
-              class="fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-slate-900/80 h-full"
-              aria-hidden="true"
-              onClick={onToggleExpand}
-            ></div>
             <div
               class={classnames(
                 'relative bg-white w-80 max-w-[calc(100%-3rem)] dark:bg-slate-800 h-full overflow-y-auto transition-all pt-10',
@@ -92,12 +97,13 @@ export const Header = FC(() => {
                   'p-6': expand.value,
                 }
               )}
+              onClick={(e) => e.stopPropagation()}
             >
               <div
                 class="absolute right-6 w-6 h-6 flex items-center justify-center"
                 onClick={onToggleExpand}
               >
-                <CloseIcon />
+                <CloseIcon class="w-2.5 h-2.5" />
               </div>
               <Nav menus={menus.value} changed={onToggleExpand} />
             </div>

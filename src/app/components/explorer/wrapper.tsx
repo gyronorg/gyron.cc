@@ -100,7 +100,6 @@ export const WrapperEditor = FC<WrapperEditorProps>(
         onInputChange={onActiveChange}
         onAdd={onAdd}
         onRemove={onRemove}
-        onRun={onRun}
         onChangeActive={onChangeActive}
         content={
           <Editor
@@ -118,6 +117,9 @@ export const WrapperEditor = FC<WrapperEditorProps>(
             onRemove={onRemove}
           />
         }
+        preview={
+          <Preview source={sources.value} namespace={namespace} ref={preview} />
+        }
       >
         {sources.value.map((item) => (
           <Tab source={item}></Tab>
@@ -133,9 +135,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
             code: '',
             type: 'less',
           }}
-        >
-          <Preview source={sources.value} namespace={namespace} ref={preview} />
-        </Tab>
+        ></Tab>
       </Tabs>
     )
 
