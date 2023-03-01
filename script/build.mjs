@@ -6,7 +6,7 @@ import { createSSRInstance, nextRender, h } from '@gyron/runtime'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, generateNestedRoutes, Router } from '@gyron/router'
 import { escape } from '@gyron/shared'
-import { buildClient, buildAPP } from './base.mjs'
+import { buildClient, buildAPP, buildServer } from './base.mjs'
 import { JSDOM } from 'jsdom'
 import DOMPurify from 'dompurify'
 import fs from 'fs-extra'
@@ -123,8 +123,8 @@ buildClient(false, tempPath).then((appMeta) => {
     fs.copySync('public/sitemap', `${tempPath}/sitemap`)
     fs.copySync('public/assets', `${tempPath}/assets`)
     fs.copySync('node_modules/gyron/dist/browser', `${tempPath}/assets/gyron`)
-    fs.copyFile('node_modules/esbuild-wasm/esbuild.wasm', `${tempPath}/assets/esbuild.wasm`)
     fs.rmSync('dist/app', { recursive: true, force: true })
+    await buildServer()
     spinner.succeed(chalk.green('Build Complete!'))
   })
 })

@@ -103,7 +103,9 @@ export const MdxContainer = FC<MdxContainerProps>(({ children, menu }) => {
               <span>Copyright © {new Date().getFullYear()} Link</span>
               <span class="border-l border-slate-400 ml-4 pl-4">
                 Produced with
-                <a href="https://github.com/gyronorg/docs" class="underline">@gyron/docs</a>
+                <a href="https://github.com/gyronorg/docs" class="underline">
+                  @gyron/docs
+                </a>
               </span>
             </p>
           </div>

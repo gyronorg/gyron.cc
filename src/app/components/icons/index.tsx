@@ -130,7 +130,10 @@ export const AnchorIcon = () => (
   </svg>
 )
 export const CopyIcon = FC<IconProps>(({ class: className }) => (
-  <svg viewBox="0 0 1024 1024" class={classnames('fill-current pointer-events-none', className)}>
+  <svg
+    viewBox="0 0 1024 1024"
+    class={classnames('fill-current pointer-events-none', className)}
+  >
     <path d="M829.568 53.12H960V1024H194.432v-121.344H64V284.48L361.92 0h467.648v53.12z m0 80.896v768.64H279.488v40.448h595.456V134.016h-45.44zM149.056 317.952v503.808h595.456V80.896H397.248L149.12 317.952z"></path>
   </svg>
 ))

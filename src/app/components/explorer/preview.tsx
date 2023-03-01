@@ -2,18 +2,16 @@ import {
   createRef,
   exposeComponent,
   FC,
-  Instance,
   onAfterMount,
   onDestroyed,
   useValue,
 } from 'gyron'
-import { initialBabelBundle } from '@gyron/babel-plugin-jsx'
 import { Source } from './wrapper'
 import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
 import { isInViewport, useElementMutationObserver } from '@/utils/dom'
 import { SourceType } from './editor'
-import type { BuildResult } from 'esbuild-wasm'
+import type { BuildResult } from 'esbuild'
 import classNames from 'classnames'
 import less from 'less'
 import { keys } from 'lodash-es'
@@ -44,18 +42,17 @@ function initialRuntime(namespace: string) {
   removeStandalone(namespace, `style_${namespace}`)
 }
 
-function insertScript(ret: BuildResult, namespace: string) {
+function insertScript(code: string, namespace: string) {
   const name = `script_${namespace}`
   const script = document.createElement('script')
   script.setAttribute('type', 'module')
   script.id = 'standalone'
   script.async = true
-  script.innerHTML = ret.outputFiles[0].text
+  script.innerHTML = code
   script.className = name
   document.body.append(script)
 }
 
-let build: (main: any, config: any) => Promise<BuildResult<any>>
 async function startEditorRuntime(
   main: Source,
   containerId: string,
@@ -63,8 +60,6 @@ async function startEditorRuntime(
   namespace: string,
   instanceInner: string
 ) {
-  !build && (build = await initialBabelBundle('/assets/esbuild.wasm'))
-
   sources = sources.map((item) => ({
     ...item,
     loader: item.type === 'less' ? 'css' : 'tsx',
@@ -74,7 +69,7 @@ async function startEditorRuntime(
     const source = sources[i]
     if (source.type === 'less') {
       const css = (await less.render(`.${namespace}{${source.code}}`)).css
-      source.code = `var style = document.createElement('style')
+      source.code = `const style = document.createElement('style')
       style.id = '${source.uuid}'
       style.className = 'style_${namespace}'
       style.setAttribute('type', 'text/css')
@@ -103,44 +98,44 @@ try {
   // 清除编译时的错误
   _helperCallback && _helperCallback.building()
 
-  const ret = await build(
-    {
-      code: code,
-      name: '_app.tsx',
-      loader: 'tsx',
-      rootFileName: '_app.tsx',
-      setup: true,
-      importSourceMap: {
-        gyron: location.origin + '/assets/gyron/index.js',
-      },
-      external: [],
+  const res = await fetch('/build', {
+    method: 'post',
+    headers: {
+      'user-agent': 'Mozilla/4.0 MDN Example',
+      'content-type': 'application/json',
     },
-    {
+    body: JSON.stringify({
+      main: {
+        code: code,
+        name: '_app.tsx',
+        loader: 'tsx',
+        rootFileName: '_app.tsx',
+        setup: true,
+        importSourceMap: {
+          gyron: location.origin + '/assets/gyron/index.js',
+        },
+      },
       sources: sources,
       options: {
+        external: ['gyron', '@gyron'],
         metafile: true,
       },
-    }
-  ).catch((e) => {
-    _helperCallback && _helperCallback.building(e)
+    }),
   })
+    .then((res) => res.json())
+    .catch((e) => {
+      _helperCallback && _helperCallback.building(e)
+    })
 
-  if (ret) {
-    if (_helperCallback) {
-      if (ret.warnings.length) {
-        _helperCallback.building(
-          new Error(ret.warnings.map((item) => item.text).join('\n'))
-        )
-      } else {
-        _helperCallback.building()
-      }
-    }
-
+  if (res.code === 0) {
+    _helperCallback.building()
     initialRuntime(namespace)
-    insertScript(ret, namespace)
+    insertScript(res.data.text, namespace)
+  } else {
+    _helperCallback.building(new Error(res.data))
   }
 
-  return ret && ret.metafile
+  return res && res.data.metafile
 }
 
 export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {

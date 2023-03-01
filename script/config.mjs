@@ -137,29 +137,41 @@ function HttpResource() {
     /** @type {import('esbuild').Plugin['setup']} */
     setup(build) {
       const cache = {}
-      build.onResolve({ filter: /^https:\/\// }, ({ path }) => ({ path, namespace }));
-      build.onResolve({ filter: /.*/, namespace }, ({ path, importer }) => ({ path: new URL(path.replace(/\?.*/, ""), importer).toString(), namespace }));
+      build.onResolve({ filter: /^https:\/\// }, ({ path }) => ({
+        path,
+        namespace,
+      }))
+      build.onResolve({ filter: /.*/, namespace }, ({ path, importer }) => ({
+        path: new URL(path.replace(/\?.*/, ''), importer).toString(),
+        namespace,
+      }))
       build.onLoad({ filter: /.*/, namespace }, async (args) => {
         const { pathname } = new URL(args.path)
         try {
           const text = await fs.promises.readFile(`node_modules${pathname}`)
           return {
             contents: text,
-            loader: 'text'
+            loader: 'text',
           }
-        } catch { }
+        } catch {}
 
-        return cache[args.path] || fetch(args.path).then(res => res.text()).then((res) => {
-          return {
-            contents: res,
-            loader: 'text'
-          }
-        }).then(value => {
-          cache[args.path] = value
-          return value
-        })
+        return (
+          cache[args.path] ||
+          fetch(args.path)
+            .then((res) => res.text())
+            .then((res) => {
+              return {
+                contents: res,
+                loader: 'text',
+              }
+            })
+            .then((value) => {
+              cache[args.path] = value
+              return value
+            })
+        )
       })
-    }
+    },
   }
 }
 
@@ -186,6 +198,6 @@ export function renderConfig(watch, __DEV__) {
     ],
     loader: {
       '.ttf': 'dataurl',
-    }
+    },
   }
 }

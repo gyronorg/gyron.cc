@@ -7,6 +7,7 @@ import fs from 'fs-extra'
 import plugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import stdLibBrowser from 'node-stdlib-browser'
 import path from 'path'
+import glob from 'glob'
 
 /** @type {import('child_process').ChildProcess} */
 let task
@@ -65,20 +66,29 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
       platform: 'node',
       watch: watch
         ? {
-          onRebuild(err, result) {
-            runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
-          },
-        }
+            onRebuild(err, result) {
+              runServer(tempPath, formatEntryMeta(result.metafile.outputs).js)
+            },
+          }
         : false,
       define: {
-        __DEV__: watch,
-        __WARN__: false,
+        __DEV__: String(watch),
+        __WARN__: String(false),
         __TMP__: JSON.stringify(watch ? tempPath : '../'),
         __CLIENT__: JSON.stringify(clientMetaFile),
       },
+      logLevel: 'error',
+      external: ['esbuild'],
     })
     const filename = formatEntryMeta(result.metafile.outputs).js
     if (watch) {
+      const files = glob.sync('node_modules/esbuild*')
+      for (const file of files) {
+        fs.copySync(
+          file,
+          tempPath + '/server/node_modules/' + file.replace('node_modules/', '')
+        )
+      }
       runServer(tempPath, filename)
     } else {
       fs.writeFileSync('dist/server/index.js', `require('./${filename}')\n`, {
@@ -113,8 +123,8 @@ export async function buildClient(watch, tempPath) {
         ),
       ],
       define: {
-        __DEV__: watch,
-        __WARN__: false,
+        __DEV__: String(watch),
+        __WARN__: String(false),
         global: 'global',
         process: 'process',
         Buffer: 'Buffer',

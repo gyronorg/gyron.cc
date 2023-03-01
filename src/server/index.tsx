@@ -1,14 +1,23 @@
 import { nextRender } from 'gyron'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, Router } from '@gyron/router'
+import {
+  transformWithBabel,
+  buildBrowserEsmWithEsbuild,
+} from '@gyron/babel-plugin-jsx'
+import { build } from 'esbuild'
 import { App } from '@/index'
 import express from 'express'
 import path from 'path'
 import nocache from 'nocache'
 import cookieParser from 'cookie-parser'
+import bodyParser from 'body-parser'
 import template from '../../public/index.html'
 
 const app = express()
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 const root = __DEV__ ? path.join(__TMP__) : path.join(__dirname, __TMP__)
 const clientPath = path.join(root, 'client')
@@ -24,6 +33,48 @@ app.use('/assets', express.static(assetsPath))
 
 const router = createMemoryRouter({
   isSSR: true,
+})
+
+app.post('/build', async (req, res) => {
+  const { main, sources } = req.body
+
+  try {
+    const { plugin } = buildBrowserEsmWithEsbuild(main, {
+      sources,
+    })
+    const content = await transformWithBabel(main.code, main.name, main, true)
+    const bundle = await build({
+      stdin: {
+        contents: content.code,
+        sourcefile: main.name,
+      },
+      bundle: true,
+      write: false,
+      format: 'esm',
+      plugins: [plugin],
+    })
+
+    if (bundle.warnings.length) {
+      res.send({
+        data: bundle.warnings.map((item) => item.text).join('\n'),
+        code: 1,
+      })
+    } else {
+      res.send({
+        data: {
+          text: bundle.outputFiles[0].text,
+          metafile: bundle.metafile,
+        },
+        code: 0,
+      })
+    }
+  } catch (e) {
+    console.error(e.message)
+    res.send({
+      data: e.message,
+      code: 1,
+    })
+  }
 })
 
 app.get('*', async (req, res) => {
@@ -45,10 +96,7 @@ app.get('*', async (req, res) => {
   try {
     res.send(
       template
-        .replace(
-          'data-server-theme',
-          `class="${theme === 'dark' ? theme : ''}"`
-        )
+        .replace('data-server-theme', `class="${theme || ''}"`)
         .replace(
           'Gyron.js 文档',
           `Gyron.js | ${router.extra.currentRoute.meta.title}`
