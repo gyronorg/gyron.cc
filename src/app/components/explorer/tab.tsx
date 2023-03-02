@@ -152,9 +152,12 @@ const TabEditContainer = FC<TabEditContainerProps>(
       return (
         <div
           class={classnames(
-            'backdrop-blur border-b-2 border-transparent relative px-6 py-1 text-sm cursor-pointer fill-black dark:fill-white dark:text-white bg-slate-100 dark:bg-[#1e293b] group-item h-9 flex items-center',
+            'backdrop-blur border-b-2 relative px-6 py-1 text-sm cursor-pointer fill-black dark:fill-white dark:text-white bg-slate-100 dark:bg-[#1e293b] group-item h-9 flex items-center',
             {
               'border-amber-500': active === uuid || uuid === Explorer.Preview,
+              'border-transparent': !(
+                active === uuid || uuid === Explorer.Preview
+              ),
               'ml-auto order-last': uuid === Explorer.Preview,
             }
           )}
@@ -267,8 +270,16 @@ export const Tabs = FC<TabsProps>(
               }
             )}
           >
-            <pre html={runtimeErrorMessage.value}></pre>
-            <pre html={buildingErrorMessage.value}></pre>
+            <pre
+              class={classnames({ hidden: runtimeErrorMessage.value === null })}
+              html={runtimeErrorMessage.value}
+            ></pre>
+            <pre
+              class={classnames({
+                hidden: buildingErrorMessage.value === null,
+              })}
+              html={buildingErrorMessage.value}
+            ></pre>
           </div>
           <div class="h-[calc(100%-36px)] relative z-40 flex flex-col lg:flex-row">
             <div class={classnames('h-1/2 lg:h-full flex-1 w-full lg:w-1/2')}>
