@@ -8,6 +8,7 @@
     "build": "rimraf dist && node script/build.mjs"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.21.0",
     "@docsearch/js": "^3.1.0",
     "@gyron/monaco-jsx-highlight": "^0.0.1",
     "@gyron/rehype-highlight": "^0.0.8",
