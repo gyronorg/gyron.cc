@@ -98,7 +98,7 @@ try {
   // 清除编译时的错误
   _helperCallback && _helperCallback.building()
 
-  const res = await fetch('/build', {
+  const res = await fetch('/api/build', {
     method: 'post',
     headers: {
       'user-agent': 'Mozilla/4.0 MDN Example',

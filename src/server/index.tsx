@@ -39,7 +39,7 @@ appRouter.use('/js', express.static(clientPath))
 appRouter.use('/css', express.static(clientPath))
 appRouter.use('/assets', express.static(assetsPath))
 
-appRouter.post('/build', async (req, res) => {
+appRouter.post('/api/build', async (req, res) => {
   const { main, sources } = req.body
 
   try {
