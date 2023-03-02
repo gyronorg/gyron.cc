@@ -12,6 +12,7 @@ import path from 'path'
 import nocache from 'nocache'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
+import serverless from 'serverless-http'
 import template from '../../public/index.html'
 
 const app = express()
@@ -134,4 +135,8 @@ function run() {
   })
 }
 
-run()
+if (process.env.PUBLISH_ENV === 'netlify') {
+  module.exports.handler = serverless(app)
+} else {
+  run()
+}

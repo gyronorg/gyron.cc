@@ -135,6 +135,7 @@ buildClient(false, tempPath).then((appMeta) => {
       main: "./index.js",
       dependencies: {
         esbuild: "0.14.49",
+        "@babel/preset-typescript": "7.21.0"
       }
     }))
     fs.rmSync('dist/app', { recursive: true, force: true })
