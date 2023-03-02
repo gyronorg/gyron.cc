@@ -136,7 +136,7 @@ function run() {
 }
 
 if (process.env.PUBLISH_ENV === 'netlify') {
-  module.exports.handler = serverless(app)
+  exports.handler = serverless(app)
 } else {
   run()
 }

@@ -91,7 +91,7 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
       }
       runServer(tempPath, filename)
     } else {
-      fs.writeFileSync('dist/server/index.js', `const { handler } = require('./${filename}');\nmodule.exports.handler = handler;\n`, {
+      fs.writeFileSync('dist/server/index.js', `const { handler } = require('./${filename}');\nexports.handler = handler;\n`, {
         encoding: 'utf-8',
       })
     }
