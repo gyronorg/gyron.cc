@@ -131,6 +131,12 @@ buildClient(false, tempPath).then((appMeta) => {
         tempPath + '/server/node_modules/' + file.replace('node_modules/', '')
       )
     }
+    fs.writeFileSync('dist/server/package.json', JSON.stringify({
+      main: "./index.js",
+      dependencies: {
+        esbuild: "0.14.49",
+      }
+    }))
     fs.rmSync('dist/app', { recursive: true, force: true })
     await buildServer()
     spinner.succeed(chalk.green('Build Complete!'))
