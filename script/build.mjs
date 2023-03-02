@@ -139,7 +139,7 @@ buildClient(false, tempPath).then((appMeta) => {
       }
     }))
     fs.rmSync('dist/app', { recursive: true, force: true })
-    await buildServer()
+    await buildServer(false, null, appMeta)
     spinner.succeed(chalk.green('Build Complete!'))
   })
 })
