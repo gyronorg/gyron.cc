@@ -20,7 +20,7 @@ export const Nav = FC<DocsLinkProps>(({ menus }) => {
 
   function onClick(e: Event, path: string) {
     e.preventDefault()
-    router.push(useHref(path)).then(props.changed)
+    router.push(path).then(props.changed)
   }
 
   return (
@@ -49,7 +49,7 @@ export const Nav = FC<DocsLinkProps>(({ menus }) => {
                           'dark:hover:border-sky-400': active(menu.path),
                         }
                       )}
-                      onClick={(e) => onClick(e, menu.path)}
+                      onClick={(e) => onClick(e, useHref(resolve(group.path, menu.path)))}
                     >
                       {menu.name}
                     </a>
