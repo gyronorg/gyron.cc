@@ -17,7 +17,7 @@ import {
 } from './pages'
 import { storeState } from './store'
 
-const isDevelopment = process.env.NODE_ENV === 'development'
+const base = process.env.PUBLISH_BASE
 
 const Content = FC<{
   menu: ContentMenu
@@ -84,6 +84,7 @@ export const App = FC(() => {
 
 export const app = () => {
   const router = createBrowserRouter({
+    base: base || '/',
     beforeEach: (from, to, next) => {
       next()
     },

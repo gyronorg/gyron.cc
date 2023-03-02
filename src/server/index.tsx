@@ -28,15 +28,18 @@ if (__DEV__) {
   app.use(nocache())
 }
 app.use(cookieParser())
-app.use('/js', express.static(clientPath))
-app.use('/css', express.static(clientPath))
-app.use('/assets', express.static(assetsPath))
 
 const router = createMemoryRouter({
   isSSR: true,
 })
 
-app.post('/build', async (req, res) => {
+const appRouter = express.Router()
+
+appRouter.use('/js', express.static(clientPath))
+appRouter.use('/css', express.static(clientPath))
+appRouter.use('/assets', express.static(assetsPath))
+
+appRouter.post('/build', async (req, res) => {
   const { main, sources } = req.body
 
   try {
@@ -78,7 +81,7 @@ app.post('/build', async (req, res) => {
   }
 })
 
-app.get('*', async (req, res) => {
+appRouter.get('*', async (req, res) => {
   const { theme } = req.cookies
 
   const root = (
@@ -117,6 +120,9 @@ app.get('*', async (req, res) => {
   }
 })
 
+app.use('/.netlify/functions/index', appRouter)
+app.use('/', appRouter)
+
 function run() {
   const port = 3000
   const server = app
@@ -136,7 +142,7 @@ function run() {
 }
 
 if (process.env.PUBLISH_ENV === 'netlify') {
-  exports.handler = serverless(app)
+  module.exports.handler = serverless(app)
 } else {
   run()
 }
