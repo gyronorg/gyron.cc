@@ -14,6 +14,7 @@ import path from 'path'
 import chalk from 'chalk'
 import ProgressBar from 'progress'
 import ora from 'ora'
+import glob from 'glob'
 
 const spinner = ora('Building...')
 const tempPath = 'dist'
@@ -123,6 +124,13 @@ buildClient(false, tempPath).then((appMeta) => {
     fs.copySync('public/sitemap', `${tempPath}/sitemap`)
     fs.copySync('public/assets', `${tempPath}/assets`)
     fs.copySync('node_modules/gyron/dist/browser', `${tempPath}/assets/gyron`)
+    const files = glob.sync('node_modules/esbuild*')
+    for (const file of files) {
+      fs.copySync(
+        file,
+        tempPath + '/server/node_modules/' + file.replace('node_modules/', '')
+      )
+    }
     fs.rmSync('dist/app', { recursive: true, force: true })
     await buildServer()
     spinner.succeed(chalk.green('Build Complete!'))
