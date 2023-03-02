@@ -115,7 +115,7 @@ try {
           gyron: location.origin + '/assets/gyron/index.js',
         },
       },
-      sources: sources,
+      sources: sources.filter(item => !item.name.endsWith('.d.ts')),
       options: {
         external: ['gyron', '@gyron'],
         metafile: true,
