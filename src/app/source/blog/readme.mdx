@@ -1,0 +1,294 @@
+距离第一个试用版已经过去半年之久，想想就发了这篇文章，该文章起这种标题完全是被迫。之前也相继发表了一些相关的文章但是阅读量和点赞量寥寥无几，这种标题我也是看了一些自媒体发表的文章后学习而来。我也在尝试编写一些高质量的文章，如果你看到这篇文章请嘴下留情。
+
+## 响应式
+
+`Gyron.js`是一款零依赖的响应式框架，和社区中大多数响应式方案一样，`Gyron.js`也是利用`Proxy`提供的能力进行的依赖收集和更新，理论上来说只要支持`Proxy`能力的环境都支持这套响应式的逻辑，只是需要修改（接入）对应的渲染部分。这里也要感谢 Vue 实现的响应式依赖更新方案，我们基本上参考着这套方案实现了自己的 API。
+
+响应式核心部分就是 effect 结构，基本上所有提供出来的 api 都是在 effect 之上实现的，所以我们先来介绍 effect 这个数据结构。
+
+我们先来看一眼 effect 长什么样子
+
+```ts
+export type Dep = Set<Effect>;
+
+export type EffectScheduler = (...args: any[]) => any;
+
+export type Noop = () => void;
+
+export interface Effect {
+  // A 等于 self effect
+  // B 等于 other effect
+  // deps 是一个 Set 结构的 Effect ，用于存放 A 依赖的 B
+  // 当A不再使用时需要清除所有依赖 A 的 B
+  deps: Dep[];
+  // 在边界情况下强制执行依赖的B
+  allowEffect: boolean;
+  // 在首次执行时收集依赖的函数
+  scheduler: EffectScheduler | null;
+  // 存放所有手动设置的依赖
+  wrapper: Noop;
+  // 当需要更新时执行的函数
+  run: Noop;
+  // 当不再使用时清除依赖的B
+  stop: Noop;
+}
+```
+
+effect 中有很多属性，我也在其中注释了每个属性的作用。每个属性都有自己的应用场景，比如 deps 就是用于卸载组件后清除所有组件依赖的数据，避免数据更新后组件被卸载，导致组件更新异常。其实响应式核心分为两个部分，第一个部分就是依赖收集，第二个部分就是响应更新，我们先来看看下面这张图。
+
+![reactivity.png](/assets/image/reactivity.png)
+
+上面这张图就是说明两个不同的数据之间的依赖关系，第一块（左上角）表明 `variable proxy 2` 依赖 `variable proxy 1`，在 `variable proxy 2` 中访问 `variable proxy 1` 时，会触发 `variable proxy 1` 的自动收集任务，当 `variable proxy 1` 的值更新后会触发依赖 `variable proxy 2` 的任务，也就是 run 或者 scheduler。那么我们是通过什么将这两个变量关联在一起的呢？我们引入了一个[WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)数据**effectTracks**，用变量作为一个 key 值，然后在变更 `variable proxy 1` 时从这个模块变量中找到依赖再做更新，也就是图中右边部分。至此，依赖收集和依赖更新都已经完成，接下来，如何对应到组件上面呢？
+
+上面我们介绍了两个响应式变量是如何完成这一整套响应式方案，那么我们把上述的变量变更为组件可不可以呢？答案是**可以的**。组件是什么？在 `Gyron.js` 中组件就是一个函数，一个被内装函数包装的函数。那么，组件在初次渲染时如何进行依赖收集呢？在讲解组件的依赖收集之前，我们先讲一讲另外一个模块变量`activeEffect`，这个变量主要用于组件初次渲染时保存组件的 effect 对象，然后在响应式数据 track 时，获取到组件的 effect 对象保存在上面讲的**effectTracks**模块变量中，在响应式数据发生变更后触发组件 effect 的 update 方法（也就是 run）来更新组件。这里值得一提的是，所有的更新我们全部都是异步，并且是可选支持中断继续模式的，这部分内容我们接下来再进行介绍。
+
+好了，响应式的核心内容其实并不多，其实如何实现只是冰山一角，最主要的是其中的想法可以应用在你的业务之中，尽量少写一些恶心同事的代码。
+
+## 任务调度
+
+上面我们讲解了`Gyron.js`是如何做到响应式更新的，接下来我们说一说多个组件同时更新应该怎么处理呢？如果组件更新阻止了用户操作应该怎么办呢？如何在组件中拿到更新后的[DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model)呢？这些问题在平时开发中相信大多数开发中都遇到过，其实这些问题可以在编写业务代码时去进行优化，但是不怎么优雅，也可能会导致代码不可读，比如
+
+获取更新后的 DOM
+
+```
+// 获取更新后的 D<DOM>
+任务: [update component A, update component B, [update component C, [update component D]]]
+等待任务更新完成: A、B、C、D
+获取组件D更新后的DOM
+```
+
+为了提高开发效率和用户体验，开发者可以合理选择使用哪种模式更新组件。具体有哪些模式可以选择呢？答案是两种，第一种就是默认模式，组件更新全部在异步队列中完成。第二种模式就是在异步队列中的任务会受到外部状态控制。接下来我们分开讲一讲这两种模式。
+
+第一种模式，我们可以使用`Gyron.js`暴露的`FC`方法定义组件，然后正常使用 JSX 去描述 UI，在组件更新时通过暴露的`nextRender`获取到更新后的 DOM。这是一个很常见的实现方式，这也和 Vue 的`nextTick`一样。我们重点讲讲另外一种更新模式。
+
+**延迟更新**：组件更新的前面几步都是一样，有一个异步队列，但是**延迟更新**模式中有一个`priority`属性，当组件 effect 拥有这种属性的时候会自动根据这批组件的更新时间，或者用户操作来中断队列中后续任务的更新，当浏览器告诉我们，现在有空闲了可以继续任务时再继续未更新的任务。其实这种模式还可以更进一步，设定一个冷却时间，在冷却时间内再次发现相同的任务直接抛弃上一次相同的任务（根据任务 ID 来区分），这样做可以减少浏览器开销，因为这些任务在下一个周期中肯定会被覆盖。我们有计划的去实现这个内容，但不是现在。
+
+第二种模式的实现完全得益于浏览器提供的 API，让这种模式实现变为可能，也让用户体验得到提升。
+
+其实第二种模式后面的理念可以用在一些大型的编辑场景和文档协作中以此来提升用户体验，这也是在研究 React 的调度任务之后得出的结论。
+
+所以，有人在反驳说看这些源码时没用时可以硬气的告诉他们，看完之后学到了什么。（不过不要盲目的去看，针对具体的问题去研究和借鉴）
+
+## 复合直观的
+
+如果你是一个 React 的用户，你会发现函数式组件的状态心智负担太高，不符合直觉，直接劝退新手。那么，什么是符合直观的代码？当我的组件依赖更新后组件的内容发生响应的更新即可，这也是响应式的核心。在`Gyron.js`中编写一个简单的响应式组件会如此简单。
+
+```tsx
+import { FC, useValue } from "gyron";
+
+interface HelloProps {
+  initialCount: number;
+}
+
+const Hello = FC<HelloProps>(({ initialCount = 0 }) => {
+  const count = useValue(initialCount);
+  const onClick = () => count.value++;
+
+  // Render JSX
+  return <div onClick={onClick}>{count.value}</div>;
+});
+```
+
+上面定义了一个 Hello 的组件，这个组件接受一个参数 initialCount，类型为数字，组件的功能也很简单，当用户点击这个数字然后自增一。而如果要用 React 去实现或者 Vue 去实现这样一个功能，我们应该怎么做呢？
+
+我们用 Vue 去实现一个一样的组件，代码如下（使用了 setup 语法）
+
+```text
+<script lang="ts" setup>
+import { ref } from "vue";
+
+const props = withDefaults(
+  defineProps<{
+    initialCount: number;
+  }>(),
+  {
+    initialCount: 0,
+  }
+);
+
+const count = ref(props.initialCount);
+function onClick() {
+  count.value++;
+}
+</script>
+
+<template>
+  <div @click="onClick">{{ count }}</div>
+</template>
+```
+
+那么我们用 React 也去实现一个一样的组件，代码如下
+
+```tsx
+import { useState, useCallback } from "react";
+
+export const Hello = ({ initialCount = 0 }) => {
+  const [count, setCount] = useState(initialCount);
+
+  const onClick = useCallback(() => {
+    setCount(count + 1);
+  }, [count, setCount]);
+
+  console.log("refresh"); // 每点击一次都会打印一次
+
+  return <div onClick={onClick}>{count}</div>;
+};
+```
+
+好了，上面是不同框架实现的 Hello 组件。这里并不是说其它框架不好，只是我认为在表达上有一些欠缺。Vue2 中需要理解 this，并且没办法让 this 稳定下来，因为它可以在任何地方修改然后还无法被追踪，在 Vue3 中需要理解 setup 和 template 之间的关系，然后实现类型推断需要了解 defineXXX 这种 API。在 React 中想要更新组件需要注意 React 更新机制，比如内部状态何时才是预期的值，在遇到复杂的组件时这往往比较考验开发者的编码水平。
+
+以上，`Gyron.js`是如何解决这些问题的呢？其实，这完全得益于 babel 的强大能力，让开发者不需要知道编译构建优化的知识也能介入其中，改变源码并能重新构建。如果想了解其中的用法可以去 babel 官网[plugin 页面](https://babeljs.io/docs/plugins/)
+
+然后，`Gyron.js`是如何解决上面提到的问题？我们以上面编写的一个简单组件 Hello 为例，介绍其中到底发生了什么。
+首先，我们的组件用 FC 函数进行了一个包装，这里 FC 就好比一个标识符，在 AST 中属于 `BinaryExpression` 节点，然后函数体的返回值就是`JSX.Element`。我们有了这个规则，然后在 babel 中就可以根据这个规则定位到组件本身，再做修改。为了解决重复渲染的问题，我们需要把返回值做一些修改，把`JSX.Element`用一个函数进行包裹再进行返回。具体转换如下：
+
+```tsx
+const Hello = FC(({ numbers }) => {
+  return <div>{numbers}</div>;
+});
+// ↓ ↓ ↓ ↓ ↓
+const Hello = FC(({ numbers }) => {
+  return ({ numbers }) => <div>{numbers}</div>;
+});
+```
+
+> 名词解释  
+> 组件函数：我们熟知的 JSX 组件  
+> 渲染函数：转换后的 JSX 函数，用于标记哪些部分是渲染部分，哪些是逻辑部分。类似于 Vue3 的 setup 和 render 的区别。
+
+这是一个最简单的转换，但是这又引入了另外几个问题。第一，在`JSX.Element`中的元素内容是组件的参数，但是在下次渲染时取到的是顶层函数中的`numbers`，为了解决这个问题，我们将顶层函数中的第一个参数作为渲染函数中的第一个参数，然后在渲染函数中访问到的状态就是最新状态。
+
+这其中还有一个问题，我在组件函数中访问 props 状态也无法保证是最新的，这时候就需要使用`Gyron.js`提供的`onBeforeUpdate`方法，这个方法会在组件更新之前调用，然后我们需要把组件函数中定义的 props 全部放进这个函数中，然后根据函数的 new props 去更新用户定义的 props。但是真实的使用场景比较复杂，比如可以这样定义`({ a, ...b }) => {}`，将 props 的 a 单独拎出来，然后其余部分全部归纳到 b 中。
+
+举一个简单的例子：
+
+```tsx
+const Hello = FC(({ numbers }) => {
+  function transform() {
+    return numbers;
+  }
+  return <div>{transform()}</div>;
+});
+// ↓ ↓ ↓ ↓ ↓
+import { onBeforeUpdate as _onBeforeUpdate } from "gyron";
+const Hello = FC(({ numbers }) => {
+  _onBeforeUpdate((_, props) => {
+    var _props = props;
+    numbers = _props.numbers;
+  });
+  function transform() {
+    return numbers;
+  }
+  return <div>{transform()}</div>;
+});
+```
+
+可以看到转换后的组件中多出了一个`_onBeforeUpdate`方法调用，其作用就是更新组件函数作用域中的 props。
+
+> 小结：为了让用户在开发中编写符合直观的代码，`Gyron.js`在背后做了很多事情。这其实也是 babel 在实际项目中的一种使用方法。
+
+## 极快的 hmr
+
+hmr（hot module replacement ）就是模块的热更新，其实这部分功能都是编译工具提供，我们只需要按照他们提供的 API 然后更新我们的组件。
+
+```js
+if (module.hot) {
+  module.hot.accept("./hello.jsx", function (Comp1) {
+    rerender("HashId", Comp1);
+  });
+}
+```
+
+以上代码我们的插件会自动插入，无需手动引入。（目前还只接入 vite，后续有计划的支持 webpack 等有 hot 模块的工具）
+
+我们大致了解一下这其中发生了什么？首先，我们还是借助 babel 把每一个组件的名字和内容生成的 hash 值作为注释节点存放在模块中，然后通过编译工具获取到所有本模块的组件，然后通过注册 hot 事件重新渲染更新后的组件。
+
+好了，讲解了编译工具提供的功能，这里着重讲解一下`Gyron.js`是如何做到重新渲染的。首先，我们通过编译工具获取到了组件 Hash 和组件函数，然后通过`rerender`函数执行重新渲染。那么`rerender`所需要的数据又是从哪里来的呢？其实，在实例第一次初始化的时候这个数据全部都收集到一个`Map<string, Set<Component>>`数据结构中，然后再通过`Component`上的 update 方法执行组件的更新。
+
+## SEO 友好
+
+其实这段内容和`Gyron.js`本身关系不太大，但是没有`Gyron.js`提供的能力也很难办到。`Gyron.js`提供了 SSR（Server Side Render）的渲染模式，也就是我们熟知的服务端渲染。其中大致的原理就是服务端将实例渲染成字符串之后返回给浏览器，然后再通过客户端的`hydrate`功能让“静态”文本变的可响应。
+
+以上是简单的用法，然后大致流程图如下所示：
+
+![ssr.png](/assets/image/ssr.png)
+
+为了让组件变得更通用，我们在所有组件的 props 上注入了一个变量告诉开发者当前处于何种模式的渲染当中，在服务端渲染当中时不能使用客户端提供的 API，在客户端渲染的过程中不能使用服务端的 API。
+
+```tsx
+const App = ({ isSSR }) => {
+  // ...
+  if (!isSSR) {
+    document.title = "欢迎";
+  }
+};
+```
+
+```tsx
+import { strict as assert } from "node:assert";
+const App = ({ isSSR }) => {
+  // ...
+  if (isSSR) {
+    assert.deepEqual([[[1, 2, 3]], 4, 5], [[[1, 2, "3"]], 4, 5]);
+  }
+};
+```
+
+这是服务端渲染的方式，还有一种介于服务端渲染和客户端渲染之间，就是完全输出静态资源然后就可以部署到任何机器或者在线平台服务商中，比如[app.netlify.com](https://app.netlify.com)、[github.com](https://github.com/)等。这里不再介绍 SSR 模式的使用方法，可以去[https://gyron.cc/docs/ssr](https://gyron.cc/docs/ssr)这里有更详细的介绍。
+
+## 所见即所得
+
+> 这里介绍的是官方文档中的在线编辑器，相比于接入其它平台，我们占用的资源更少，功能齐全。
+
+经过一段时间的折腾，终于弄出一个简单版的在线编辑器，支持实时预览、语法纠错、语法高亮、智能跳转等功能。
+
+语言的话目前支持 jsx、tsx、less，并且还支持加载在线资源，比如`import { h } from 'https://cdn.jsdelivr.net/npm/gyron'`。因为所有数据都不保存在远端，只保存在本地，所以没有使用 standalone 沙盒技术隔离运行环境，也没有防范 xss 攻击。在线编辑器的目标就是让用户可以在线使用，支持用户编辑源代码，支持本地模块导入，支持实时预览，支持多个编辑器运行互不干扰。
+
+目前这个编辑器支持本地编译和服务端编译，本地编译会让首屏加载变慢所以在线编辑器使用的服务端编译。现在，可以访问[https://gyron.cc/explorer](https://gyron.cc/explorer)这个地址在线体验。
+
+如果使用本地编译，这里面最终的就是需要实现一套本地的虚拟文件系统，让打包工具能够正常访问到对应的本地资源。而在 esbuild 中实现一套虚拟文件系统其实很简单，只需要编写一个插件，然后用 resolve 和 load 两种勾子就可以将本地文件输出到 esbuild 中。
+
+```ts
+const buildModuleRuntime = {
+  name: "buildModuleRuntime",
+  setup(build) {
+    build.onResolve({ filter: /\.\// }, (args) => {
+      return {
+        path: args.path,
+        namespace: "localModule",
+      };
+    });
+    build.onLoad({ filter: /\.\//, namespace: "localModule" }, async (args) => {
+      // 具体实现可以去github https://github.com/gyronorg/core/blob/main/packages/babel-plugin-jsx/src/browser.ts
+      const source = findSourceCode(config.sources, args.path);
+
+      if (source) {
+        const filename = getFileName(args, source.loader);
+        const result = await transformWithBabel(
+          source.code,
+          filename,
+          main,
+          true
+        );
+        return {
+          contents: result.code,
+        };
+      }
+      return {
+        contents: "",
+        loader: "text",
+        warnings: [
+          {
+            pluginName: "buildModuleRuntime",
+            text: `Module "${args.path}" is not defined in the local editor`,
+          },
+        ],
+      };
+    });
+  },
+};
+```
+
+然后会输出一个 module 文件，最终只需要将文件塞到 script 中让其运行。
+
+在页面中引用多个编辑器，需要注意的是在不用这个 module 文件后及时删除。可以使用命名空间给 module 加上一个标签，新增和删除都使用这个命名空间作为变量控制当前运行时的资源。

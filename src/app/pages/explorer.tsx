@@ -4,6 +4,7 @@ import { decode } from 'js-base64'
 import sourceTSX from '@/demo/main/index.tsx.txt'
 import sourceLESS from '@/demo/main/index.less.txt'
 import classNames from 'classnames'
+import { Description } from '@/components/description'
 
 interface ExplorerProps {
   sources?: Source[]
@@ -48,6 +49,7 @@ export const Explorer = FC<ExplorerProps>(
         style={{ height: height + 'px' }}
       >
         <WrapperEditor sources={sources} />
+        <Description desc="Gyron.js 的在线编辑器。 Gyron.js playground。 在这里可以直接编辑预览 Gyron.js 的项目" />
       </div>
     )
   }

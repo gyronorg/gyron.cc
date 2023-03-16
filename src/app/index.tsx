@@ -14,6 +14,8 @@ import {
   Home,
   ROUTE_MENUS,
   Explorer,
+  BlogDocs,
+  BLOG_ROUTE_MENUS,
 } from './pages'
 import { storeState } from './store'
 
@@ -57,6 +59,15 @@ export const ExposeRoutes = FC(() => {
             path={menu.path}
             meta={menu.meta}
             element={<Content menu={menu} parentPath="core" />}
+          />
+        ))}
+      </Route>
+      <Route path="blog" element={<BlogDocs />}>
+        {BLOG_ROUTE_MENUS.map((menu) => (
+          <Route
+            path={menu.path}
+            meta={menu.meta}
+            element={<Content menu={menu} parentPath="blog" />}
           />
         ))}
       </Route>

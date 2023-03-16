@@ -61,7 +61,7 @@ async function render(vnode, url, clientMeta) {
   const { sanitize } = DOMPurify(window)
 
   const description =
-    window.document.querySelector('article')?.textContent || normalDescription
+    window.document.querySelector('article')?.textContent || window.document.querySelector('#_description')?.textContent || normalDescription
 
   return fs
     .readFileSync(path.join(process.cwd(), 'public/index.html'), {

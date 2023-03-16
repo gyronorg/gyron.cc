@@ -38,6 +38,9 @@ const CoreDoxApi = () => import('./core/redux/api.mdx')
 const CoreJSXGettingStarted = () => import('./core/jsx/getting-started.mdx')
 const CoreJSXFaq = () => import('./core/jsx/faq.mdx')
 
+// blog
+const BlogReadme = () => import('./blog/readme.mdx')
+
 export {
   Installation,
   Introduction,
@@ -75,4 +78,6 @@ export {
   CoreDoxApi,
   CoreJSXGettingStarted,
   CoreJSXFaq,
+  // blog
+  BlogReadme
 }

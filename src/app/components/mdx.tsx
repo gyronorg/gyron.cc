@@ -1,12 +1,12 @@
 import { Guidance } from '@/components/guidance'
-import { ROUTE_MENUS, CORE_ROUTE_MENUS } from '@/pages'
+import { ROUTE_MENUS, CORE_ROUTE_MENUS, BLOG_ROUTE_MENUS } from '@/pages'
 import { useRouter, Link } from '@gyron/router'
 import { resolve } from '@gyron/shared'
 import { useMemo, defineProps, FC } from 'gyron'
 import { ArrowLeftBoldIcon, ArrowRightBoldIcon } from './icons'
 import { ContentMenu, MenuView } from '@/interface/menu'
 
-export type ParentPath = 'docs' | 'core'
+export type ParentPath = 'docs' | 'core' | 'blog'
 
 export interface MdxContainerProps {
   parentPath: ParentPath
@@ -18,6 +18,7 @@ const RoutesMap: {
 } = {
   docs: ROUTE_MENUS,
   core: CORE_ROUTE_MENUS,
+  blog: BLOG_ROUTE_MENUS,
 }
 
 export const MdxContainer = FC<MdxContainerProps>(({ children, menu }) => {
