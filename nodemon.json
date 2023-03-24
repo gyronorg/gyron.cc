@@ -1,0 +1,7 @@
+{
+  "watch": ["src"],
+  "ignore": ["src/**/*.spec.ts"],
+  "ext": "ts,tsx,mjs,js,json,less",
+  "exec": "node ./script/dev.mjs && node ./dist/server/index.js",
+  "legacyWatch": true
+}
