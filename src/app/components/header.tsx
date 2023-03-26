@@ -44,9 +44,7 @@ export const Header = FC(() => {
     <header
       class={classnames(
         'fixed top-0 z-50 h-[58px] border-b border-solid border-gray-200 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75',
-        {
-          sticky: !expand.value,
-        }
+        expand.value ? 'fixed' : 'sticky'
       )}
     >
       <div
