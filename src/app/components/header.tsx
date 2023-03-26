@@ -3,7 +3,7 @@ import { Link, useRouter } from '@gyron/router'
 import { DarkToggle } from '@/components/dark'
 import { CloseIcon, GithubIcon, LogoIcon, MenuIcon } from '@/components/icons'
 import { Nav } from './nav'
-import { DOCS_NAV, CORE_NAV } from '@/pages'
+import { DOCS_NAV, CORE_NAV, BLOG_NAV } from '@/pages'
 import { isUesLightTheme } from '@/hooks/light'
 import pkg from '../../../package.json'
 import classnames from 'classnames'
@@ -14,7 +14,12 @@ export const Header = FC(() => {
   const router = useRouter()
   const expand = useValue(false)
   const menus = useMemo(() => {
-    return router.path.startsWith('/core') ? CORE_NAV : DOCS_NAV
+    const path = router.path
+    return path.startsWith('/core')
+      ? CORE_NAV
+      : path.startsWith('/blog')
+      ? BLOG_NAV
+      : DOCS_NAV
   })
 
   function onToggleExpand() {
@@ -36,7 +41,14 @@ export const Header = FC(() => {
   })
 
   return (
-    <header class="sticky top-0 z-50 h-[58px] border-b border-solid border-gray-200 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75">
+    <header
+      class={classnames(
+        'fixed top-0 z-50 h-[58px] border-b border-solid border-gray-200 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75',
+        {
+          sticky: !expand.value,
+        }
+      )}
+    >
       <div
         class={classnames(
           'container mr-auto ml-auto flex items-center justify-between sm-down:max-w-none dark:text-slate-200',
@@ -72,7 +84,7 @@ export const Header = FC(() => {
           />
           <div
             class={classnames(
-              'fixed inset-0 z-50 bg-black/20 backdrop-blur-sm dark:bg-slate-900/80 w-0 h-[100vh] opacity-0 transition-opacity',
+              'fixed inset-0 z-50 bg-black/20 backdrop-blur-sm bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/80 w-0 h-[100vh] opacity-0 transition-opacity',
               {
                 'w-[100vw] opacity-100': expand.value,
               }
@@ -81,7 +93,7 @@ export const Header = FC(() => {
           ></div>
           <div
             class={classnames(
-              'absolute inset-0 z-50 lg:hidden transition-all w-0 translate-x-0 h-[calc(100vh-env(safe-area-inset-bottom))]',
+              'fixed inset-0 z-50 lg:hidden transition-all w-0 translate-x-0 h-[calc(100vh-env(safe-area-inset-bottom))]',
               {
                 'w-[100vw]': expand.value,
               }

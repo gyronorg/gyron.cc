@@ -161,3 +161,9 @@ pre[class*='language-'] {
 .built-interface {
   color: #4ec9b0;
 }
+
+.dark {
+  .prose :where(img):not(:where([class~="not-prose"] *)) {
+    filter: invert(1);
+  }
+}
