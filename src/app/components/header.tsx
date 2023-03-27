@@ -10,6 +10,17 @@ import classnames from 'classnames'
 import docsearch from '@docsearch/js'
 import '@docsearch/css'
 
+const Portal = FC(({ children, isSSR }) => {
+  if (!isSSR) {
+    onAfterMount((component) => {
+      if (component.vnode.el) {
+        document.body.appendChild(component.vnode.el)
+      }
+    })
+  }
+  return children
+})
+
 export const Header = FC(() => {
   const router = useRouter()
   const expand = useValue(false)
@@ -43,8 +54,7 @@ export const Header = FC(() => {
   return (
     <header
       class={classnames(
-        'fixed top-0 z-50 h-[58px] border-b border-solid border-gray-200 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75',
-        expand.value ? 'fixed' : 'sticky'
+        'sticky top-0 z-50 h-[58px] border-b border-solid border-gray-200 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75'
       )}
     >
       <div
@@ -80,44 +90,48 @@ export const Header = FC(() => {
             })}
             expand={onToggleExpand}
           />
-          <div
-            class={classnames(
-              'fixed inset-0 z-50 bg-black/20 backdrop-blur-sm bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/80 w-0 h-[100vh] opacity-0 transition-opacity',
-              {
-                'w-[100vw] opacity-100': expand.value,
-              }
-            )}
-            aria-hidden="true"
-          ></div>
-          <div
-            class={classnames(
-              'fixed inset-0 z-50 lg:hidden transition-all w-0 translate-x-0 h-[calc(100vh-env(safe-area-inset-bottom))]',
-              {
-                'w-[100vw]': expand.value,
-              }
-            )}
-            aria-modal="true"
-            role="dialog"
-            onClick={onToggleExpand}
-          >
-            <div
-              class={classnames(
-                'relative bg-white w-80 max-w-[calc(100%-3rem)] dark:bg-slate-800 h-full overflow-y-auto transition-all pt-10',
-                {
-                  'p-6': expand.value,
-                }
-              )}
-              onClick={(e) => e.stopPropagation()}
-            >
+          <Portal>
+            <span>
               <div
-                class="absolute right-6 w-6 h-6 flex items-center justify-center"
+                class={classnames(
+                  'fixed inset-0 z-50 bg-black/20 backdrop-blur-sm bg-opacity-60 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/80 w-0 h-[100vh] opacity-0 transition-opacity',
+                  {
+                    'w-[100vw] opacity-100': expand.value,
+                  }
+                )}
+                aria-hidden="true"
+              ></div>
+              <div
+                class={classnames(
+                  'fixed inset-0 z-50 lg:hidden transition-all w-0 translate-x-0 h-[calc(100vh-env(safe-area-inset-bottom))]',
+                  {
+                    'w-[100vw]': expand.value,
+                  }
+                )}
+                aria-modal="true"
+                role="dialog"
                 onClick={onToggleExpand}
               >
-                <CloseIcon class="w-2.5 h-2.5" />
+                <div
+                  class={classnames(
+                    'relative bg-white w-80 max-w-[calc(100%-3rem)] dark:bg-slate-800 h-full overflow-y-auto transition-all pt-10',
+                    {
+                      'p-6': expand.value,
+                    }
+                  )}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div
+                    class="absolute right-6 w-6 h-6 flex items-center justify-center"
+                    onClick={onToggleExpand}
+                  >
+                    <CloseIcon class="w-2.5 h-2.5" />
+                  </div>
+                  <Nav menus={menus.value} changed={onToggleExpand} />
+                </div>
               </div>
-              <Nav menus={menus.value} changed={onToggleExpand} />
-            </div>
-          </div>
+            </span>
+          </Portal>
         </div>
         <nav
           class={classnames('flex flex-none', {
