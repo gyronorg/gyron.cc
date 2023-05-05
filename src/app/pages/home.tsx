@@ -75,7 +75,7 @@ export const Home = FC(() => {
         </div>
         <AsyncExplorer fallback={<Skeleton length={3} />} />
         <div class="text-xs ml-auto mr-auto mt-4 pl-4">
-          在线使用，在左边编辑完成后点击运行按钮即可预览效果。
+          在线使用，在左边编辑完成后点击运行按钮即可预览效果。在后面阅读文档时发现代码都可以贴在编辑器中实时预览。
         </div>
       </main>
       <footer class="pt-28 pb-10 border-slate-200 text-slate-500 dark:border-slate-200/5 text-center">

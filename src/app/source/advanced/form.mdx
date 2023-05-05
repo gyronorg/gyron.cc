@@ -2,7 +2,7 @@
 
 当你在制作后台管理系统时，就会接触到很多表单输入选项。Gyron.js 的表单数据绑定和默认表单数据提交是不同的行为。
 
-在 HTML 表单中的提交数据由 DOM 元素属性和值提供，在 Gyron.js 中不同的是你需要自定义数据的绑定，通常这样做可以更灵活的掌控自己的数据变化。
+在 HTML 表单中，提交数据由 DOM 元素属性和值提供。在 Gyron.js 中，需要自定义数据的绑定以更灵活地掌控自己的数据变化。
 
 ### 基本例子
 
@@ -18,7 +18,7 @@
 </form>
 ```
 
-这种写法好处就是不需要过多的处理，当用户输入完成后点击提交按钮即可，缺点也很明显，没办法对输入的值进行修改。
+这种写法的优点是简洁明了，用户只需在表单中输入完成后点击提交按钮即可。然而，它的缺点在于我们无法方便地修改用户输入的值。针对这个问题，Gyron.js 提供了自定义数据绑定的方法，以便更好地掌控数据变化。在使用 Gyron.js 的表单数据绑定时，我们需要自己处理数据的绑定操作，但这样能够更灵活地控制数据的变化。
 
 ```jsx line=9
 import { useReactive, FC } from 'gyron'
@@ -96,5 +96,26 @@ const App = FC(({ component }) => {
   }
 
   return <input value={code.value} onInput={handleInput} />
+})
+```
+
+### Input
+
+`input` 控件的事件和浏览器内置的事件在有些情况下表现不一样，这样做是为了兼容输入类型的控件在事件上行为保持一致。
+
+input 控件的 `change` 事件在行为上和其它控件一样，在内容发生变更后立马调用，这一点和浏览器不一样，浏览器是在输入变更后焦点离开才会触发 `change` 事件。
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(() => {
+  function handleInput() {}
+  return (
+    <div>
+      <input onChange={handleInput} />
+      {/* 行为一致 */}
+      <input onInput={handleInput} />
+    </div>
+  )
 })
 ```
