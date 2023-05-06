@@ -154,6 +154,11 @@ export const Header = FC(() => {
                 博客
               </Link>
             </li>
+            <li>
+              <Link to="/explorer" activeClassName="nav-active-link">
+                编辑器
+              </Link>
+            </li>
           </ul>
           <div class="flex items-center border-l border-slate-200 ml-5 md:ml-6 pl-5 md:pl-6 dark:border-slate-800 space-x-5 md:space-x-6">
             <DarkToggle />

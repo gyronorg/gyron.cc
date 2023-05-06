@@ -126,7 +126,7 @@ const generateDTS = async () => {
           path: '/gyron/dist/index.d.ts',
           origin: 'https://unpkg.com',
           name: 'jsx.d.ts',
-          text: jsxDts,
+          text: jsxDts.replace(/\@gyron\/runtime/g, 'gyron'),
         },
         '/csstype/index.d.ts': {
           path: '/csstype/index.d.ts',

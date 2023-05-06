@@ -103,3 +103,58 @@ state.value = 1
 // 正确的更新
 store.extra.dispatch({ type: 'counter/incremented' })
 ```
+
+### 完整示例
+
+完整示例将介绍如何使用 `@gyron/redux` 连接 gyron 和 redux，您还可以下载 redux 周边生态工具，比如 [redux-devtools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)。
+
+```jsx filename=store.ts
+import { createStore, createSlice } from '@gyron/redux'
+import Counter from './module/counter'
+
+const counter = createSlice({
+  name: 'counter',
+  initialState: {
+    count: 0,
+  },
+  reducers: {
+    increment(state) {
+      state.count++
+    },
+  },
+})
+
+export const store = createStore({
+  reducer: {
+    Counter: counter.reducer,
+  },
+})
+
+export const { increment } = counter.actions
+```
+
+```jsx filename=index.tsx
+import { createInstance, FC } from 'gyron'
+import { Provider } from '@gyron/redux'
+import { useSelector, useDispatch } from '@gyron/redux'
+import { store, increment } from './store'
+
+const App = FC(() => {
+  const { Counter } = useSelector()
+  const dispatch = useDispatch()
+
+  return (
+    <div onClick={() => dispatch(increment())}>
+      这是一个累加器的 Demo：{Counter.count}
+    </div>
+  )
+})
+
+createInstance(
+  <Provider store={store}>
+    <App />
+  </Provider>
+).render('#root')
+```
+
+点击累加器文案，后面的计数会依次递增。如果你还下载了 redux 插件，那么还可以在插件中使用时光倒流技术，选择任意时间点即可跳回当时的状态。

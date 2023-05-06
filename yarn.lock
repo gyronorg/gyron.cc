@@ -435,32 +435,38 @@
     "@docsearch/css" "3.3.3"
     algoliasearch "^4.0.0"
 
-"@gyron/babel-plugin-jsx@^0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@gyron/babel-plugin-jsx/-/babel-plugin-jsx-0.0.31.tgz#4ca1f33dd132c6a5ea423dcd7c6773935f0a7ebd"
-  integrity sha512-/fifKukbM+9WAqgiRUbK1FNEdJ/UiMjB8d5MPH8VesDUfyNWbdtXCzjcxPFX5fCjNomYs6ZRKfkMM/wRMzFIEg==
+"@gyron/babel-plugin-jsx@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/babel-plugin-jsx/-/babel-plugin-jsx-0.0.32.tgz#a1de660f3658ea08a7bf58943b3bfa9d49a33116"
+  integrity sha512-WaQ0Sgpv94TxuV+1Q+Wo4iK/vMFTY4gq32xvg5YBHQf4x6YvZFcl9HNrnvadC/ipH5vM1FKUi76fIUigL6y5YA==
   dependencies:
     "@babel/core" "^7.18.5"
     "@babel/plugin-syntax-jsx" "^7.16.7"
     "@babel/plugin-transform-typescript" "^7.17.12"
-    "@gyron/runtime" "^0.0.31"
-    "@gyron/shared" "^0.0.31"
-    gyron "^0.0.31"
+    "@gyron/logger" "^0.0.32"
+    "@gyron/runtime" "^0.0.32"
+    "@gyron/shared" "^0.0.32"
+    gyron "^0.0.32"
 
-"@gyron/dom-server@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@gyron/dom-server/-/dom-server-0.0.30.tgz#cbe4e05a6a12f0b447c2dcdf11c09e7f31023ba3"
-  integrity sha512-Zfbwc2vse4sIf34syJe/7Mxs7sQIfJDQahPdkC3gVU63yw1vOVQrDPTXJxZVzfjT6mEMHsXRV+Sfa5hiWXfyeg==
+"@gyron/dom-server@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/dom-server/-/dom-server-0.0.32.tgz#3a6f51845e4df01b69d88a95bdd9ff09b407018e"
+  integrity sha512-g50vB/+5ZvrEV7QPg0APEDEslvZyiHYbevVmVdSAFlpUxRNyCX+/L+zxiIjya4L648UWu+e52bw/7JcJ7zrKCg==
   dependencies:
-    "@gyron/runtime" "^0.0.30"
+    "@gyron/runtime" "^0.0.32"
 
-"@gyron/jsx-runtime@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@gyron/jsx-runtime/-/jsx-runtime-0.0.30.tgz#ed768081ca8d9b2cffdffd75f9f390cebdc8fe7f"
-  integrity sha512-1AQ8niF5QzF5sYZ/2/e4QKySId/p6SMdtXE22Dl8fhDNe3zdmTQTJQ0YVnGDvUjmUrWI3+WbpEwbiKgc1FsMNg==
+"@gyron/jsx-runtime@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/jsx-runtime/-/jsx-runtime-0.0.32.tgz#f1aaf65f0e68e8ee6c26e6ad7c996bd77b0d1fc5"
+  integrity sha512-g47ADW+M32LlgUKqpD9de5+MoqtTVRpfg53EbM5ihcLDZc7hOhxpMr5NzxLFC3+3vd32yd7151wbeertEHG2fQ==
   dependencies:
-    "@gyron/runtime" "^0.0.30"
-    "@gyron/shared" "^0.0.30"
+    "@gyron/runtime" "^0.0.32"
+    "@gyron/shared" "^0.0.32"
+
+"@gyron/logger@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/logger/-/logger-0.0.32.tgz#1eeacd3d8149641e3128ccdc07e0ef83da40499f"
+  integrity sha512-XNTZr46vmxgeLReL4M+9hg88yrsjpd/bFdljBckcweL9HnK2NAKfTuIHRo+wSZZblNlY4bKYBymO3EruTP1K+w==
 
 "@gyron/monaco-jsx-highlight@^0.0.1":
   version "0.0.1"
@@ -472,41 +478,32 @@
   resolved "https://registry.yarnpkg.com/@gyron/rehype-highlight/-/rehype-highlight-0.0.8.tgz#ebf6bbeb78df2d1bbeacf528026a29a4574ad2c6"
   integrity sha512-uatpEv/7KpS1eVnyzioMv/fqEYSJW3R1TaEI0Xc9dpqM1IZSYMqPPia6SHyoVdZfDUzu407/ltTr2SVxaDrFfg==
 
-"@gyron/router@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@gyron/router/-/router-0.0.30.tgz#ea8198a9fa6021559b3d2729f64cb222950d44c6"
-  integrity sha512-b1Xc+IQFvJeN9X4stwnrI1e/WkIJvQ8urD8Jhh3MW7DI9kdIDB6W2UOu61GiWhIghm9XRG3TrqK2z2Rexlmnbw==
+"@gyron/router@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/router/-/router-0.0.32.tgz#c9121291870b628278bfcf0dedcc462cf65f0c2c"
+  integrity sha512-no5ZT/zPqYk32ZcytZv1Db0beZnFVjgLrnEVHT0CI1w1E6U35dW1R1sHm+YM9XA4KCbJAKP2vf0qTuW/r7OlKw==
   dependencies:
-    "@gyron/runtime" "^0.0.30"
-    "@gyron/shared" "^0.0.30"
-    "@gyron/sync" "^0.0.30"
+    "@gyron/logger" "^0.0.32"
+    "@gyron/runtime" "^0.0.32"
+    "@gyron/shared" "^0.0.32"
+    "@gyron/sync" "^0.0.32"
     history "^5.3.0"
     path-to-regexp "^6.2.0"
 
-"@gyron/runtime@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@gyron/runtime/-/runtime-0.0.30.tgz#b393d089c5f2e564b7d3c83d305879742f29d94e"
-  integrity sha512-im+texM7y8MgNfNU7yjHvsjMeYBsb+OuZdpj3Shho4pU2ZYYLkTLFTqTYuWias+4PWNGNJGeLJ2yEaUdG7wyjA==
+"@gyron/runtime@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/runtime/-/runtime-0.0.32.tgz#6270c6a4710b43cb4249f0a736d6fc0f7386fec5"
+  integrity sha512-F4Urd4lajQf9cdeQZ7dAUYE7sIu059LH6/I1UI0qh6qFOur9jNxuTmlLLqzgvJwaVtr7+A8d2T0ByBUBA/rnBg==
 
-"@gyron/runtime@^0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@gyron/runtime/-/runtime-0.0.31.tgz#96785756073b8d86574789408df218563d5717f8"
-  integrity sha512-Mp2piTWkG3zmv1WgAtPEAVQBracOeTnI7mw71IIE+zKXbPwHr9d9Yye5Sl1lNMWZ9AeYE06JhlX+WIudlmz+1A==
+"@gyron/shared@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/shared/-/shared-0.0.32.tgz#ded8ee0945e426a039df75351da18329668f39be"
+  integrity sha512-tWX1XrxWwys16wnfOZqZv0NrwwAd0n/AIYDpTXlbdYCDgLf60qEK9H1TzjtQS3OlFIGuA9topeMoulG9pT+ILQ==
 
-"@gyron/shared@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@gyron/shared/-/shared-0.0.30.tgz#b30cc1b801e16297e8be997b7aedd9933256e191"
-  integrity sha512-Rxqd7dnH7OrRVATNddbUFkkFfNpLrwQxyZzxvJ90dK2QZAVa+NKRkr1LBhPC02J7RQ3sVzsx3WsjQdbfA10xHA==
-
-"@gyron/shared@^0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@gyron/shared/-/shared-0.0.31.tgz#5f7606f0084932a5b57efbc65c3b436cd10ea9df"
-  integrity sha512-OFTbSAOO4XciE+m56dX6XGFcYeg47MvCqRKXBYLPjwmaQBZbBo4LPBWeJYw4lJqvxPppPbTMK61A8hbR9gR9yQ==
-
-"@gyron/sync@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@gyron/sync/-/sync-0.0.30.tgz#b7614430bc3af68e38c2f2473af0790981b8d677"
-  integrity sha512-5A7UnUrRkKYFu2DO7ljw1DMI5BZgzhy6ESyR67GRwseElik0UbSHbUtIEmtzPhz3Xl5xlyu4RwUFLjQyjePF+Q==
+"@gyron/sync@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@gyron/sync/-/sync-0.0.32.tgz#22daa5459dff423f6edb4e0b9469c28f9a597646"
+  integrity sha512-6pWnPimFiJnZa7goAa1n3AAepIoJWcjgHJ5j0q6xSMJB5zj9nauaw6q21HDmx25yEfKnSWh7XwtjK2lA5V5zRw==
 
 "@jridgewell/gen-mapping@^0.1.0":
   version "0.1.1"
@@ -2116,20 +2113,12 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
-gyron@^0.0.30:
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/gyron/-/gyron-0.0.30.tgz#f9adff83b6d16082d3238a9ac6f934cfee6e6662"
-  integrity sha512-+N9zGST6fKcCgT/xS0F32WktboklqVgK3FQSwI79GExaiZkMk/ilMyhuJQvgGE8IhEoix+PhrCOkf+gzTX7byg==
+gyron@^0.0.32:
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/gyron/-/gyron-0.0.32.tgz#a8a9c6ebf1c84bd6acffda7eab35a19661d86586"
+  integrity sha512-JFA68v9hlHuIXfiurxUE4mRpdpy91itd2vVwb/K9j0cC1sH34lHKGPe/VZDy1QVqUbvDe5pvHJbWCxpKhZ+1RA==
   dependencies:
-    "@gyron/runtime" "^0.0.30"
-    csstype "^3.1.0"
-
-gyron@^0.0.31:
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/gyron/-/gyron-0.0.31.tgz#e24c5f5726e070ef48464240264c77f8f69e7116"
-  integrity sha512-rILsW4AE9muTwUyJWyE6CGbS+36Rcva73kSpLtbP/kJ1S1rL9EmOkPBVuNWPPOsRCUpVXiRVBr8EwqWWyiuVGQ==
-  dependencies:
-    "@gyron/runtime" "^0.0.31"
+    "@gyron/runtime" "^0.0.32"
     csstype "^3.1.0"
 
 has-flag@^3.0.0:

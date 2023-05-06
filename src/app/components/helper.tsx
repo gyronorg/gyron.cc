@@ -170,7 +170,7 @@ const Pre = FC(({ children, isSSR }) => {
       )}
     >
       {meta && meta.filename && (
-        <span class="absolute -top-[24px] bg-slate-100 dark:bg-[#00000080] text-slate-900 dark:text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
+        <span class="absolute -top-[24px] bg-white dark:bg-[#00000080] text-slate-900 dark:text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
           {meta.filename}
         </span>
       )}
