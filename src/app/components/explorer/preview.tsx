@@ -168,6 +168,7 @@ export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
       shouldRestart = Boolean(hit)
     }
     if (shouldRestart) {
+      const { window } = getEnvironment(namespace)
       window[app] && window[app].destroy()
       loading.value = true
       try {
