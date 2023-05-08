@@ -1,6 +1,5 @@
-import { initialMonaco } from '@/hooks/monaco'
 import { generateSafeUuid } from '@/utils/uuid'
-import { createRef, FC, nextRender, useComputed, useValue } from 'gyron'
+import { createRef, FC, useComputed, useValue } from 'gyron'
 import { debounce } from 'lodash-es'
 import { Explorer, MAIN_FILE } from './constant'
 import { Editor, SourceType } from './editor'

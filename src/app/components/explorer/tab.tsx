@@ -1,7 +1,7 @@
 import {
   FC,
   nextRender,
-  onDestroyed,
+  onAfterMount,
   useValue,
   VNode,
   WrapperFunction,
@@ -9,11 +9,11 @@ import {
 import { Dropdown, DropdownItem } from './dropdown'
 import { SourceType } from './editor'
 import { OnAdd, Source } from './wrapper'
-import { CloseIcon, CodeIcon, LessIcon, TsxIcon } from '../icons'
+import { CloseIcon, LessIcon, TsxIcon } from '../icons'
 import { Explorer } from './constant'
-import { last } from 'lodash-es'
-import classnames from 'classnames'
 import { getEditorWithElement, getModal } from './hook'
+import { getEnvironment, useMountWithStandalone } from './standalone'
+import classnames from 'classnames'
 
 interface TabProps {
   source: Source
@@ -60,23 +60,20 @@ interface TabEditProps {
   onTabRemove?: (uuid: string) => void
 }
 
-export function useStandaloneNamespace(
+function useStandaloneNamespace(
   namespace: string,
   runtimeCallback?: (err?: Error) => void,
   callback?: (err?: Error) => void
-): (err?: Error) => void {
-  if (!window[`$${namespace}`]) {
-    window[`$${namespace}`] = {
-      runtime: runtimeCallback,
-      building: callback,
+) {
+  useMountWithStandalone(() => {
+    const { window } = getEnvironment(namespace)
+    if (!window[`$${namespace}`]) {
+      window[`$${namespace}`] = {
+        runtime: runtimeCallback,
+        building: callback,
+      }
     }
-  }
-
-  onDestroyed(() => {
-    delete window[`$${namespace}`]
   })
-
-  return window[`$${namespace}`]
 }
 
 const TabEdit = FC<TabEditProps>(

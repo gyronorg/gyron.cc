@@ -2,6 +2,7 @@ import {
   createRef,
   exposeComponent,
   FC,
+  nextRender,
   onAfterMount,
   onDestroyed,
   useValue,
@@ -11,10 +12,11 @@ import { generateSafeUuid } from '@/utils/uuid'
 import { Loading } from '../icons/animation'
 import { isInViewport, useElementMutationObserver } from '@/utils/dom'
 import { SourceType } from './editor'
+import { keys } from 'lodash-es'
+import { getEnvironment, Standalone, useMountWithStandalone } from './standalone'
 import type { BuildResult } from 'esbuild'
 import classNames from 'classnames'
 import less from 'less'
-import { keys } from 'lodash-es'
 
 export interface PreviewExpose {
   start: (source: Source) => void
@@ -33,6 +35,7 @@ interface PreviewProps {
 }
 
 function removeStandalone(namespace: string, cls: string) {
+  const { document } = getEnvironment(namespace)
   const clsElement = document.getElementsByClassName(cls)
   new Array(...clsElement).forEach((item) => item.remove())
 }
@@ -44,6 +47,7 @@ function initialRuntime(namespace: string) {
 
 function insertScript(code: string, namespace: string) {
   const name = `script_${namespace}`
+  const { document } = getEnvironment(namespace)
   const script = document.createElement('script')
   script.setAttribute('type', 'module')
   script.id = 'standalone'
@@ -69,13 +73,15 @@ async function startEditorRuntime(
     const source = sources[i]
     if (source.type === 'less') {
       const css = (await less.render(`.${namespace}{${source.code}}`)).css
-      source.code = `const style = document.createElement('style')
-      style.id = '${source.uuid}'
-      style.className = 'style_${namespace}'
-      style.setAttribute('type', 'text/css')
-      style.setAttribute('data-name', '${source.name}')
-      style.appendChild(document.createTextNode(${JSON.stringify(css)}))
-      document.head.append(style)`
+      source.code = `(function () {
+        const style = document.createElement('style')
+        style.id = '${source.uuid}'
+        style.className = 'style_${namespace}'
+        style.setAttribute('type', 'text/css')
+        style.setAttribute('data-name', '${source.name}')
+        style.appendChild(document.createTextNode(${JSON.stringify(css)}))
+        document.head.append(style)
+      })()`
       source.type = 'typescript'
       source.name = source.name + '.ts'
     }
@@ -93,6 +99,7 @@ try {
   _helperCallback && _helperCallback.runtime(e)
 }`
 
+  const { window } = getEnvironment(namespace)
   const _helperCallback = window[`$${namespace}`]
 
   // 清除编译时的错误
@@ -115,7 +122,7 @@ try {
           gyron: location.origin + '/assets/gyron/index.js',
         },
       },
-      sources: sources.filter(item => !item.name.endsWith('.d.ts')),
+      sources: sources.filter((item) => !item.name.endsWith('.d.ts')),
       options: {
         external: ['gyron', '@gyron'],
         metafile: true,
@@ -192,7 +199,7 @@ export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
     start: start,
   })
 
-  onAfterMount(() => {
+  useMountWithStandalone(() => {
     if (isInViewport(container.current)) {
       onScroll()
     } else {
@@ -203,8 +210,6 @@ export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
   })
 
   onDestroyed(() => {
-    removeStandalone(namespace, `script_${namespace}`)
-    removeStandalone(namespace, `style_${namespace}`)
     document.removeEventListener('scroll', onScroll)
   })
 
@@ -215,14 +220,16 @@ export const Preview = FC<PreviewProps>(({ source, namespace, isSSR }) => {
           <Loading class="w-8" />
         </div>
       )}
-      <div
-        class={classNames(
-          'h-full overflow-auto text-slate-800 dark:text-slate-100',
-          namespace
-        )}
-        id={id}
-        ref={container}
-      ></div>
+      <Standalone namespace={namespace}>
+        <div
+          class={classNames(
+            'h-full overflow-auto text-slate-800 dark:text-slate-100',
+            namespace
+          )}
+          id={id}
+          ref={container}
+        ></div>
+      </Standalone>
     </div>
   )
 })
