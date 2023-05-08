@@ -9,11 +9,12 @@ import {
 import { Dropdown, DropdownItem } from './dropdown'
 import { SourceType } from './editor'
 import { OnAdd, Source } from './wrapper'
-import { CloseIcon, LessIcon, TsxIcon } from '../icons'
+import { CloseIcon, LessIcon, ShareIcon, TsxIcon } from '../icons'
 import { Explorer } from './constant'
 import { getEditorWithElement, getModal } from './hook'
 import { getEnvironment, useMountWithStandalone } from './standalone'
 import classnames from 'classnames'
+import { encode } from 'js-base64'
 
 interface TabProps {
   source: Source
@@ -45,6 +46,7 @@ interface TabsProps {
   active?: string
   content: VNode
   preview: VNode
+  sources: Source[]
   children: VNode<any, TabProps>[]
   onInputChange?: (id: string, value: string) => void
   onAdd?: OnAdd
@@ -181,9 +183,10 @@ export const Tabs = FC<TabsProps>(
     children,
     content,
     namespace,
+    sources,
+    isSSR,
     onAdd,
     onRemove,
-    isSSR,
     onChangeActive,
   }) => {
     const activeEditTitleId = useValue(null)
@@ -228,12 +231,23 @@ export const Tabs = FC<TabsProps>(
         onChangeActive(uuid)
       }
     }
+    async function onShare() {
+      try {
+        const origin = location.origin + '/explorer'
+        const hash = encode(JSON.stringify(sources))
+        await navigator.clipboard.writeText(`${origin}#${hash}`)
+        location.hash = hash
+        alert('拷贝成功，快去分享吧')
+      } catch {
+        alert('拷贝失败，请允许访问粘贴板')
+      }
+    }
 
     return ({ preview, active, onInputChange }) => {
       return (
         <div class="h-full relative shadow-lg dark:shadow-black/25">
           <div class="flex gap-2">
-            <div class="flex max-w-[calc(100%-134px)]">
+            <div class="flex w-full">
               <div class="flex overflow-x-auto overflow-y-hidden">
                 {children.slice(0, -1).map((item, index) => {
                   return (
@@ -255,6 +269,12 @@ export const Tabs = FC<TabsProps>(
                 <DropdownItem name="typescript">TSX</DropdownItem>
                 <DropdownItem name="less">LESS</DropdownItem>
               </Dropdown>
+              <div
+                class="px-4 bg-slate-100 dark:bg-slate-700 select-none ml-auto flex items-center cursor-pointer"
+                onClick={onShare}
+              >
+                <ShareIcon />
+              </div>
             </div>
           </div>
           <div

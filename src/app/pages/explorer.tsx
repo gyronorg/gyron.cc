@@ -36,9 +36,7 @@ export const Explorer = FC<ExplorerProps>(
     ]
 
     try {
-      sources = JSON.parse(
-        decode(new URLSearchParams(location.search).get('sources'))
-      )
+      sources = JSON.parse(decode(location.hash))
     } catch {}
 
     return (

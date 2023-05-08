@@ -5,7 +5,7 @@ import { Explorer, MAIN_FILE } from './constant'
 import { Editor, SourceType } from './editor'
 import { getModal } from './hook'
 import { Preview, PreviewExpose } from './preview'
-import { Tabs, Tab } from './tab'
+import { Tabs, Tab } from './container'
 
 export type OnAdd = (
   type: SourceType,
@@ -96,6 +96,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       <Tabs
         namespace={namespace}
         active={activeId.value}
+        sources={sources.value}
         onInputChange={onActiveChange}
         onAdd={onAdd}
         onRemove={onRemove}

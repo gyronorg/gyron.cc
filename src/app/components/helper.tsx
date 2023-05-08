@@ -139,12 +139,12 @@ const Pre = FC(({ children, isSSR }) => {
     copyState.isDark = isDark
   })
 
-  const copy = () => {
+  const copy = async () => {
     const content = meta?.content
     try {
       copyState.copying = true
       if (content) {
-        navigator.clipboard.writeText(content)
+        await navigator.clipboard.writeText(content)
         copyState.status = true
       } else {
         copyState.status = false
