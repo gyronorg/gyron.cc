@@ -35,10 +35,6 @@ export const Explorer = FC<ExplorerProps>(
       },
     ]
 
-    try {
-      sources = JSON.parse(decode(location.hash))
-    } catch {}
-
     return (
       <div
         class={classNames('h-[calc(100vh-58px)]', {

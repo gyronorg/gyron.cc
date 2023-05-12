@@ -13,7 +13,7 @@ import {
   Docs,
   Home,
   ROUTE_MENUS,
-  Explorer,
+  Editor,
   BlogDocs,
   BLOG_ROUTE_MENUS,
 } from './pages'
@@ -73,8 +73,8 @@ export const ExposeRoutes = FC(() => {
       </Route>
       <Route
         path="explorer"
-        meta={{ title: '在线编辑器' }}
-        element={<Explorer />}
+        meta={{ title: '在线/协同 Gyron.js编辑器' }}
+        element={<Editor />}
       />
       <Route
         path="*"

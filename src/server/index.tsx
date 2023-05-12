@@ -7,6 +7,8 @@ import {
 } from '@gyron/babel-plugin-jsx'
 import { build } from 'esbuild'
 import { App } from '@/index'
+import { createServer } from './rtc'
+import { withGithub, withToken } from './user'
 import express from 'express'
 import path from 'path'
 import nocache from 'nocache'
@@ -15,7 +17,10 @@ import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
 import template from '../../public/index.html'
 
-const app = express()
+const port = Number(process.env.RTC_PORT) || 3000
+
+// TODO netlify service check
+const app = createServer(port)
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -39,6 +44,8 @@ appRouter.use('/js', express.static(clientPath))
 appRouter.use('/css', express.static(clientPath))
 appRouter.use('/assets', express.static(assetsPath))
 
+appRouter.use('/api/github/*', withGithub)
+appRouter.post('/api/token', withToken)
 appRouter.post('/api/build', async (req, res) => {
   const { main, sources } = req.body
 
@@ -124,7 +131,6 @@ app.use('/.netlify/functions/index', appRouter)
 app.use('/', appRouter)
 
 function run() {
-  const port = 3000
   const server = app
     .listen(port, () => {
       console.log('listen to http://localhost:' + port)

@@ -156,7 +156,7 @@ export const Header = FC(() => {
             </li>
             <li>
               <Link to="/explorer" activeClassName="nav-active-link">
-                编辑器
+                协同编辑
               </Link>
             </li>
           </ul>

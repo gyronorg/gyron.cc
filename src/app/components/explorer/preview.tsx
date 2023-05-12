@@ -13,10 +13,15 @@ import { Loading } from '../icons/animation'
 import { isInViewport, useElementMutationObserver } from '@/utils/dom'
 import { SourceType } from './editor'
 import { keys } from 'lodash-es'
-import { getEnvironment, Standalone, useMountWithStandalone } from './standalone'
+import {
+  getEnvironment,
+  Standalone,
+  useMountWithStandalone,
+} from './standalone'
 import type { BuildResult } from 'esbuild'
 import classNames from 'classnames'
 import less from 'less'
+import { post } from '@/utils/fetch'
 
 export interface PreviewExpose {
   start: (source: Source) => void
@@ -105,13 +110,8 @@ try {
   // 清除编译时的错误
   _helperCallback && _helperCallback.building()
 
-  const res = await fetch('/api/build', {
-    method: 'post',
-    headers: {
-      'user-agent': 'Mozilla/4.0 MDN Example',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
+  const res = await post('/api/build', {
+    data: {
       main: {
         code: code,
         name: '_app.tsx',
@@ -127,7 +127,7 @@ try {
         external: ['gyron', '@gyron'],
         metafile: true,
       },
-    }),
+    },
   })
     .then((res) => res.json())
     .catch((e) => {
