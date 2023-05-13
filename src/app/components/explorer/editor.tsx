@@ -13,8 +13,8 @@ import { OnAdd, Source } from './wrapper'
 import type { IRange } from 'monaco-editor'
 import { getModal, initialEditor } from './hook'
 import { EVENT_TYPES, useEvent } from '@/hooks/event'
-import classNames from 'classnames'
 import { isDarkTheme } from '../dark'
+import classNames from 'classnames'
 
 export type SourceType = 'typescript' | 'less'
 

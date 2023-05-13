@@ -1,5 +1,5 @@
 import { generateSafeUuid } from '@/utils/uuid'
-import { createRef, FC, useComputed, useValue } from 'gyron'
+import { createRef, FC, useComputed, useValue, useWatch } from 'gyron'
 import { debounce } from 'lodash-es'
 import { Explorer, MAIN_FILE } from './constant'
 import { Editor, SourceType } from './editor'
@@ -50,11 +50,13 @@ function normalizedSource(sources: Source[]): Source[] {
 
 export interface WrapperEditorProps {
   sources?: Source[]
+  namespace?: string
+  onUpdateSources?: (e: Source[]) => void
 }
 
 export const WrapperEditor = FC<WrapperEditorProps>(
-  ({ sources: _sources, isSSR }) => {
-    const namespace = generateSafeUuid()
+  ({ sources: _sources, namespace, onUpdateSources }) => {
+    namespace ??= generateSafeUuid()
 
     const preview = createRef<PreviewExpose>()
 
@@ -73,7 +75,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
           },
         ]
     const sources = useValue<Source[]>(sourcesDefault as Source[])
-    const activeId = useValue<string>(sourcesDefault[0].uuid)
+    const activeId = useValue<string>(sourcesDefault[0]?.uuid || '')
     const activeSource = useComputed(() =>
       sources.value.find((item) => item.uuid === activeId.value)
     )
@@ -91,6 +93,10 @@ export const WrapperEditor = FC<WrapperEditorProps>(
         preview.current.start(source)
       }
     }, 3000)
+
+    useWatch(() => {
+      onUpdateSources?.(sources.value)
+    })
 
     return (
       <Tabs

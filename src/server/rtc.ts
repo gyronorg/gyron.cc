@@ -1,19 +1,21 @@
-import { PeerServer } from 'peer'
-import * as core from 'express-serve-static-core'
+import { PeerServer, ExpressPeerServer, PeerServerEvents } from 'peer'
+import { ROOM_KEY, ROOM_PATH } from './constant'
+import { Express } from 'express'
 import http from 'node:http'
 import https from 'node:https'
+import ws from 'ws'
 
-export function createServer(port: number) {
+export function createServer(port: number, server?: http.Server) {
   return new Promise<{
-    app: core.Express
+    app: Express & PeerServerEvents
     server: http.Server | https.Server
   }>((resolve) => {
-    const path = '/api/rtc'
+    const path = ROOM_PATH
     const peerServer = PeerServer(
       {
         port: port,
         path: path,
-        key: 'gyronjs',
+        key: ROOM_KEY,
       },
       (server) => {
         resolve({

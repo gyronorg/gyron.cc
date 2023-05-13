@@ -85,7 +85,7 @@ export const ExposeRoutes = FC(() => {
   )
 })
 
-export const App = FC(() => {
+export const App = FC(({ isSSR }) => {
   return (
     <Layout>
       <ExposeRoutes />

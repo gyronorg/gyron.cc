@@ -10,30 +10,41 @@ interface ExplorerProps {
   sources?: Source[]
   hasPadding?: boolean
   height?: number
+  namespace?: string
+  onUpdateSources?: (e: Source[]) => void
 }
 
 export const Explorer = FC<ExplorerProps>(
-  ({ sources: _sources, height, hasPadding = true }) => {
-    let sources: Source[] = _sources || [
-      {
-        code: sourceTSX,
-        type: 'typescript',
-        name: 'index.tsx',
-        label: '',
-        editTitle: false,
-        editContent: true,
-        remove: false,
-      },
-      {
-        code: sourceLESS,
-        type: 'less',
-        name: 'index.less',
-        label: '',
-        editTitle: true,
-        editContent: true,
-        remove: true,
-      },
-    ]
+  ({
+    sources: _sources,
+    height,
+    namespace,
+    onUpdateSources,
+    hasPadding = true,
+  }) => {
+    let sources: Source[] =
+      _sources && _sources.length
+        ? _sources
+        : [
+            {
+              code: sourceTSX,
+              type: 'typescript',
+              name: 'index.tsx',
+              label: '',
+              editTitle: false,
+              editContent: true,
+              remove: false,
+            },
+            {
+              code: sourceLESS,
+              type: 'less',
+              name: 'index.less',
+              label: '',
+              editTitle: true,
+              editContent: true,
+              remove: true,
+            },
+          ]
 
     return (
       <div
@@ -42,7 +53,11 @@ export const Explorer = FC<ExplorerProps>(
         })}
         style={{ height: height + 'px' }}
       >
-        <WrapperEditor sources={sources} />
+        <WrapperEditor
+          sources={sources}
+          onUpdateSources={onUpdateSources}
+          namespace={namespace}
+        />
         <DescriptionWithMeta desc="Gyron.js 的在线编辑器。 Gyron.js playground。 在这里可以直接编辑预览 Gyron.js 的项目" />
       </div>
     )

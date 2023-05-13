@@ -1,7 +1,8 @@
 import { createServer } from './rtc'
-import { withGithub, withToken } from './user'
+import { withGithub, withToken } from './github'
 import { withHTML } from './html'
 import { withBuild } from './build'
+import { createEditorSocket } from './yjs'
 import express from 'express'
 import path from 'path'
 import nocache from 'nocache'
@@ -10,10 +11,13 @@ import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
 
 const port = Number(process.env.RTC_PORT) || 3000
+const editorPort = Number(process.env.YJS_PORT) || 4000
 
-async function init() {
+async function initial() {
   // TODO netlify service check
   const { app, server } = await createServer(port)
+
+  const wss = await createEditorSocket(editorPort)
 
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
@@ -33,7 +37,8 @@ async function init() {
   appRouter.use('/css', express.static(clientPath))
   appRouter.use('/assets', express.static(assetsPath))
 
-  appRouter.use('/api/github/*', withGithub)
+  appRouter.get('/api/github/*', withGithub)
+  appRouter.post('/api/github/*', withGithub)
   appRouter.post('/api/token', withToken)
   appRouter.post('/api/build', withBuild)
 
@@ -45,7 +50,7 @@ async function init() {
 }
 
 async function run() {
-  const { server } = await init()
+  const { server } = await initial()
   server.addListener('error', (err) => {
     console.log(err)
   })
@@ -59,7 +64,7 @@ async function run() {
 }
 
 if (process.env.PUBLISH_ENV === 'netlify') {
-  init().then(({ app }) => {
+  initial().then(({ app }) => {
     module.exports.handler = serverless(app)
   })
 } else {

@@ -160,7 +160,7 @@ export const Header = FC(() => {
               </Link>
             </li>
           </ul>
-          <div class="flex items-center border-l border-slate-200 ml-5 md:ml-6 pl-5 md:pl-6 dark:border-slate-800 space-x-5 md:space-x-6">
+          <div class="flex items-center border-l border-slate-200 ml-3 md:ml-6 pl-3 md:pl-6 dark:border-slate-800 space-x-5 md:space-x-6">
             <DarkToggle />
             <a
               href="https://github.com/gyronorg/core"
@@ -178,7 +178,7 @@ export const Header = FC(() => {
           >
             <div
               id="docsearch"
-              class="pointer-events-auto border-l border-slate-200 dark:border-slate-800 ml-5 md:ml-6 pl-5 md:pl-6"
+              class="pointer-events-auto border-l border-slate-200 dark:border-slate-800 ml-3 md:ml-6 pl-3 md:pl-6"
             ></div>
           </div>
         </nav>

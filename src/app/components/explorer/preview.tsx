@@ -128,11 +128,9 @@ try {
         metafile: true,
       },
     },
+  }).catch((e) => {
+    _helperCallback && _helperCallback.building(e)
   })
-    .then((res) => res.json())
-    .catch((e) => {
-      _helperCallback && _helperCallback.building(e)
-    })
 
   if (res.code === 0) {
     _helperCallback.building()

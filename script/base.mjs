@@ -76,6 +76,8 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
         __WARN__: String(false),
         __TMP__: JSON.stringify(watch ? tempPath : '../'),
         __CLIENT__: JSON.stringify(clientMetaFile),
+        navigator: JSON.stringify({}),
+        PEER_HOST: JSON.stringify('gyron.cc'),
       },
       logLevel: 'error',
       external: ['esbuild'],
@@ -91,9 +93,13 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
       }
       runServer(tempPath, filename)
     } else {
-      fs.writeFileSync('dist/server/index.js', `const { handler } = require('./${filename}');\nmodule.exports.handler = handler;\n`, {
-        encoding: 'utf-8',
-      })
+      fs.writeFileSync(
+        'dist/server/index.js',
+        `const { handler } = require('./${filename}');\nmodule.exports.handler = handler;\n`,
+        {
+          encoding: 'utf-8',
+        }
+      )
     }
   } catch (e) {
     console.error(e)
@@ -105,7 +111,7 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
  * @param {boolean} watch
  * @param {string} tempPath
  */
-export async function buildClient(watch, tempPath) {
+export async function buildClient(watch, tempPath, dev = false) {
   // client
   try {
     const config = renderConfig(watch, watch)
@@ -128,6 +134,9 @@ export async function buildClient(watch, tempPath) {
         global: 'global',
         process: 'process',
         Buffer: 'Buffer',
+        PEER_HOST: dev
+          ? JSON.stringify('localhost')
+          : JSON.stringify('gyron.cc'),
         'process.env.NODE_ENV': JSON.stringify(
           watch ? 'development' : 'production'
         ),
@@ -161,6 +170,7 @@ export async function buildAPP() {
       define: {
         __DEV__: String(false),
         __WARN__: String(false),
+        PEER_HOST: JSON.stringify('gyron.cc'),
         'process.env.NODE_ENV': JSON.stringify('production'),
       },
       plugins: config.plugins.concat(plugin(stdLibBrowser)),
