@@ -256,7 +256,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
               <img
                 src={info.value.avatar_url}
                 alt="avatar"
-                class="mx-auto w-[100px] rounded-[50px]"
+                class="mx-auto h-[100px] rounded-[50px]"
               />
             ) : (
               <div class="h-[100px]"></div>
