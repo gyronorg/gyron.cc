@@ -197,3 +197,6 @@ video {
   max-width: 100%;
   height: auto;
 }
+.dark {
+  filter: invert(1);
+}

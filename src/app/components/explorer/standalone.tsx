@@ -25,6 +25,12 @@ export const Standalone = FC<StandaloneProps>(({ namespace, children }) => {
   useMountWithStandalone(() => {
     const { document } = getEnvironment(namespace)
     const root = document.createElement('div')
+    root.classList.add(
+      window.localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light')
+    )
     const style = document.createElement('style')
     style.appendChild(document.createTextNode(defaultCss))
     createInstance(children as VNode).render(root)

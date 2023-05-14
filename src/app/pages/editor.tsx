@@ -11,9 +11,9 @@ import {
   setGithubAccess,
 } from '@/utils/github'
 import { post } from '@/utils/fetch'
+import { generateSafeUuid } from '@/utils/uuid'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import { generateSafeUuid } from '@/utils/uuid'
 
 export const Editor = FC(({ isSSR }) => {
   const token = useValue('')
@@ -58,7 +58,11 @@ export const Editor = FC(({ isSSR }) => {
       class={classNames('h-[calc(100vh-58px)] flex py-4 gap-3 px-4 md:px-8')}
     >
       <div class="h-full w-[200px]">
-        <CollaboratorInfo token={token.value} sources={sources.value} namespace={namespace} />
+        <CollaboratorInfo
+          token={token.value}
+          sources={sources.value}
+          namespace={namespace}
+        />
         <CollaboratorList />
       </div>
       <div class="flex-1">

@@ -55,7 +55,12 @@ function formatEntryMeta(outputs) {
  * @param {{ js: string; css: string; }} clientMetaFile
  * @param {import('ora').Ora} spinner
  */
-export async function buildServer(watch, tempPath, clientMetaFile) {
+export async function buildServer(
+  watch,
+  tempPath,
+  clientMetaFile,
+  dev = false
+) {
   // server
   try {
     const result = await esbuild.build({
@@ -77,7 +82,9 @@ export async function buildServer(watch, tempPath, clientMetaFile) {
         __TMP__: JSON.stringify(watch ? tempPath : '../'),
         __CLIENT__: JSON.stringify(clientMetaFile),
         navigator: JSON.stringify({}),
-        PEER_HOST: JSON.stringify('gyron.cc'),
+        'process.env.NODE_ENV': JSON.stringify(
+          dev ? 'development' : 'production'
+        ),
       },
       logLevel: 'error',
       external: ['esbuild'],
@@ -129,16 +136,13 @@ export async function buildClient(watch, tempPath, dev = false) {
         ),
       ],
       define: {
-        __DEV__: String(watch),
+        __DEV__: String(dev),
         __WARN__: String(false),
         global: 'global',
         process: 'process',
         Buffer: 'Buffer',
-        PEER_HOST: dev
-          ? JSON.stringify('localhost')
-          : JSON.stringify('gyron.cc'),
         'process.env.NODE_ENV': JSON.stringify(
-          watch ? 'development' : 'production'
+          dev ? 'development' : 'production'
         ),
       },
       plugins: config.plugins.concat(plugin(stdLibBrowser)),

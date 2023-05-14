@@ -50,24 +50,39 @@ function useGithubInfo(token: string) {
   return info
 }
 
-function streamWithCanvas(stream: MediaStream, canvas: HTMLCanvasElement) {
+function streamWithCanvas(
+  stream: MediaStream,
+  container: HTMLDivElement,
+  id: string
+) {
+  const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
-  const video =
-    document.querySelector<HTMLVideoElement>('#_video_pipe') ||
-    document.createElement('video')
-  if (!video.id) {
-    video.autoplay = true
-    video.style.display = 'none'
-    video.id = '_video_pipe'
-  }
+  const video = document.createElement('video')
+
+  canvas.width = 200
+  canvas.id = `c_${id}`
+  video.id = `v_${id}`
+  video.autoplay = true
+  video.style.display = 'none'
   video.srcObject = stream
   video.addEventListener('play', (e) => {
     function step() {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-      requestAnimationFrame(step)
+      if (video) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        requestAnimationFrame(step)
+      }
     }
     requestAnimationFrame(step)
   })
+  container.append(canvas)
+}
+
+function leaveWithCanvas(container: HTMLDivElement, id: string) {
+  const canvas = container.querySelector(`#c_${id}`)
+  const video = container.querySelector<HTMLVideoElement>(`#v_${id}`)
+  video?.pause()
+  canvas?.remove()
+  video?.remove()
 }
 
 async function connectMonaco(
@@ -82,16 +97,23 @@ async function connectMonaco(
   const ydoc = new Y.Doc()
   const signal = `${location.protocol === 'http:' ? 'ws' : 'wss'}://${
     location.hostname
-  }:4000`
+    // prod url is /api/yjs
+    // nginx proxy /api/yjs to 4000 server
+  }${process.env.NODE_ENV === 'development' ? ':4000' : '/api/yjs'}`
 
   const provider = new WebrtcProvider(id, ydoc, {
     signaling: [signal],
   })
+
   const type = ydoc.getText('monaco')
-  if (!collaborate) {
-    // TODO 刚加入时协作数据同步
-  }
+
   type.insert(0, model.getValue())
+  ydoc.on('update', (update) => {
+    if (model.getValue() !== type.toJSON()) {
+      model.setValue(type.toJSON())
+    }
+    Y.applyUpdate(ydoc, update)
+  })
   const monacoBinding = new MonacoBinding(
     type,
     model,
@@ -113,7 +135,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       video: true,
     })
     const info = useGithubInfo(token)
-    const canvasContainer = createRef<HTMLCanvasElement>()
+    const canvasContainer = createRef<HTMLDivElement>()
 
     function onOAuth() {
       location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=user,gist,public_repo`
@@ -123,7 +145,6 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
 
     async function onCreateWorkspace() {
       if (roomName.value) {
-        const ctx = canvasContainer.current.getContext('2d')
         // TODO
         // const {} = await createGist(roomName.value, sources)
         const { id, peer } = await p2pReady()
@@ -134,18 +155,21 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             video: true,
           })
           call.answer(stream)
+
           call.on('stream', (stream) => {
-            streamWithCanvas(stream, canvasContainer.current)
+            streamWithCanvas(stream, canvasContainer.current, call.connectionId)
+          })
+          call.on('close', () => {
+            leaveWithCanvas(canvasContainer.current, call.connectionId)
           })
         })
 
-        connectMonaco(sources[0].name, id, namespace, false)
+        await connectMonaco(sources[0].name, id, namespace, false)
       }
     }
 
     async function onAddWorkspace() {
       if (roomOtherName.value) {
-        const ctx = canvasContainer.current.getContext('2d')
         const { peer } = await p2pConnect(roomOtherName.value, {
           onReceive(e) {},
         })
@@ -155,10 +179,20 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         })
         const call = peer.call(roomOtherName.value, stream)
         call.on('stream', (stream) => {
-          streamWithCanvas(stream, canvasContainer.current)
+          streamWithCanvas(stream, canvasContainer.current, call.connectionId)
+        })
+        call.on('close', () => {
+          leaveWithCanvas(canvasContainer.current, call.connectionId)
         })
 
-        connectMonaco(sources[0].name, roomOtherName.value, namespace, true)
+        const { model } = await getModal(sources[0].name, namespace)
+        model.setValue('')
+        await connectMonaco(
+          sources[0].name,
+          roomOtherName.value,
+          namespace,
+          true
+        )
       }
     }
 
@@ -225,7 +259,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           >
             加入协同
           </button>
-          <canvas ref={canvasContainer}></canvas>
+          <div ref={canvasContainer}></div>
         </div>
       </div>
     )

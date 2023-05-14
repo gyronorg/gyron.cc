@@ -15,7 +15,7 @@ process.on('SIGINT', () => {
 })
 
 buildClient(false, tempPath, true).then((clientMetafile) => {
-  buildServer(false, tempPath, clientMetafile).then(() => {
+  buildServer(false, tempPath, clientMetafile, true).then(() => {
     fs.copySync('public/assets', `${tempPath}/assets`)
     fs.copySync('node_modules/gyron/dist/browser', `${tempPath}/assets/gyron`)
     fs.copySync('public/assets', `${tempPath}/assets`)
