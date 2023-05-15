@@ -24,6 +24,7 @@ import { Button } from '../button'
 import { Input } from '../input'
 import { FormItem } from '../formItem'
 import { Collaborator } from './list'
+import { isArray } from 'lodash-es'
 
 interface CollaboratorInfoProps {
   token: string
@@ -142,7 +143,8 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
   ({ token, sources, namespace, onUpdateSources, isSSR }) => {
     const share = useValue('')
     const roomName = useValue('')
-    const roomOtherName = useValue(
+    const sourceRoomId = useValue('')
+    const targetRoomId = useValue(
       isSSR ? '' : new URLSearchParams(location.search).get('room_id')
     )
     const config = useReactive({
@@ -155,8 +157,36 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     const canvasContainer = createRef<HTMLDivElement>()
     const connectMonacoInstance = createRef<WebrtcProvider>()
     const { getSources } = createEditorHook()
+    const pool: Record<string, number> = {}
 
     function onOpenGist() {}
+
+    function onMessageWithMonaco(provider: WebrtcProvider) {
+      const conn1: SignalingConn = provider.signalingConns[0]
+      conn1.on(
+        'message',
+        (m: {
+          clients: number
+          type: string
+          topic: string
+          topics: string[]
+        }) => {
+          if (m.type === 'subscribe') {
+            console.log('subscribe', m)
+            if (isArray(m.topics) && m.topics.length) {
+              pool[m.topics[0]] = m.clients
+            }
+          }
+          if (m.type === 'unsubscribe') {
+            console.log('unsubscribe', m)
+            if (isArray(m.topics) && m.topics.length) {
+              pool[m.topics[0]] = m.clients
+            }
+          }
+          console.log(pool)
+        }
+      )
+    }
 
     async function onCreateWorkspace(e: Event) {
       e.preventDefault()
@@ -174,7 +204,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
               type: 'initial-sources',
               data: sources,
             })
-            console.log(conn)
+            console.log('initial-sources', sources)
           })
         })
         await onCall(config.audio, config.video, peer, canvasContainer.current)
@@ -186,6 +216,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           console.log(id, currentId)
         })
 
+        sourceRoomId.value = id
         share.value = `${location.origin}/explorer?room_id=${id}`
 
         const { monacoBinding, provider } = await connectMonaco(
@@ -195,6 +226,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           false
         )
         connectMonacoInstance.current = provider
+        onMessageWithMonaco(provider)
 
         config.disabledCreateRoom = true
         config.disabledJoinRoom = true
@@ -203,9 +235,9 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
 
     async function onAddWorkspace(e: Event) {
       e.preventDefault()
-      if (roomOtherName.value) {
+      if (targetRoomId.value) {
         // TODO confirm continue
-        const { peer, conn } = await p2pConnectRoom(roomOtherName.value)
+        const { peer, conn } = await p2pConnectRoom(targetRoomId.value)
         // 获取到 remote sources 数据
         const sources = await getSources(conn)
         // 更新本地 sources
@@ -217,7 +249,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           peer,
           canvasContainer.current
         )
-        await call(peer, roomOtherName.value, stream, canvasContainer.current)
+        await call(peer, targetRoomId.value, stream, canvasContainer.current)
         peer.on('close', () => {
           config.disabledCreateRoom = false
           config.disabledJoinRoom = false
@@ -228,11 +260,12 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         model.setValue('')
         const { monacoBinding, provider } = await connectMonaco(
           name,
-          roomOtherName.value,
+          targetRoomId.value,
           namespace,
           true
         )
         connectMonacoInstance.current = provider
+        onMessageWithMonaco(provider)
 
         config.disabledCreateRoom = true
         config.disabledJoinRoom = true
@@ -241,31 +274,33 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
 
     exposeComponent({
       leave: (id) => {
-        console.log('leave', id)
-        connectMonacoInstance.current.destroy()
-      },
-      enter: async (id) => {
-        console.log('enter', id)
+        connectMonacoInstance.current?.destroy()
         const source = sources.find((source) => source.uuid === id)
         if (source) {
-          const { provider } = await connectMonaco(
-            source.name,
-            roomOtherName.value,
-            namespace,
-            true
-          )
-          connectMonacoInstance.current = provider
-          // 信令服务器只存在一个
-          const conn: SignalingConn = provider.signalingConns[0]
-          conn.on('connect', () => {
-            console.log('connect', conn)
-          })
-          conn.on('disconnect', () => {
-            console.log('disconnect', conn)
-          })
-          conn.on('message', (m) => {
-            console.log('message', m)
-          })
+          pool[`${targetRoomId.value || sourceRoomId.value}_${source.name}`]--
+          console.log(pool)
+        }
+      },
+      enter: async (id) => {
+        if (config.disabledCreateRoom || config.disabledJoinRoom) {
+          const source = sources.find((source) => source.uuid === id)
+          if (source) {
+            const clients =
+              pool[
+                `${targetRoomId.value || sourceRoomId.value}_${source.name}`
+              ] || 0
+            if (clients > 0) {
+              const { model } = await getModal(source.name, namespace)
+              model.setValue('')
+            }
+            const { provider } = await connectMonaco(
+              source.name,
+              targetRoomId.value || sourceRoomId.value,
+              namespace,
+              true
+            )
+            connectMonacoInstance.current = provider
+          }
         }
       },
     } as ExposeInfo)
@@ -325,9 +360,9 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
               id="other"
               placeholder="请输入房间名或者访问分享的链接"
               required
-              value={roomOtherName.value}
+              value={targetRoomId.value}
               onChange={(e) =>
-                (roomOtherName.value = (e.target as HTMLInputElement).value)
+                (targetRoomId.value = (e.target as HTMLInputElement).value)
               }
             />
           </FormItem>

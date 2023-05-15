@@ -18,7 +18,7 @@ export async function connectMonaco(
     // nginx proxy /api/yjs to 4000 server
   }${process.env.NODE_ENV === 'development' ? ':4000' : '/api/yjs'}`
 
-  const provider = new WebrtcProvider(id + name, ydoc, {
+  const provider = new WebrtcProvider(`${id}_${name}`, ydoc, {
     signaling: [signal],
   })
 

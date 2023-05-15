@@ -67,7 +67,7 @@ export function normalizedSource(sources: Source[]): Source[] {
   return sources.map((item) => {
     return {
       ...item,
-      uuid: generateSafeUuid(),
+      uuid: item.uuid || generateSafeUuid(),
     }
   })
 }
@@ -85,8 +85,6 @@ export interface WrapperEditorProps {
 
 export const WrapperEditor = FC<WrapperEditorProps>(
   ({ sources: _sources, namespace, event }) => {
-    namespace ??= generateSafeUuid()
-
     const preview = createRef<PreviewExpose>()
 
     const sourcesDefault = _sources ? normalizedSource(_sources) : defaultSource
@@ -112,8 +110,9 @@ export const WrapperEditor = FC<WrapperEditorProps>(
 
     exposeComponent({
       initial: (data) => {
-        debugger
+        console.log('received-resources', data)
         sources.value = data
+        activeId.value = data[0].uuid
       },
     } as ExposeWrapperEditor)
 

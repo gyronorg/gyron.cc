@@ -4,6 +4,7 @@ import { DescriptionWithMeta } from '@/components/description'
 import sourceTSX from '@/demo/main/index.tsx.txt'
 import sourceLESS from '@/demo/main/index.less.txt'
 import classNames from 'classnames'
+import { generateSafeUuid } from '@/utils/uuid'
 
 export const defaultSources: Source[] = [
   {
@@ -30,12 +31,12 @@ interface ExplorerProps {
   sources?: Source[]
   hasPadding?: boolean
   height?: number
-  namespace?: string
 }
 
 export const Explorer = FC<ExplorerProps>(
-  ({ sources: _sources, height, namespace, hasPadding = true }) => {
+  ({ sources: _sources, height, hasPadding = true }) => {
     const sources = _sources && _sources.length ? _sources : defaultSources
+    const namespace = generateSafeUuid()
 
     return (
       <div

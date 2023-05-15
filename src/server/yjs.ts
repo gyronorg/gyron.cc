@@ -23,7 +23,14 @@ function send(conn: ws.WebSocket, message: object) {
   }
 }
 
-const topics = new Map<string, Set<any>>()
+const topics = new Map<string, Set<ws.WebSocket>>()
+
+function toJson() {
+  return [...topics.keys()].reduce((prev, curr) => {
+    prev[curr] = [...topics.get(curr)]
+    return prev
+  }, {})
+}
 
 export const withEditorRtcServer = (socket: ws.WebSocket) => {
   const subscribedTopics = new Set<string>()
@@ -109,6 +116,18 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
           case 'ping':
             send(socket, { type: 'pong' })
         }
+
+        ;[...topics.keys()].forEach((name) => {
+          const sockets = topics.get(name)
+          sockets.forEach((socket1) => {
+            if (socket1 !== socket) {
+              send(socket1, {
+                type: 'sync',
+                topics: toJson(),
+              })
+            }
+          })
+        })
       }
     }
   )

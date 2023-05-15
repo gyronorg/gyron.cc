@@ -16,7 +16,7 @@ export const Input = FC<Partial<InputProps>>(
       <input
         type={type || 'text'}
         id={id}
-        class="w-full text-zinc-900 dark:text-white placeholder:text-gray-600 px-2 py-1 rounded-sm invalid:border-red-600"
+        class="w-full text-zinc-900 enabled:bg-gray-200 enabled:dark:bg-gray-700 dark:text-white placeholder:text-gray-600 px-2 py-1 rounded-sm invalid:border-red-600"
         value={value}
         disabled={disabled || false}
         required={required || false}

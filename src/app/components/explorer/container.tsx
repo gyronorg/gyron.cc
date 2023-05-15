@@ -221,11 +221,7 @@ export const Tabs = FC<TabsProps>(
       onChangeActive(nextUuid)
     }
     function onActive(uuid: string) {
-      if (uuid === Explorer.Preview) {
-        // ...
-      } else {
-        onChangeActive(uuid)
-      }
+      onChangeActive(uuid)
     }
     async function onShare() {
       try {
