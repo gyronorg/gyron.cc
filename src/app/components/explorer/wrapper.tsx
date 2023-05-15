@@ -1,5 +1,13 @@
 import { generateSafeUuid } from '@/utils/uuid'
-import { createRef, FC, useComputed, useValue, useWatch } from 'gyron'
+import {
+  createRef,
+  exposeComponent,
+  FC,
+  useComputed,
+  useEffect,
+  useValue,
+  useWatch,
+} from 'gyron'
 import { debounce } from 'lodash-es'
 import { Explorer, MAIN_FILE } from './constant'
 import { Editor, SourceType } from './editor'
@@ -38,8 +46,24 @@ const sourceSuffixName: Record<SourceType, string> = {
   typescript: '.tsx',
   less: '.less',
 }
+const defaultSource = [
+  {
+    name: MAIN_FILE,
+    label: MAIN_FILE,
+    type: 'typescript',
+    code: '',
+    uuid: generateSafeUuid(),
+    editTitle: false,
+    editContent: true,
+    remove: false,
+  },
+]
 
-function normalizedSource(sources: Source[]): Source[] {
+export interface ExposeWrapperEditor {
+  initial: (sources: Source[]) => void
+}
+
+export function normalizedSource(sources: Source[]): Source[] {
   return sources.map((item) => {
     return {
       ...item,
@@ -51,29 +75,21 @@ function normalizedSource(sources: Source[]): Source[] {
 export interface WrapperEditorProps {
   sources?: Source[]
   namespace?: string
-  onUpdateSources?: (e: Source[]) => void
+  event?: {
+    updateSources?: (e: Source[]) => void
+    changeActiveTab?: (e1: string, e2: string) => void
+    removeTab?: (e: string) => void
+    addTab?: (e: Source) => void
+  }
 }
 
 export const WrapperEditor = FC<WrapperEditorProps>(
-  ({ sources: _sources, namespace, onUpdateSources }) => {
+  ({ sources: _sources, namespace, event }) => {
     namespace ??= generateSafeUuid()
 
     const preview = createRef<PreviewExpose>()
 
-    const sourcesDefault = _sources
-      ? normalizedSource(_sources)
-      : [
-          {
-            name: MAIN_FILE,
-            label: MAIN_FILE,
-            type: 'typescript',
-            code: '',
-            uuid: generateSafeUuid(),
-            editTitle: false,
-            editContent: true,
-            remove: false,
-          },
-        ]
+    const sourcesDefault = _sources ? normalizedSource(_sources) : defaultSource
     const sources = useValue<Source[]>(sourcesDefault as Source[])
     const activeId = useValue<string>(sourcesDefault[0]?.uuid || '')
     const activeSource = useComputed(() =>
@@ -94,9 +110,12 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       }
     }, 3000)
 
-    useWatch(() => {
-      onUpdateSources?.(sources.value)
-    })
+    exposeComponent({
+      initial: (data) => {
+        debugger
+        sources.value = data
+      },
+    } as ExposeWrapperEditor)
 
     return (
       <Tabs
@@ -168,6 +187,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
         uuid: generateSafeUuid(),
       }
       sources.value.push(source)
+      event?.addTab?.(source)
       return source
     }
 
@@ -185,10 +205,12 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       const nextUuid = sources.value[nextIndex]?.uuid
       activeId.value = nextUuid
       sources.value.splice(index, 1)
+      event?.removeTab?.(uuid)
       return nextUuid
     }
 
     function onChangeActive(uuid: string) {
+      event?.changeActiveTab?.(activeId.value, uuid)
       activeId.value = uuid
     }
   }

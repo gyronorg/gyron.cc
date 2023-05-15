@@ -13,8 +13,8 @@ import { CloseIcon, LessIcon, ShareIcon, TsxIcon } from '../icons'
 import { Explorer } from './constant'
 import { getEditorWithElement, getModal } from './hook'
 import { getEnvironment, useMountWithStandalone } from './standalone'
-import classnames from 'classnames'
 import { encode } from 'js-base64'
+import classnames from 'classnames'
 
 interface TabProps {
   source: Source
@@ -203,10 +203,6 @@ export const Tabs = FC<TabsProps>(
           buildingErrorMessage.value = err ? err.stack : null
         }
       )
-    }
-
-    if (children[0]?.props?.source?.uuid) {
-      onChangeActive(children[0].props.source.uuid)
     }
 
     async function onAddTab(type: SourceType) {

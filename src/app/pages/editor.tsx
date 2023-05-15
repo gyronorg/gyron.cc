@@ -1,8 +1,11 @@
-import { FC, useReactive, useValue } from 'gyron'
-import { Explorer } from './explorer'
-import { CollaboratorInfo } from '@/components/collaborator/info'
-import { CollaboratorList } from '@/components/collaborator/list'
-import { Source } from '@/components/explorer/wrapper'
+import { FC, createRef, useValue } from 'gyron'
+import { CollaboratorInfo, ExposeInfo } from '@/components/collaborator/info'
+import {
+  ExposeWrapperEditor,
+  Source,
+  WrapperEditor,
+  normalizedSource,
+} from '@/components/explorer/wrapper'
 import { decode } from 'js-base64'
 import {
   clearGithubAccess,
@@ -12,13 +15,15 @@ import {
 } from '@/utils/github'
 import { post } from '@/utils/fetch'
 import { generateSafeUuid } from '@/utils/uuid'
+import { defaultSources } from './explorer'
 import classNames from 'classnames'
-import dayjs from 'dayjs'
 
 export const Editor = FC(({ isSSR }) => {
   const token = useValue('')
-  const sources = useValue<Source[]>([])
+  const sources = useValue<Source[]>(normalizedSource(defaultSources))
   const namespace = generateSafeUuid()
+  const info = createRef<ExposeInfo>()
+  const editor = createRef<ExposeWrapperEditor>()
 
   function initial(code: string, data: any) {
     post('/api/token', {
@@ -38,6 +43,7 @@ export const Editor = FC(({ isSSR }) => {
       })
       .catch(() => {})
   }
+
   try {
     if (!isSSR) {
       if (location.hash) {
@@ -59,18 +65,30 @@ export const Editor = FC(({ isSSR }) => {
     >
       <div class="h-full w-[200px]">
         <CollaboratorInfo
+          ref={info}
           token={token.value}
           sources={sources.value}
           namespace={namespace}
+          onUpdateSources={(e) => {
+            editor.current.initial(e)
+            sources.value = e
+          }}
         />
-        <CollaboratorList />
       </div>
       <div class="flex-1">
-        <Explorer
+        <WrapperEditor
+          ref={editor}
           namespace={namespace}
           sources={sources.value}
-          hasPadding={false}
-          onUpdateSources={(e) => (sources.value = e)}
+          event={{
+            updateSources(e) {},
+            removeTab(e) {},
+            addTab(e) {},
+            changeActiveTab(e1, e2) {
+              info.current?.leave(e1)
+              info.current?.enter(e2)
+            },
+          }}
         />
       </div>
     </div>

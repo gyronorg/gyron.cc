@@ -1,27 +1,40 @@
 import {
   createRef,
+  exposeComponent,
   FC,
   onAfterUpdate,
   useReactive,
   useValue,
-  useWatch,
+  h,
+  createInstance,
 } from 'gyron'
 import { GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
 import { CLIENT_ID } from 'src/server/constant'
 import { GithubInfo, setGithubInfo } from '@/utils/github'
 import { createGist } from './gist'
-import { p2pConnect, p2pReady } from './room'
+import { p2pConnectRoom, p2pCreateRoom } from './p2p'
 import { Source } from '../explorer/wrapper'
-import { WebrtcProvider } from 'y-webrtc'
-import { getEditorWithElement, getModal } from '../explorer/hook'
-import * as Y from 'yjs'
-import Peer from 'peerjs'
+import { getModal } from '../explorer/hook'
+import Peer, { DataConnection } from 'peerjs'
+import { connectMonaco } from './util'
+import type { MonacoBinding } from 'y-monaco'
+import type { WebrtcProvider, SignalingConn } from 'y-webrtc'
+import { Button } from '../button'
+import { Input } from '../input'
+import { FormItem } from '../formItem'
+import { Collaborator } from './list'
 
 interface CollaboratorInfoProps {
   token: string
   namespace: string
   sources: Source[]
+  onUpdateSources?: (e: Source[]) => void
+}
+
+export interface ExposeInfo {
+  leave: (id: string) => void
+  enter: (id: string) => void
 }
 
 function useGithubInfo(token: string) {
@@ -51,77 +64,19 @@ function useGithubInfo(token: string) {
   return info
 }
 
-function streamWithCanvas(
+function renderStreamWithCanvas(
   stream: MediaStream,
   container: HTMLDivElement,
   id: string
 ) {
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  const video = document.createElement('video')
-
-  canvas.width = 200
-  canvas.id = `c_${id}`
-  video.id = `v_${id}`
-  video.autoplay = true
-  video.style.display = 'none'
-  video.srcObject = stream
-  video.addEventListener('play', (e) => {
-    function step() {
-      if (video) {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        requestAnimationFrame(step)
-      }
-    }
-    requestAnimationFrame(step)
-  })
-  container.append(canvas)
+  const li = document.createElement('li')
+  createInstance(<Collaborator id={id} stream={stream} />).render(li)
+  container.append(li)
 }
 
-function leaveWithCanvas(container: HTMLDivElement, id: string) {
-  const canvas = container.querySelector(`#c_${id}`)
-  const video = container.querySelector<HTMLVideoElement>(`#v_${id}`)
-  video?.pause()
-  canvas?.remove()
-  video?.remove()
-}
-
-async function connectMonaco(
-  name: string,
-  id: string,
-  namespace: string,
-  collaborate: boolean
-) {
-  const { model } = await getModal(name, namespace)
-  const { instance } = getEditorWithElement(namespace)
-  const { MonacoBinding } = await import('y-monaco')
-  const ydoc = new Y.Doc()
-  const signal = `${location.protocol === 'http:' ? 'ws' : 'wss'}://${
-    location.hostname
-    // prod url is /api/yjs
-    // nginx proxy /api/yjs to 4000 server
-  }${process.env.NODE_ENV === 'development' ? ':4000' : '/api/yjs'}`
-
-  const provider = new WebrtcProvider(id, ydoc, {
-    signaling: [signal],
-  })
-
-  const type = ydoc.getText('monaco')
-
-  type.insert(0, model.getValue())
-  ydoc.on('update', (update) => {
-    if (model.getValue() !== type.toJSON()) {
-      model.setValue(type.toJSON())
-    }
-    Y.applyUpdate(ydoc, update)
-  })
-  const monacoBinding = new MonacoBinding(
-    type,
-    model,
-    new Set([instance]),
-    provider.awareness
-  )
-  return monacoBinding
+function removeStreamWithCanvas(container: HTMLDivElement, id: string) {
+  const li = container.querySelector(`#collaborator_${id}`)
+  li?.remove()
 }
 
 async function onCall(
@@ -137,10 +92,10 @@ async function onCall(
   peer.on('call', async (call) => {
     call.answer(stream)
     call.on('stream', (stream) => {
-      streamWithCanvas(stream, container, call.connectionId)
+      renderStreamWithCanvas(stream, container, call.connectionId)
     })
     call.on('close', () => {
-      leaveWithCanvas(container, call.connectionId)
+      removeStreamWithCanvas(container, call.connectionId)
     })
   })
   return stream
@@ -155,16 +110,36 @@ async function call(
   const call = peer.call(roomId, stream)
 
   call.on('stream', (stream) => {
-    streamWithCanvas(stream, container, call.connectionId)
+    renderStreamWithCanvas(stream, container, call.connectionId)
   })
   call.on('close', () => {
-    leaveWithCanvas(container, call.connectionId)
+    removeStreamWithCanvas(container, call.connectionId)
   })
   return call
 }
 
+function createEditorHook() {
+  return {
+    getSources: (conn: DataConnection) => {
+      return new Promise<Source[]>((resolve) => {
+        console.log(conn)
+        conn.on('data', (e: any) => {
+          console.log('data', e)
+          if (e.type === 'initial-sources') {
+            resolve(e.data)
+          }
+        })
+      })
+    },
+  }
+}
+
+function onOAuth() {
+  location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=user,gist,public_repo`
+}
+
 export const CollaboratorInfo = FC<CollaboratorInfoProps>(
-  ({ token, sources, namespace, isSSR }) => {
+  ({ token, sources, namespace, onUpdateSources, isSSR }) => {
     const share = useValue('')
     const roomName = useValue('')
     const roomOtherName = useValue(
@@ -178,28 +153,31 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     })
     const info = useGithubInfo(token)
     const canvasContainer = createRef<HTMLDivElement>()
-
-    function onOAuth() {
-      location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=user,gist,public_repo`
-    }
+    const connectMonacoInstance = createRef<WebrtcProvider>()
+    const { getSources } = createEditorHook()
 
     function onOpenGist() {}
 
     async function onCreateWorkspace(e: Event) {
+      e.preventDefault()
       if (roomName.value) {
-        e.preventDefault()
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: config.audio,
-          video: config.video,
-        })
         // TODO
         // const {} = await createGist(roomName.value, sources)
-        const { id, peer } = await p2pReady()
-        share.value = `${location.origin}/explorer?room_id=${id}`
-        await onCall(config.audio, config.video, peer, canvasContainer.current)
-        peer.on('connection', (conn) => {
-          console.log(conn)
+        const { id, peer } = await p2pCreateRoom({
+          onReceive(e) {
+            console.log('root', e)
+          },
         })
+        peer.on('connection', (conn) => {
+          conn.on('open', () => {
+            conn.send({
+              type: 'initial-sources',
+              data: sources,
+            })
+            console.log(conn)
+          })
+        })
+        await onCall(config.audio, config.video, peer, canvasContainer.current)
         peer.on('close', () => {
           config.disabledCreateRoom = false
           config.disabledJoinRoom = false
@@ -208,7 +186,15 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           console.log(id, currentId)
         })
 
-        await connectMonaco(sources[0].name, id, namespace, false)
+        share.value = `${location.origin}/explorer?room_id=${id}`
+
+        const { monacoBinding, provider } = await connectMonaco(
+          sources[0].name,
+          id,
+          namespace,
+          false
+        )
+        connectMonacoInstance.current = provider
 
         config.disabledCreateRoom = true
         config.disabledJoinRoom = true
@@ -216,12 +202,15 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     }
 
     async function onAddWorkspace(e: Event) {
+      e.preventDefault()
       if (roomOtherName.value) {
-        e.preventDefault()
         // TODO confirm continue
-        const { peer } = await p2pConnect(roomOtherName.value, {
-          onReceive(e) {},
-        })
+        const { peer, conn } = await p2pConnectRoom(roomOtherName.value)
+        // 获取到 remote sources 数据
+        const sources = await getSources(conn)
+        // 更新本地 sources
+        onUpdateSources(sources)
+
         const stream = await onCall(
           config.audio,
           config.video,
@@ -234,23 +223,56 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           config.disabledJoinRoom = false
         })
 
-        const { model } = await getModal(sources[0].name, namespace)
+        const name = sources[0].name
+        const { model } = await getModal(name, namespace)
         model.setValue('')
-        await connectMonaco(
-          sources[0].name,
+        const { monacoBinding, provider } = await connectMonaco(
+          name,
           roomOtherName.value,
           namespace,
           true
         )
+        connectMonacoInstance.current = provider
 
         config.disabledCreateRoom = true
         config.disabledJoinRoom = true
       }
     }
 
+    exposeComponent({
+      leave: (id) => {
+        console.log('leave', id)
+        connectMonacoInstance.current.destroy()
+      },
+      enter: async (id) => {
+        console.log('enter', id)
+        const source = sources.find((source) => source.uuid === id)
+        if (source) {
+          const { provider } = await connectMonaco(
+            source.name,
+            roomOtherName.value,
+            namespace,
+            true
+          )
+          connectMonacoInstance.current = provider
+          // 信令服务器只存在一个
+          const conn: SignalingConn = provider.signalingConns[0]
+          conn.on('connect', () => {
+            console.log('connect', conn)
+          })
+          conn.on('disconnect', () => {
+            console.log('disconnect', conn)
+          })
+          conn.on('message', (m) => {
+            console.log('message', m)
+          })
+        }
+      },
+    } as ExposeInfo)
+
     return (
       <div class="text-white text-sm">
-        {token ? (
+        {token || isSSR ? (
           <div class="mb-4">
             {info.value.avatar_url ? (
               <img
@@ -262,78 +284,58 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
               <div class="h-[100px]"></div>
             )}
             <div class="text-center my-2">{info.value.name}</div>
-            <button
-              class="px-4 py-1 text-white border rounded-sm border-sky-100 block my-2 disabled:border-stone-700 disabled:text-stone-500 active:translate-x-0.5 active:translate-y-0.5 hover:bg-black/20 w-full"
-              onClick={onOpenGist}
-            >
-              我的代码
-            </button>
+            <Button onClick={onOpenGist}>我的代码</Button>
             <form>
-              <label for="self" class="mb-2 mt-3 block">
-                房间名称
-              </label>
-              <input
-                type="text"
-                id="self"
-                class="w-full text-zinc-900 px-2 py-1 rounded-sm invalid:border-red-600 dark:text-white placeholder:text-gray-600"
-                placeholder="请输入房间名"
-                required
-                value={roomName.value}
-                onChange={(e) =>
-                  (roomName.value = (e.target as HTMLInputElement).value)
-                }
-              />
-              <button
-                class="px-4 py-1 text-white border rounded-sm border-sky-100 block my-2 disabled:border-stone-700 disabled:text-stone-500 active:translate-x-0.5 active:translate-y-0.5 hover:bg-black/20 w-full"
+              <FormItem name="房间名称">
+                <Input
+                  type="text"
+                  placeholder="请输入房间名"
+                  required
+                  value={roomName.value}
+                  onChange={(e) =>
+                    (roomName.value = (e.target as HTMLInputElement).value)
+                  }
+                />
+              </FormItem>
+              <Button
                 onClick={onCreateWorkspace}
                 disabled={config.disabledCreateRoom}
               >
                 创建协同
-              </button>
-              <label class="mb-2 mt-3 block">分享</label>
-              <input
-                type="text"
-                id="share"
-                class="w-full text-zinc-900 px-2 py-1 rounded-sm dark:text-white placeholder:text-gray-600"
-                placeholder="请创建房间后拷贝分享"
-                value={share.value}
-                disabled
-              />
+              </Button>
+              <FormItem name="分享">
+                <Input
+                  type="text"
+                  placeholder="请创建房间后拷贝分享"
+                  value={share.value}
+                  disabled
+                />
+              </FormItem>
             </form>
           </div>
         ) : (
-          <button
-            onClick={onOAuth}
-            class="flex justify-center w-full border rounded-sm border-sky-100 p-2 hover:bg-black/20 mb-4"
-          >
+          <Button onClick={onOAuth}>
             <GithubIcon class="w-7 h-7" />
-          </button>
+          </Button>
         )}
 
         <form>
-          <label for="other" class="mb-2 mt-3 block">
-            房间标识符
-          </label>
-          <input
-            type="text"
-            id="other"
-            class="w-full text-zinc-900 dark:text-white placeholder:text-gray-600 px-2 py-1 rounded-sm invalid:border-red-600"
-            placeholder="请输入房间名或者访问分享的链接"
-            required
-            value={roomOtherName.value}
-            onChange={(e) =>
-              (roomOtherName.value = (e.target as HTMLInputElement).value)
-            }
-          />
-          <button
-            class="px-4 py-1 text-white border rounded-sm border-sky-100 block my-2 disabled:border-stone-700 disabled:text-stone-500 active:translate-x-0.5 active:translate-y-0.5 hover:bg-black/20 w-full"
-            onClick={onAddWorkspace}
-            disabled={config.disabledJoinRoom}
-          >
+          <FormItem name="房间标识符">
+            <Input
+              id="other"
+              placeholder="请输入房间名或者访问分享的链接"
+              required
+              value={roomOtherName.value}
+              onChange={(e) =>
+                (roomOtherName.value = (e.target as HTMLInputElement).value)
+              }
+            />
+          </FormItem>
+          <Button onClick={onAddWorkspace} disabled={config.disabledJoinRoom}>
             加入协同
-          </button>
+          </Button>
         </form>
-        <div ref={canvasContainer}></div>
+        <ul ref={canvasContainer}></ul>
       </div>
     )
   }
