@@ -1,6 +1,22 @@
-import { WebrtcProvider } from 'y-webrtc'
+import { SignalingConn, WebrtcProvider } from 'y-webrtc'
 import { getModal, getEditorWithElement } from '../explorer/hook'
 import * as Y from 'yjs'
+
+function waitGetClients(provider: WebrtcProvider) {
+  return new Promise<number>((resolve) => {
+    const conn: SignalingConn = provider.signalingConns[0]
+    conn.on('message', (e: any) => {
+      if (e.type === 'clients-pong') {
+        resolve(e.clients)
+      }
+    })
+  })
+}
+
+export function send(provider: WebrtcProvider, message: any) {
+  const conn: SignalingConn = provider.signalingConns[0]
+  conn.send(message)
+}
 
 export async function connectMonaco(
   name: string,
@@ -21,10 +37,8 @@ export async function connectMonaco(
   const provider = new WebrtcProvider(`${id}_${name}`, ydoc, {
     signaling: [signal],
   })
-
   const type = ydoc.getText('monaco')
 
-  type.insert(0, model.getValue())
   ydoc.on('update', (update) => {
     if (model.getValue() !== type.toJSON()) {
       model.setValue(type.toJSON())
@@ -37,6 +51,15 @@ export async function connectMonaco(
     new Set([instance]),
     provider.awareness
   )
+
+  const clients = collaborate ? await waitGetClients(provider) : 0
+
+  if (clients === 0) {
+    type.insert(0, model.getValue())
+  } else {
+    model.setValue('')
+  }
+
   return {
     monacoBinding,
     provider,

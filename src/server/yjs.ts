@@ -3,6 +3,7 @@
 import ws from 'ws'
 import http from 'http'
 import * as map from 'lib0/map'
+import type { Source } from '@/components/explorer/wrapper'
 
 const wsReadyStateConnecting = 0
 const wsReadyStateOpen = 1
@@ -67,6 +68,14 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
     closed = true
   })
 
+  function notice(message: any) {
+    const receivers = topics.get(message.topic)
+    if (receivers) {
+      message.clients = receivers.size
+      receivers.forEach((receiver) => send(receiver, message))
+    }
+  }
+
   socket.on(
     'message',
     (message: {
@@ -74,6 +83,7 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
       topics: string[]
       topic: string
       clients: number
+      sources: Source[]
     }) => {
       if (typeof message === 'string') {
         message = JSON.parse(message)
@@ -93,6 +103,10 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
                 topic.add(socket)
                 // add topic to conn
                 subscribedTopics.add(topicName)
+                // 告诉客户端当前房间有多少人
+                message.topic = topicName
+                message.type = 'clients-pong'
+                notice(message)
               }
             })
             break
@@ -116,18 +130,6 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
           case 'ping':
             send(socket, { type: 'pong' })
         }
-
-        ;[...topics.keys()].forEach((name) => {
-          const sockets = topics.get(name)
-          sockets.forEach((socket1) => {
-            if (socket1 !== socket) {
-              send(socket1, {
-                type: 'sync',
-                topics: toJson(),
-              })
-            }
-          })
-        })
       }
     }
   )

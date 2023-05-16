@@ -17,7 +17,7 @@ import { p2pConnectRoom, p2pCreateRoom } from './p2p'
 import { Source } from '../explorer/wrapper'
 import { getModal } from '../explorer/hook'
 import Peer, { DataConnection } from 'peerjs'
-import { connectMonaco } from './util'
+import { connectMonaco, send } from './util'
 import type { MonacoBinding } from 'y-monaco'
 import type { WebrtcProvider, SignalingConn } from 'y-webrtc'
 import { Button } from '../button'
@@ -157,36 +157,8 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     const canvasContainer = createRef<HTMLDivElement>()
     const connectMonacoInstance = createRef<WebrtcProvider>()
     const { getSources } = createEditorHook()
-    const pool: Record<string, number> = {}
 
     function onOpenGist() {}
-
-    function onMessageWithMonaco(provider: WebrtcProvider) {
-      const conn1: SignalingConn = provider.signalingConns[0]
-      conn1.on(
-        'message',
-        (m: {
-          clients: number
-          type: string
-          topic: string
-          topics: string[]
-        }) => {
-          if (m.type === 'subscribe') {
-            console.log('subscribe', m)
-            if (isArray(m.topics) && m.topics.length) {
-              pool[m.topics[0]] = m.clients
-            }
-          }
-          if (m.type === 'unsubscribe') {
-            console.log('unsubscribe', m)
-            if (isArray(m.topics) && m.topics.length) {
-              pool[m.topics[0]] = m.clients
-            }
-          }
-          console.log(pool)
-        }
-      )
-    }
 
     async function onCreateWorkspace(e: Event) {
       e.preventDefault()
@@ -219,14 +191,14 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         sourceRoomId.value = id
         share.value = `${location.origin}/explorer?room_id=${id}`
 
+        const name = sources[0].name
         const { monacoBinding, provider } = await connectMonaco(
-          sources[0].name,
+          name,
           id,
           namespace,
           false
         )
         connectMonacoInstance.current = provider
-        onMessageWithMonaco(provider)
 
         config.disabledCreateRoom = true
         config.disabledJoinRoom = true
@@ -256,8 +228,6 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         })
 
         const name = sources[0].name
-        const { model } = await getModal(name, namespace)
-        model.setValue('')
         const { monacoBinding, provider } = await connectMonaco(
           name,
           targetRoomId.value,
@@ -265,7 +235,6 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           true
         )
         connectMonacoInstance.current = provider
-        onMessageWithMonaco(provider)
 
         config.disabledCreateRoom = true
         config.disabledJoinRoom = true
@@ -274,26 +243,15 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
 
     exposeComponent({
       leave: (id) => {
-        connectMonacoInstance.current?.destroy()
-        const source = sources.find((source) => source.uuid === id)
-        if (source) {
-          pool[`${targetRoomId.value || sourceRoomId.value}_${source.name}`]--
-          console.log(pool)
+        if (connectMonacoInstance.current) {
+          connectMonacoInstance.current.destroy()
         }
       },
       enter: async (id) => {
         if (config.disabledCreateRoom || config.disabledJoinRoom) {
           const source = sources.find((source) => source.uuid === id)
           if (source) {
-            const clients =
-              pool[
-                `${targetRoomId.value || sourceRoomId.value}_${source.name}`
-              ] || 0
-            if (clients > 0) {
-              const { model } = await getModal(source.name, namespace)
-              model.setValue('')
-            }
-            const { provider } = await connectMonaco(
+            const { monacoBinding, provider } = await connectMonaco(
               source.name,
               targetRoomId.value || sourceRoomId.value,
               namespace,
