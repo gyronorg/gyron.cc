@@ -44,6 +44,7 @@ export const Editor = FC<EditorProps>(
           model ||= editor.getModel(
             monaco.Uri.parse(`file:///${source.value.name}`)
           )
+          model.setValue(source.value.code)
           instance.setModel(model)
 
           const onCodeChange = () => {

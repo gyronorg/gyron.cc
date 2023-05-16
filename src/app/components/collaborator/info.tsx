@@ -36,6 +36,7 @@ interface CollaboratorInfoProps {
 export interface ExposeInfo {
   leave: (id: string) => void
   enter: (id: string) => void
+  initial: (sources: Source[]) => void
 }
 
 function useGithubInfo(token: string) {
@@ -245,6 +246,11 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       leave: (id) => {
         if (connectMonacoInstance.current) {
           connectMonacoInstance.current.destroy()
+          send(connectMonacoInstance.current, {
+            type: 'leave',
+            sources: sources,
+            topic: connectMonacoInstance.current.roomName,
+          })
         }
       },
       enter: async (id) => {
@@ -260,6 +266,10 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             connectMonacoInstance.current = provider
           }
         }
+      },
+      initial(_) {
+        console.log('initial sources', _)
+        sources = _
       },
     } as ExposeInfo)
 

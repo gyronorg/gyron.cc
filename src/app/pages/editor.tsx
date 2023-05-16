@@ -81,7 +81,9 @@ export const Editor = FC(({ isSSR }) => {
           namespace={namespace}
           sources={sources.value}
           event={{
-            updateSources(e) {},
+            updateSources(e) {
+              info.current?.initial(e)
+            },
             removeTab(e) {},
             addTab(e) {},
             changeActiveTab(e1, e2) {

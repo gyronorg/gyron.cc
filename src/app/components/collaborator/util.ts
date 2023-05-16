@@ -6,16 +6,22 @@ function waitGetClients(provider: WebrtcProvider) {
   return new Promise<number>((resolve) => {
     const conn: SignalingConn = provider.signalingConns[0]
     console.log(conn)
-    conn.send({
-      type: 'subscribe',
-      topics: [provider.roomName],
-      custom: true
-    })
-    conn.once('message', (e: any) => {
-      if (e.type === 'clients-pong') {
-        resolve(e.clients)
-      }
-    })
+    const handler = () => {
+      conn.send({
+        type: 'subscribe',
+        topics: [provider.roomName],
+      })
+      conn.once('message', (e: any) => {
+        if (e.type === 'clients-pong') {
+          resolve(e.clients)
+        }
+      })
+    }
+    if (conn.connecting) {
+      conn.ws.addEventListener('open', handler, { once: true })
+    } else {
+      handler()
+    }
   })
 }
 
@@ -46,8 +52,8 @@ export async function connectMonaco(
   const type = ydoc.getText('monaco')
 
   const clients = collaborate ? await waitGetClients(provider) : 0
-  console.log('clients', clients, model.getValue())
-  if (clients === 0) {
+  console.log('clients', clients)
+  if (clients === 0 || clients === 1) {
     type.insert(0, model.getValue())
   } else {
     model.setValue('')

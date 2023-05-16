@@ -3,6 +3,7 @@ import {
   createRef,
   exposeComponent,
   FC,
+  toRaw,
   useComputed,
   useEffect,
   useValue,
@@ -100,9 +101,11 @@ export const WrapperEditor = FC<WrapperEditorProps>(
           item.label = item.name = name
         }
       })
+      event?.updateSources?.(toRaw(sources.value))
     }
 
     const onRun = debounce((source: Source) => {
+      event?.updateSources?.(toRaw(sources.value))
       if (preview && preview.current) {
         preview.current.start(source)
       }
@@ -187,6 +190,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       }
       sources.value.push(source)
       event?.addTab?.(source)
+      event?.updateSources?.(toRaw(sources.value))
       return source
     }
 
@@ -205,6 +209,7 @@ export const WrapperEditor = FC<WrapperEditorProps>(
       activeId.value = nextUuid
       sources.value.splice(index, 1)
       event?.removeTab?.(uuid)
+      event?.updateSources?.(toRaw(sources.value))
       return nextUuid
     }
 

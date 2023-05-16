@@ -25,6 +25,7 @@ function send(conn: ws.WebSocket, message: object) {
 }
 
 const topics = new Map<string, Set<ws.WebSocket>>()
+const workspaces = new Map<string, Source[]>()
 
 function toJson() {
   return [...topics.keys()].reduce((prev, curr) => {
@@ -83,7 +84,7 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
       topics: string[]
       topic: string
       clients: number
-      sources: Source[]
+      sources?: Source[]
     }) => {
       if (typeof message === 'string') {
         message = JSON.parse(message)
@@ -91,6 +92,13 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
       if (message && message.type && !closed) {
         const _topics = message.topics || []
         switch (message.type) {
+          case 'leave':
+            const receivers = topics.get(message.topic)
+            // size 为 1 或者 0 代表只有自己一个客户端在这个房间里了
+            if (receivers && (receivers.size === 1 || receivers.size === 0)) {
+              workspaces.set(message.topic, message.sources)
+            }
+            break
           case 'subscribe':
             _topics.forEach((topicName) => {
               if (typeof topicName === 'string') {
@@ -109,6 +117,19 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
                 notice(message)
               }
             })
+            const topic = _topics[0]
+            if (topic) {
+              const receivers = topics.get(topic)
+              if (receivers && receivers.size === 1) {
+                const sources = workspaces.get(topic)
+                if (sources && sources.length) {
+                  message.type = 'sync-sources'
+                  message.topic = topic
+                  message.sources = sources
+                  notice(message)
+                }
+              }
+            }
             break
           case 'unsubscribe':
             _topics.forEach((topicName) => {
