@@ -16,7 +16,7 @@ import { createGist } from './gist'
 import { p2pConnectRoom, p2pCreateRoom } from './p2p'
 import { Source } from '../explorer/wrapper'
 import { getModal } from '../explorer/hook'
-import Peer, { DataConnection } from 'peerjs'
+import Peer, { DataConnection, MediaConnection } from 'peerjs'
 import { connectMonaco, send } from './util'
 import type { MonacoBinding } from 'y-monaco'
 import type { WebrtcProvider, SignalingConn } from 'y-webrtc'
@@ -77,8 +77,21 @@ function renderStreamWithCanvas(
 }
 
 function removeStreamWithCanvas(container: HTMLDivElement, id: string) {
+  debugger
   const li = container.querySelector(`#collaborator_${id}`)
   li?.remove()
+}
+
+function handlerCall(call: MediaConnection, container: HTMLDivElement) {
+  call.on('stream', (stream) => {
+    renderStreamWithCanvas(stream, container, call.connectionId)
+  })
+  call.on('error', () => {
+    removeStreamWithCanvas(container, call.connectionId)
+  })
+  call.on('close', () => {
+    removeStreamWithCanvas(container, call.connectionId)
+  })
 }
 
 async function onCall(
@@ -93,12 +106,7 @@ async function onCall(
   })
   peer.on('call', async (call) => {
     call.answer(stream)
-    call.on('stream', (stream) => {
-      renderStreamWithCanvas(stream, container, call.connectionId)
-    })
-    call.on('close', () => {
-      removeStreamWithCanvas(container, call.connectionId)
-    })
+    handlerCall(call, container)
   })
   return stream
 }
@@ -110,13 +118,7 @@ async function call(
   container: HTMLDivElement
 ) {
   const call = peer.call(roomId, stream)
-
-  call.on('stream', (stream) => {
-    renderStreamWithCanvas(stream, container, call.connectionId)
-  })
-  call.on('close', () => {
-    removeStreamWithCanvas(container, call.connectionId)
-  })
+  handlerCall(call, container)
   return call
 }
 
@@ -166,18 +168,16 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       if (roomName.value) {
         // TODO
         // const {} = await createGist(roomName.value, sources)
-        const { id, peer } = await p2pCreateRoom({
-          onReceive(e) {
-            console.log('root', e)
-          },
-        })
+        const { id, peer } = await p2pCreateRoom()
         peer.on('connection', (conn) => {
           conn.on('open', () => {
             conn.send({
               type: 'initial-sources',
               data: sources,
             })
-            console.log('initial-sources', sources)
+            conn.on('close', () => {
+              console.log('close', conn.connectionId)
+            })
           })
         })
         await onCall(config.audio, config.video, peer, canvasContainer.current)

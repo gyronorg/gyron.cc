@@ -3,7 +3,6 @@ import { ROOM_KEY, ROOM_PATH } from './constant'
 import { Express } from 'express'
 import http from 'node:http'
 import https from 'node:https'
-import ws from 'ws'
 
 export function createServer(port: number, server?: http.Server) {
   return new Promise<{

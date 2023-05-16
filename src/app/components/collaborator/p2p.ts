@@ -19,7 +19,7 @@ const rootPeer = useValue<Peer>(null)
 
 const connections = useValue<DataConnection[]>([])
 
-export function p2pCreateRoom(config: Config) {
+export function p2pCreateRoom(config?: Config) {
   return new Promise<{ peer: Peer; id: string }>((resolve) => {
     const peer = initialPeer()
     peer.on('open', (id) => {
