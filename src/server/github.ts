@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express'
-import { APP_ID, CLIENT_ID, CLIENT_SECRET } from './constant'
+import { CLIENT_ID, CLIENT_SECRET } from './constant'
 import { GithubAccess } from '@/utils/github'
 import fetch from 'node-fetch'
 import logger from './logger'
-import dayjs from 'dayjs'
+import { registerUser } from './db'
 
 export const withToken: RequestHandler = async (req, res, next) => {
   const r = {
@@ -40,7 +40,10 @@ export const withGithub: RequestHandler = async (req, res) => {
     },
     body: r,
   })
-  const data = await j.json()
+  const data: any = await j.json()
+  if (data && data.type === 'User') {
+    await registerUser(data)
+  }
   logger.info(
     '[Github Api]',
     ' url: ',

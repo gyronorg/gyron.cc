@@ -16,8 +16,8 @@ export async function createGist(name: string, sources: Source[]) {
   })
 }
 
-async function getGistList() {
-  return await get('/api/github/gists/public')
+export async function getGistList() {
+  return await get<CreateResponseGist[]>('/api/github/gists/public')
 }
 
 export async function patchGist(id: string, name: string, sources: Source[]) {

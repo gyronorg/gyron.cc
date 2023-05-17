@@ -102,6 +102,16 @@ export interface CreateResponseGist {
   html_url: string
   updated_at: string
   created_at: string
+  description: string
+  files: {
+    [key: string]: {
+      filename: string
+      language: string
+      raw_url: string
+      size: number
+      type: string
+    }
+  }
 }
 
 export function getGithubAccess() {

@@ -13,8 +13,13 @@ import {
 import { GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
 import { CLIENT_ID } from 'src/server/constant'
-import { GithubInfo, clearGithubAccess, setGithubInfo } from '@/utils/github'
-import { createGist, patchGist } from './gist'
+import {
+  CreateResponseGist,
+  GithubInfo,
+  clearGithubAccess,
+  setGithubInfo,
+} from '@/utils/github'
+import { createGist, getGistList, patchGist } from './gist'
 import { p2pConnectRoom, p2pCreateRoom } from './p2p'
 import { Source } from '../explorer/wrapper'
 import { getModal } from '../explorer/hook'
@@ -127,6 +132,18 @@ async function call(
   return call
 }
 
+function handlePeerDisconnect(peer: Peer) {
+  // manually close the peer connections
+  for (let conns in peer.connections) {
+    peer.connections[conns].forEach((conn) => {
+      conn.peerConnection.close()
+
+      // close it using peerjs methods
+      if (conn.close) conn.close()
+    })
+  }
+}
+
 function createEditorHook() {
   return {
     getSources: (conn: DataConnection) => {
@@ -153,6 +170,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     const roomName = useValue('')
     const sourceRoomId = useValue('')
     const visible = useValue(false)
+    const gistList = useValue<CreateResponseGist[]>([])
     const targetRoomId = useValue(
       isSSR ? '' : new URLSearchParams(location.search).get('room_id')
     )
@@ -168,7 +186,12 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     const gistId = createRef<string>()
     const { getSources } = createEditorHook()
 
-    function onOpenGist() {}
+    function onOpenGist() {
+      getGistList().then((value) => {
+        visible.value = true
+        gistList.value = value
+      })
+    }
 
     async function onCreateWorkspace(e: Event) {
       e.preventDefault()
@@ -183,6 +206,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             })
             conn.on('close', () => {
               console.log('close', conn.connectionId)
+              handlePeerDisconnect(peer)
             })
           })
         })
@@ -295,9 +319,14 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             )}
             <div class="text-center my-2">{info.value.name}</div>
             <Button onClick={onOpenGist}>我的代码</Button>
-            <Modal visible={visible.value}>
+            <Modal
+              visible={visible.value}
+              onClose={() => (visible.value = false)}
+            >
               <ul>
-                <li>1</li>
+                {gistList.value.map((item) => (
+                  <li>{item.description}</li>
+                ))}
               </ul>
             </Modal>
             <form>
