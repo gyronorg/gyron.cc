@@ -7,12 +7,14 @@ import {
   useValue,
   h,
   createInstance,
+  getCurrentComponent,
+  onDestroyed,
 } from 'gyron'
 import { GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
 import { CLIENT_ID } from 'src/server/constant'
-import { GithubInfo, setGithubInfo } from '@/utils/github'
-import { createGist } from './gist'
+import { GithubInfo, clearGithubAccess, setGithubInfo } from '@/utils/github'
+import { createGist, patchGist } from './gist'
 import { p2pConnectRoom, p2pCreateRoom } from './p2p'
 import { Source } from '../explorer/wrapper'
 import { getModal } from '../explorer/hook'
@@ -25,6 +27,7 @@ import { Input } from '../input'
 import { FormItem } from '../formItem'
 import { Collaborator } from './list'
 import { isArray } from 'lodash-es'
+import { Modal } from '../modal'
 
 interface CollaboratorInfoProps {
   token: string
@@ -47,7 +50,7 @@ function useGithubInfo(token: string) {
         info.value = data
         setGithubInfo(data)
       } else {
-        //
+        clearGithubAccess()
       }
     })
   }
@@ -58,7 +61,9 @@ function useGithubInfo(token: string) {
       onAfterUpdate((b: CollaboratorInfoProps, a: CollaboratorInfoProps) => {
         if (b.token !== a.token) {
           b.token = a.token
-          getInfo()
+          if (b.token) {
+            getInfo()
+          }
         }
       })
     }
@@ -147,6 +152,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     const share = useValue('')
     const roomName = useValue('')
     const sourceRoomId = useValue('')
+    const visible = useValue(false)
     const targetRoomId = useValue(
       isSSR ? '' : new URLSearchParams(location.search).get('room_id')
     )
@@ -159,6 +165,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     const info = useGithubInfo(token)
     const canvasContainer = createRef<HTMLDivElement>()
     const connectMonacoInstance = createRef<WebrtcProvider>()
+    const gistId = createRef<string>()
     const { getSources } = createEditorHook()
 
     function onOpenGist() {}
@@ -166,8 +173,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     async function onCreateWorkspace(e: Event) {
       e.preventDefault()
       if (roomName.value) {
-        // TODO
-        // const {} = await createGist(roomName.value, sources)
+        const { id: _gistId } = await createGist(roomName.value, sources)
         const { id, peer } = await p2pCreateRoom()
         peer.on('connection', (conn) => {
           conn.on('open', () => {
@@ -190,6 +196,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         })
 
         sourceRoomId.value = id
+        gistId.current = _gistId
         share.value = `${location.origin}/explorer?room_id=${id}`
 
         const name = sources[0].name
@@ -268,8 +275,8 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         }
       },
       initial(_) {
-        console.log('initial sources', _)
-        sources = _
+        console.log('update sources', _)
+        patchGist(gistId.current, roomName.value, (sources = _))
       },
     } as ExposeInfo)
 
@@ -288,6 +295,11 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             )}
             <div class="text-center my-2">{info.value.name}</div>
             <Button onClick={onOpenGist}>我的代码</Button>
+            <Modal visible={visible.value}>
+              <ul>
+                <li>1</li>
+              </ul>
+            </Modal>
             <form>
               <FormItem name="房间名称">
                 <Input

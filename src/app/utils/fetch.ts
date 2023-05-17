@@ -2,7 +2,7 @@ interface FetchConfig extends RequestInit {
   data?: Record<string, any>
 }
 
-async function http<T>(method: 'get' | 'post', url: string, config: FetchConfig): Promise<T> {
+async function http<T>(method: 'get' | 'post' | 'patch', url: string, config: FetchConfig): Promise<T> {
   if (method === 'get') {
     if (config && config.data) {
       url += `?${new URLSearchParams(config.data).toString()}`
@@ -33,4 +33,8 @@ export function post<T = any>(url: string, config?: FetchConfig) {
 
 export function get<T = any>(url: string, config?: FetchConfig) {
   return http<T>('get', url, config)
+}
+
+export function patch<T = any>(url: string, config?: FetchConfig) {
+  return http<T>('patch', url, config)
 }

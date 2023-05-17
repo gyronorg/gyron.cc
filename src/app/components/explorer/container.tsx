@@ -15,6 +15,7 @@ import { getEditorWithElement, getModal } from './hook'
 import { getEnvironment, useMountWithStandalone } from './standalone'
 import { encode } from 'js-base64'
 import classnames from 'classnames'
+import { notice } from '../notice'
 
 interface TabProps {
   source: Source
@@ -229,9 +230,9 @@ export const Tabs = FC<TabsProps>(
         const hash = encode(JSON.stringify(sources))
         await navigator.clipboard.writeText(`${origin}#${hash}`)
         location.hash = hash
-        alert('拷贝成功，快去分享吧')
+        notice('拷贝成功，快去分享吧')
       } catch {
-        alert('拷贝失败，请允许访问粘贴板')
+        notice('拷贝失败，请允许访问粘贴板')
       }
     }
 
