@@ -143,7 +143,6 @@ export async function buildClient(watch, tempPath, dev = false) {
         global: 'global',
         process: 'process',
         Buffer: 'Buffer',
-        navigator: JSON.stringify({}),
         'process.env.CLIENT_ID': JSON.stringify(process.env.CLIENT_ID),
         'process.env.CLIENT_SECRET': JSON.stringify(process.env.CLIENT_SECRET),
         'process.env.NODE_ENV': JSON.stringify(
