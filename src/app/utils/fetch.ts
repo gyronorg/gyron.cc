@@ -22,7 +22,7 @@ async function http<T>(
       {
         headers: {
           'content-type': 'application/json',
-          'x-user-id': getGithubInfo().id,
+          'x-user-id': getGithubInfo()?.id,
         },
         method,
       },

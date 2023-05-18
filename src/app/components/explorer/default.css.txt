@@ -197,6 +197,17 @@ video {
   max-width: 100%;
   height: auto;
 }
-.dark {
-  filter: invert(1);
+html {
+  background-color: rgb(229, 231, 235);
+  color: black;
+}
+html.dark {
+  background-color: rgb(30, 41, 59);
+  color: white;
+}
+:root[class='light'] {
+  color-scheme: light;
+}
+:root[class='dark'] {
+  color-scheme: dark;
 }

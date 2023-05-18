@@ -22,7 +22,8 @@ export const withToken: RequestHandler = async (req, res, next) => {
   const data = (await j.json()) as GithubAccess
   if (data.access_token) {
     res.cookie('token', data.access_token)
-    logger.info('[OAuth Token]', data.access_token)
+  } else {
+    logger.error('[OAuth Token]', r, data)
   }
   res.send(data)
 }
@@ -40,23 +41,26 @@ export const withGithub: RequestHandler = async (req, res) => {
     },
     body: r,
   })
-  const data: any = await j.json()
-  if (
-    req.params['0'] === 'user' &&
-    req.method.toLocaleLowerCase() === 'get' &&
-    data &&
-    data.type === 'User'
-  ) {
-    await registerUser(data)
+  try {
+    const data: any = await j.json()
+    if (
+      req.params['0'] === 'user' &&
+      req.method.toLocaleLowerCase() === 'get' &&
+      data &&
+      data.type === 'User'
+    ) {
+      await registerUser(data)
+    }
+    res.send(data)
+  } catch (e) {
+    logger.info(
+      '[Github Api]',
+      ' url: ',
+      req.originalUrl,
+      ' request body: ',
+      r,
+      ' response body: ',
+      JSON.stringify(e)
+    )
   }
-  logger.info(
-    '[Github Api]',
-    ' url: ',
-    req.originalUrl,
-    ' request body: ',
-    r,
-    ' response body: ',
-    JSON.stringify(data)
-  )
-  res.send(data)
 }

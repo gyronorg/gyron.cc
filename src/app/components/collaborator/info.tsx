@@ -7,6 +7,7 @@ import {
   useValue,
   h,
   createInstance,
+  getCurrentComponent,
 } from 'gyron'
 import { GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
@@ -45,6 +46,7 @@ export interface ExposeInfo {
 
 function useGithubInfo(token: string) {
   const info = useValue<Partial<GithubInfo>>({})
+  const component = getCurrentComponent()
   function getInfo() {
     get('/api/github/user').then((data: GithubInfo) => {
       if (data.name) {
@@ -83,7 +85,6 @@ function renderStreamWithCanvas(
 }
 
 function removeStreamWithCanvas(container: HTMLDivElement, id: string) {
-  debugger
   const li = container.querySelector(`#collaborator_${id}`)
   li?.remove()
 }
@@ -316,13 +317,16 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       },
       initial(_) {
         console.log('update sources', _)
-        patchGist(gistId.current, (sources = _))
+        sources = _
+        if (gistId.current) {
+          patchGist(gistId.current, _)
+        }
       },
     } as ExposeInfo)
 
     return (
       <div class="text-white text-sm">
-        {token || isSSR ? (
+        {token ? (
           <div class="mb-4">
             {info.value.avatar_url ? (
               <img
@@ -369,12 +373,12 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
                 onClick={onCreateWorkspace}
                 disabled={config.disabledCreateRoom}
               >
-                创建协同
+                创建协同房间
               </Button>
               <FormItem name="分享">
                 <Input
                   type="text"
-                  placeholder="请创建房间后拷贝分享"
+                  placeholder="请创建协同后拷贝分享"
                   value={share.value}
                   disabled
                 />
@@ -382,8 +386,8 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             </form>
           </div>
         ) : (
-          <Button onClick={onOAuth}>
-            <GithubIcon class="w-7 h-7" />
+          <Button onClick={onOAuth} className="py-2">
+            <GithubIcon class="w-7 h-7 mx-auto" />
           </Button>
         )}
 
@@ -391,7 +395,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           <FormItem name="房间标识符">
             <Input
               id="other"
-              placeholder="请输入房间名或者访问分享的链接"
+              placeholder="请输入房间ID或者访问分享的链接"
               required
               value={targetRoomId.value}
               onChange={(e) =>
@@ -400,7 +404,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             />
           </FormItem>
           <Button onClick={onAddWorkspace} disabled={config.disabledJoinRoom}>
-            加入协同
+            加入协同房间
           </Button>
         </form>
         <ul ref={canvasContainer}></ul>

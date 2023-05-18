@@ -16,6 +16,8 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
+      - run: echo CLIENT_ID=${{ secrets.CLIENT_ID }} >> .env
+      - run: echo CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} >> .env
       - run: yarn
       - run: yarn build
 

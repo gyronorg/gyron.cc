@@ -2,6 +2,9 @@
 // @ts-nocheck
 global.__DEV__ = false
 global.__WARN__ = true
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 import { createSSRInstance, nextRender, h } from '@gyron/runtime'
 import { renderToString } from '@gyron/dom-server'
 import { createMemoryRouter, generateNestedRoutes, Router } from '@gyron/router'
@@ -61,7 +64,9 @@ async function render(vnode, url, clientMeta) {
   const { sanitize } = DOMPurify(window)
 
   const description =
-    window.document.querySelector('article')?.textContent || window.document.querySelector('#_description')?.textContent || normalDescription
+    window.document.querySelector('article')?.textContent ||
+    window.document.querySelector('#_description')?.textContent ||
+    normalDescription
 
   return fs
     .readFileSync(path.join(process.cwd(), 'public/index.html'), {
@@ -131,13 +136,16 @@ buildClient(false, tempPath).then((appMeta) => {
         tempPath + '/server/node_modules/' + file.replace('node_modules/', '')
       )
     }
-    fs.writeFileSync('dist/server/package.json', JSON.stringify({
-      main: "./index.js",
-      dependencies: {
-        esbuild: "0.14.49",
-        "@babel/preset-typescript": "7.21.0"
-      }
-    }))
+    fs.writeFileSync(
+      'dist/server/package.json',
+      JSON.stringify({
+        main: './index.js',
+        dependencies: {
+          esbuild: '0.14.49',
+          '@babel/preset-typescript': '7.21.0',
+        },
+      })
+    )
     fs.rmSync('dist/app', { recursive: true, force: true })
     await buildServer(false, null, appMeta)
     spinner.succeed(chalk.green('Build Complete!'))

@@ -82,6 +82,8 @@ export async function buildServer(
         __TMP__: JSON.stringify(watch ? tempPath : '../'),
         __CLIENT__: JSON.stringify(clientMetaFile),
         navigator: JSON.stringify({}),
+        'process.env.CLIENT_ID': JSON.stringify(process.env.CLIENT_ID),
+        'process.env.CLIENT_SECRET': JSON.stringify(process.env.CLIENT_SECRET),
         'process.env.NODE_ENV': JSON.stringify(
           dev ? 'development' : 'production'
         ),
@@ -141,6 +143,8 @@ export async function buildClient(watch, tempPath, dev = false) {
         global: 'global',
         process: 'process',
         Buffer: 'Buffer',
+        'process.env.CLIENT_ID': JSON.stringify(process.env.CLIENT_ID),
+        'process.env.CLIENT_SECRET': JSON.stringify(process.env.CLIENT_SECRET),
         'process.env.NODE_ENV': JSON.stringify(
           dev ? 'development' : 'production'
         ),
@@ -175,6 +179,8 @@ export async function buildAPP() {
         __DEV__: String(false),
         __WARN__: String(false),
         PEER_HOST: JSON.stringify('gyron.cc'),
+        'process.env.CLIENT_ID': JSON.stringify(process.env.CLIENT_ID),
+        'process.env.CLIENT_SECRET': JSON.stringify(process.env.CLIENT_SECRET),
         'process.env.NODE_ENV': JSON.stringify('production'),
       },
       plugins: config.plugins.concat(plugin(stdLibBrowser)),
