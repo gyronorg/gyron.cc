@@ -7,8 +7,6 @@ import {
   useValue,
   h,
   createInstance,
-  getCurrentComponent,
-  onDestroyed,
 } from 'gyron'
 import { GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
@@ -20,18 +18,16 @@ import {
   setGithubInfo,
 } from '@/utils/github'
 import { createGist, getGistList, patchGist } from './gist'
-import { p2pConnectRoom, p2pCreateRoom } from './p2p'
+import { readyPeer } from './p2p'
 import { Source } from '../explorer/wrapper'
-import { getModal } from '../explorer/hook'
 import Peer, { DataConnection, MediaConnection } from 'peerjs'
 import { connectMonaco, send } from './util'
-import type { MonacoBinding } from 'y-monaco'
 import type { WebrtcProvider, SignalingConn } from 'y-webrtc'
 import { Button } from '../button'
 import { Input } from '../input'
 import { FormItem } from '../formItem'
 import { Collaborator } from './list'
-import { isArray } from 'lodash-es'
+import { confirm } from '../confirm'
 import { Modal } from '../modal'
 
 interface CollaboratorInfoProps {
@@ -193,11 +189,13 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       })
     }
 
-    async function onCreateWorkspace(e: Event) {
-      e.preventDefault()
+    async function onCreateWorkspace(e?: Event, originGistId?: string) {
+      e?.preventDefault()
       if (roomName.value) {
-        const { id: _gistId } = await createGist(roomName.value, sources)
-        const { id, peer } = await p2pCreateRoom()
+        const { id: _gistId } = originGistId
+          ? { id: originGistId }
+          : await createGist(sources, roomName.value)
+        const { id, peer } = await readyPeer()
         peer.on('connection', (conn) => {
           conn.on('open', () => {
             conn.send({
@@ -241,7 +239,8 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       e.preventDefault()
       if (targetRoomId.value) {
         // TODO confirm continue
-        const { peer, conn } = await p2pConnectRoom(targetRoomId.value)
+        const { peer } = await readyPeer()
+        const conn = peer.connect(targetRoomId.value)
         // 获取到 remote sources 数据
         const sources = await getSources(conn)
         // 更新本地 sources
@@ -273,6 +272,23 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       }
     }
 
+    async function onReopenRoom(gist: CreateResponseGist) {
+      const go = () => {
+        visible.value = false
+        roomName.value = gist.name
+        targetRoomId.value = ''
+        onUpdateSources(gist.sources)
+        onCreateWorkspace(null, gist.id)
+      }
+      if (config.disabledCreateRoom || config.disabledJoinRoom) {
+        confirm(`确认离开当前房间，进入 ${gist.name}`)
+          .then(go)
+          .catch(() => {})
+      } else {
+        go()
+      }
+    }
+
     exposeComponent({
       leave: (id) => {
         if (connectMonacoInstance.current) {
@@ -300,7 +316,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       },
       initial(_) {
         console.log('update sources', _)
-        patchGist(gistId.current, roomName.value, (sources = _))
+        patchGist(gistId.current, (sources = _))
       },
     } as ExposeInfo)
 
@@ -323,10 +339,18 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
               visible={visible.value}
               onClose={() => (visible.value = false)}
             >
-              <ul>
+              <ul class="min-w-[400px]">
                 {gistList.value.map((item) => (
-                  <li>{item.description}</li>
+                  <li class="my-2 flex items-center justify-between">
+                    <div class="w-[160px] overflow-hidden text-ellipsis">
+                      {item.name}
+                    </div>
+                    <Button type="text" onClick={() => onReopenRoom(item)}>
+                      开启
+                    </Button>
+                  </li>
                 ))}
+                {gistList.value.length === 0 && <div>无数据</div>}
               </ul>
             </Modal>
             <form>

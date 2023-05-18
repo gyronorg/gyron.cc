@@ -1,33 +1,27 @@
-import { get, patch, post } from '@/utils/fetch'
+import { post } from '@/utils/fetch'
 import { CreateResponseGist } from '@/utils/github'
 import { Source } from '../explorer/wrapper'
 
-export async function createGist(name: string, sources: Source[]) {
-  return await post<CreateResponseGist>('/api/github/gists', {
+export async function createGist(sources: Source[], name: string) {
+  return await post<CreateResponseGist>('/api/editor/save', {
     data: {
-      description: 'Gyron.js Editor Code Workspace',
-      public: true,
-      files: {
-        [name]: {
-          content: JSON.stringify(sources),
-        },
-      },
+      type: 'Create',
+      sources: sources,
+      name: name
     },
   })
 }
 
 export async function getGistList() {
-  return await get<CreateResponseGist[]>('/api/github/gists/public')
+  return await post<CreateResponseGist[]>('/api/editor/list')
 }
 
-export async function patchGist(id: string, name: string, sources: Source[]) {
-  return await patch(`/api/github/gists/${id}`, {
+export async function patchGist(id: string, sources: Source[]) {
+  return await post(`/api/editor/save`, {
     data: {
-      files: {
-        [name]: {
-          content: JSON.stringify(sources)
-        }
-      }
-    }
+      type: 'Update',
+      id: id,
+      sources: sources,
+    },
   })
 }

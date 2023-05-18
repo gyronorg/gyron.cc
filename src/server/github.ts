@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express'
 import { CLIENT_ID, CLIENT_SECRET } from './constant'
 import { GithubAccess } from '@/utils/github'
+import { registerUser } from './db'
 import fetch from 'node-fetch'
 import logger from './logger'
-import { registerUser } from './db'
 
 export const withToken: RequestHandler = async (req, res, next) => {
   const r = {
@@ -41,7 +41,12 @@ export const withGithub: RequestHandler = async (req, res) => {
     body: r,
   })
   const data: any = await j.json()
-  if (data && data.type === 'User') {
+  if (
+    req.params['0'] === 'user' &&
+    req.method.toLocaleLowerCase() === 'get' &&
+    data &&
+    data.type === 'User'
+  ) {
     await registerUser(data)
   }
   logger.info(

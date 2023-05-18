@@ -1,18 +1,31 @@
-import { FC } from 'gyron'
+import classNames from 'classnames'
+import { CSSProperties, FC } from 'gyron'
 
 export interface ButtonProps {
+  type: 'text' | 'primary'
   disabled: boolean
+  style: CSSProperties
   onClick: (e: Event) => void
 }
 
-export const Button = FC<Partial<ButtonProps>>(({ disabled, children, onClick }) => {
-  return (
-    <button
-      class="px-4 py-1 text-white border rounded-sm border-sky-100 block my-2 disabled:border-stone-700 disabled:text-stone-500 enabled:active:translate-x-0.5 enabled:active:translate-y-0.5 enabled:hover:bg-black/20 w-full"
-      disabled={disabled || false}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  )
-})
+export const Button = FC<Partial<ButtonProps>>(
+  ({ type = 'primary', disabled, children, style = {}, onClick }) => {
+    return (
+      <button
+        class={classNames(
+          'block my-2 enabled:active:translate-x-0.5 enabled:active:translate-y-0.5 ',
+          {
+            'text-white px-4 py-1 border rounded-sm border-sky-100 disabled:border-stone-700 disabled:text-stone-500 enabled:hover:bg-black/20 w-full':
+              type === 'primary',
+            'text-primary-500 hover:text-primary-300': type === 'text',
+          }
+        )}
+        disabled={disabled || false}
+        onClick={onClick}
+        style={style}
+      >
+        {children}
+      </button>
+    )
+  }
+)

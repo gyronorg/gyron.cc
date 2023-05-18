@@ -1,13 +1,19 @@
+import { getGithubInfo } from './github'
+
 interface FetchConfig extends RequestInit {
   data?: Record<string, any>
 }
 
-async function http<T>(method: 'get' | 'post' | 'patch', url: string, config: FetchConfig): Promise<T> {
+async function http<T>(
+  method: 'get' | 'post' | 'patch',
+  url: string,
+  config: FetchConfig
+): Promise<T> {
   if (method === 'get') {
-    if (config && config.data) {
+    if (config?.data) {
       url += `?${new URLSearchParams(config.data).toString()}`
     }
-  } else {
+  } else if (config?.data) {
     config.body = JSON.stringify(config.data)
   }
   const e = await fetch(
@@ -16,6 +22,7 @@ async function http<T>(method: 'get' | 'post' | 'patch', url: string, config: Fe
       {
         headers: {
           'content-type': 'application/json',
+          'x-user-id': getGithubInfo().id,
         },
         method,
       },

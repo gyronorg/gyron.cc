@@ -2,6 +2,8 @@
 // Client ID: Iv1.81e27784140f8a43
 // client_secret: e1a371d6f05aa9b095874cbaa29acad50a98614b
 
+import type { Code } from 'src/server/scheme'
+
 // 拿 GitHub code https://github.com/login/oauth/authorize?client_id=
 // 重定向地址 http://127.0.0.1:3000/?code=9d14199efbb142d7f97c
 // 换取 token 由 server 完成, POST https://github.com/login/oauth/access_token
@@ -97,22 +99,7 @@ export interface GithubInfo {
   url: string
 }
 
-export interface CreateResponseGist {
-  id: string
-  html_url: string
-  updated_at: string
-  created_at: string
-  description: string
-  files: {
-    [key: string]: {
-      filename: string
-      language: string
-      raw_url: string
-      size: number
-      type: string
-    }
-  }
-}
+export interface CreateResponseGist extends Code {}
 
 export function getGithubAccess() {
   const data = localStorage.getItem('access')

@@ -9,6 +9,7 @@ import nocache from 'nocache'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
+import { withDBServer } from './db.server'
 
 const port = Number(process.env.RTC_PORT) || 3000
 const editorPort = Number(process.env.YJS_PORT) || 4000
@@ -39,6 +40,7 @@ async function initial() {
 
   appRouter.get('/api/github/*', withGithub)
   appRouter.post('/api/github/*', withGithub)
+  appRouter.post('/api/editor/*', withDBServer)
   appRouter.post('/api/token', withToken)
   appRouter.post('/api/build', withBuild)
 

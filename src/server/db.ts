@@ -1,5 +1,4 @@
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { Low } from 'lowdb'
 import { JSONFile } from 'lowdb/node'
 import { v4 as uuid } from 'uuid'
@@ -13,7 +12,6 @@ interface LowScheme {
   }
 }
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
 const file = join(__dirname, 'db.json')
 
 const adapter = new JSONFile<LowScheme>(file)
@@ -39,12 +37,33 @@ export async function registerUser(user: User) {
   return await db.write()
 }
 
-export async function writeSources(id: string, sources: Source[]) {
+export async function writeSources(
+  userId: string,
+  sources: Source[],
+  name: string,
+  sourceId: string = null
+) {
   await ready()
-  db.data.tables.code.push({
-    id: uuid(),
-    userId: id,
-    sources,
-  })
-  return await db.write()
+  const id = uuid()
+  if (sourceId) {
+    db.data.tables.code.forEach((item) => {
+      if (item.id === sourceId) {
+        item.sources = sources
+      }
+    })
+  } else {
+    db.data.tables.code.push({
+      id,
+      name,
+      userId,
+      sources,
+    })
+  }
+  await db.write()
+  return id
+}
+
+export async function getAllSources(userId: string) {
+  await ready()
+  return db.data.tables.code.filter((item) => item.userId === userId)
 }

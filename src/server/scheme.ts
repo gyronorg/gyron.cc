@@ -10,6 +10,7 @@ export interface User {
 }
 
 export interface Code {
+  name: string
   userId: string
   id: string
   sources: Source[]
