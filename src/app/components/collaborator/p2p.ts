@@ -1,13 +1,19 @@
-import { DataConnection, Peer } from 'peerjs'
+import { Peer } from 'peerjs'
+import { merge } from 'lodash-es'
 import { ROOM_KEY, ROOM_PATH } from 'src/server/constant'
 
 export function initialPeer() {
-  return new Peer(null, {
-    host: location.hostname,
-    port: Number(location.port),
-    path: ROOM_PATH,
-    key: ROOM_KEY,
-  })
+  return new Peer(
+    null,
+    merge(
+      {
+        host: location.hostname,
+        path: ROOM_PATH,
+        key: ROOM_KEY,
+      },
+      location.port ? { port: Number(location.port) } : {}
+    )
+  )
 }
 
 export function readyPeer() {
