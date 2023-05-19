@@ -5,9 +5,9 @@ import {
   onAfterUpdate,
   useReactive,
   useValue,
-  h,
   createInstance,
-  getCurrentComponent,
+  nextRender,
+  useComputed,
 } from 'gyron'
 import { GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
@@ -18,18 +18,18 @@ import {
   clearGithubAccess,
   setGithubInfo,
 } from '@/utils/github'
-import { createGist, getGistList, patchGist } from './gist'
+import { createGist, deleteGist, getGistList, patchGist } from './gist'
 import { readyPeer } from './p2p'
 import { Source } from '../explorer/wrapper'
-import Peer, { DataConnection, MediaConnection } from 'peerjs'
 import { connectMonaco, send } from './util'
-import type { WebrtcProvider, SignalingConn } from 'y-webrtc'
 import { Button } from '../button'
 import { Input } from '../input'
 import { FormItem } from '../formItem'
 import { Collaborator } from './list'
 import { confirm } from '../confirm'
 import { Modal } from '../modal'
+import Peer, { DataConnection, MediaConnection } from 'peerjs'
+import type { WebrtcProvider } from 'y-webrtc'
 
 interface CollaboratorInfoProps {
   token: string
@@ -46,7 +46,6 @@ export interface ExposeInfo {
 
 function useGithubInfo(token: string) {
   const info = useValue<Partial<GithubInfo>>({})
-  const component = getCurrentComponent()
   function getInfo() {
     get('/api/github/user').then((data: GithubInfo) => {
       if (data.name) {
@@ -101,16 +100,12 @@ function handlerCall(call: MediaConnection, container: HTMLDivElement) {
   })
 }
 
-async function onCall(
-  audio: boolean,
-  video: boolean,
-  peer: Peer,
-  container: HTMLDivElement
-) {
+async function onCall(peer: Peer, container: HTMLDivElement) {
   const stream = await navigator.mediaDevices.getUserMedia({
-    audio: audio,
-    video: video,
+    audio: true,
+    video: true,
   })
+  renderStreamWithCanvas(stream, container, 'self')
   peer.on('call', async (call) => {
     call.answer(stream)
     handlerCall(call, container)
@@ -145,9 +140,7 @@ function createEditorHook() {
   return {
     getSources: (conn: DataConnection) => {
       return new Promise<Source[]>((resolve) => {
-        console.log(conn)
         conn.on('data', (e: any) => {
-          console.log('data', e)
           if (e.type === 'initial-sources') {
             resolve(e.data)
           }
@@ -172,15 +165,18 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       isSSR ? '' : new URLSearchParams(location.search).get('room_id')
     )
     const config = useReactive({
-      audio: false,
-      video: true,
       disabledCreateRoom: false,
       disabledJoinRoom: false,
     })
     const info = useGithubInfo(token)
     const canvasContainer = createRef<HTMLDivElement>()
     const connectMonacoInstance = createRef<WebrtcProvider>()
+    const connectPeer = createRef<Peer>()
     const gistId = createRef<string>()
+    const stream = createRef<MediaStream>()
+    const disabledActionRoom = useComputed(() => {
+      return config.disabledCreateRoom || config.disabledJoinRoom
+    })
     const { getSources } = createEditorHook()
 
     function onOpenGist() {
@@ -190,13 +186,33 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       })
     }
 
+    async function onConnectMonaco(
+      peerId: string,
+      hasCreate = false,
+      name = sources[0].name
+    ) {
+      const { provider } = await connectMonaco(
+        name,
+        peerId,
+        namespace,
+        hasCreate
+      )
+      connectMonacoInstance.current = provider
+
+      config.disabledCreateRoom = config.disabledJoinRoom = true
+    }
+
+    function onClosePeer() {
+      config.disabledCreateRoom = config.disabledJoinRoom = false
+    }
+
     async function onCreateWorkspace(e?: Event, originGistId?: string) {
-      e?.preventDefault()
       if (roomName.value) {
+        e?.preventDefault()
         const { id: _gistId } = originGistId
           ? { id: originGistId }
           : await createGist(sources, roomName.value)
-        const { id, peer } = await readyPeer()
+        const { id, peer } = await readyPeer(onClosePeer)
         peer.on('connection', (conn) => {
           conn.on('open', () => {
             conn.send({
@@ -209,85 +225,73 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             })
           })
         })
-        await onCall(config.audio, config.video, peer, canvasContainer.current)
-        peer.on('close', () => {
-          config.disabledCreateRoom = false
-          config.disabledJoinRoom = false
-        })
-        peer.on('disconnected', (currentId) => {
-          console.log(id, currentId)
-        })
+        const _stream = await onCall(peer, canvasContainer.current)
+        await onConnectMonaco(id)
 
+        stream.current = _stream
         sourceRoomId.value = id
         gistId.current = _gistId
+        connectPeer.current = peer
         share.value = `${location.origin}/explorer?room_id=${id}`
-
-        const name = sources[0].name
-        const { monacoBinding, provider } = await connectMonaco(
-          name,
-          id,
-          namespace,
-          false
-        )
-        connectMonacoInstance.current = provider
-
-        config.disabledCreateRoom = true
-        config.disabledJoinRoom = true
       }
     }
 
     async function onAddWorkspace(e: Event) {
-      e.preventDefault()
       if (targetRoomId.value) {
+        e.preventDefault()
         // TODO confirm continue
-        const { peer } = await readyPeer()
+        const { peer } = await readyPeer(onClosePeer)
         const conn = peer.connect(targetRoomId.value)
         // 获取到 remote sources 数据
         const sources = await getSources(conn)
         // 更新本地 sources
         onUpdateSources(sources)
+        await nextRender()
 
-        const stream = await onCall(
-          config.audio,
-          config.video,
-          peer,
-          canvasContainer.current
-        )
-        await call(peer, targetRoomId.value, stream, canvasContainer.current)
-        peer.on('close', () => {
-          config.disabledCreateRoom = false
-          config.disabledJoinRoom = false
-        })
+        const _stream = await onCall(peer, canvasContainer.current)
+        await call(peer, targetRoomId.value, _stream, canvasContainer.current)
+        await onConnectMonaco(targetRoomId.value, true)
+        connectPeer.current = peer
+        stream.current = _stream
+      }
+    }
 
-        const name = sources[0].name
-        const { monacoBinding, provider } = await connectMonaco(
-          name,
-          targetRoomId.value,
-          namespace,
-          true
-        )
-        connectMonacoInstance.current = provider
-
-        config.disabledCreateRoom = true
-        config.disabledJoinRoom = true
+    async function onLeaveWorkspace() {
+      if (connectPeer.current) {
+        gistId.current = null
+        connectPeer.current.destroy()
+        config.disabledCreateRoom = config.disabledJoinRoom = false
+        if (stream.current) {
+          stream.current.getTracks().forEach((item) => item.stop())
+          removeStreamWithCanvas(canvasContainer.current, 'self')
+        }
       }
     }
 
     async function onReopenRoom(gist: CreateResponseGist) {
-      const go = () => {
+      const go = async () => {
         visible.value = false
         roomName.value = gist.name
         targetRoomId.value = ''
         onUpdateSources(gist.sources)
+        await nextRender()
         onCreateWorkspace(null, gist.id)
       }
-      if (config.disabledCreateRoom || config.disabledJoinRoom) {
-        confirm(`确认离开当前房间，进入 ${gist.name}`)
+      if (disabledActionRoom.value) {
+        confirm(`确认离开当前房间，进入 "${gist.name}" ?`)
           .then(go)
           .catch(() => {})
       } else {
         go()
       }
+    }
+
+    async function onRemoveRoom(gist: CreateResponseGist) {
+      confirm(`确定删除 ${gist.name} 房间吗?`)
+        .then(() => {
+          deleteGist(gist.id).then(onOpenGist)
+        })
+        .catch(() => {})
     }
 
     exposeComponent({
@@ -302,16 +306,14 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         }
       },
       enter: async (id) => {
-        if (config.disabledCreateRoom || config.disabledJoinRoom) {
+        if (disabledActionRoom.value) {
           const source = sources.find((source) => source.uuid === id)
           if (source) {
-            const { monacoBinding, provider } = await connectMonaco(
-              source.name,
+            await onConnectMonaco(
               targetRoomId.value || sourceRoomId.value,
-              namespace,
-              true
+              true,
+              source.name
             )
-            connectMonacoInstance.current = provider
           }
         }
       },
@@ -325,7 +327,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     } as ExposeInfo)
 
     return (
-      <div class="text-white text-sm">
+      <div class="text-white text-sm h-full flex flex-col">
         {token ? (
           <div class="mb-4">
             {info.value.avatar_url ? (
@@ -349,9 +351,18 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
                     <div class="w-[160px] overflow-hidden text-ellipsis">
                       {item.name}
                     </div>
-                    <Button type="text" onClick={() => onReopenRoom(item)}>
-                      开启
-                    </Button>
+                    <div class="flex items-center gap-3">
+                      <Button
+                        type="text"
+                        disabled={item.id === gistId.current}
+                        onClick={() => onRemoveRoom(item)}
+                      >
+                        移除
+                      </Button>
+                      <Button type="text" onClick={() => onReopenRoom(item)}>
+                        开启
+                      </Button>
+                    </div>
                   </li>
                 ))}
                 {gistList.value.length === 0 && <div>无数据</div>}
@@ -403,11 +414,19 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
               }
             />
           </FormItem>
-          <Button onClick={onAddWorkspace} disabled={config.disabledJoinRoom}>
-            加入协同房间
-          </Button>
+          <div class="flex items-center justify-between gap-3">
+            <Button onClick={onAddWorkspace} disabled={config.disabledJoinRoom}>
+              加入
+            </Button>
+            <Button
+              onClick={onLeaveWorkspace}
+              disabled={!config.disabledJoinRoom}
+            >
+              离开
+            </Button>
+          </div>
         </form>
-        <ul ref={canvasContainer}></ul>
+        <ul class="flex-1 overflow-auto" ref={canvasContainer}></ul>
       </div>
     )
   }

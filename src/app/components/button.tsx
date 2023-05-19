@@ -19,7 +19,7 @@ export const Button = FC<Partial<ButtonProps>>(
           {
             'text-white px-4 py-1 border rounded-sm border-sky-100 disabled:border-stone-700 disabled:text-stone-500 enabled:hover:bg-black/20 w-full':
               type === 'primary',
-            'text-primary-500 hover:text-primary-300': type === 'text',
+            'text-gray-400 enabled:text-primary-500 enabled:hover:text-primary-300': type === 'text',
           }
         )}
         disabled={disabled || false}

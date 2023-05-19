@@ -16,7 +16,7 @@ export function initialPeer() {
   )
 }
 
-export function readyPeer() {
+export function readyPeer(close: () => void) {
   return new Promise<{ peer: Peer; id: string }>((resolve) => {
     const peer = initialPeer()
     peer.on('open', (id) => {
@@ -26,5 +26,6 @@ export function readyPeer() {
         id,
       })
     })
+    peer.on('close', close)
   })
 }

@@ -67,3 +67,9 @@ export async function getAllSources(userId: string) {
   await ready()
   return db.data.tables.code.filter((item) => item.userId === userId)
 }
+
+export async function deleteSources(id: string) {
+  await ready()
+  db.data.tables.code = db.data.tables.code.filter((item) => item.id !== id)
+  return await db.write()
+}

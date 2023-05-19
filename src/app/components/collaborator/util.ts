@@ -5,7 +5,6 @@ import * as Y from 'yjs'
 function waitGetClients(provider: WebrtcProvider) {
   return new Promise<number>((resolve) => {
     const conn: SignalingConn = provider.signalingConns[0]
-    console.log(conn)
     const handler = () => {
       conn.send({
         type: 'subscribe',

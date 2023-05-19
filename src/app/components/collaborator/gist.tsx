@@ -7,13 +7,19 @@ export async function createGist(sources: Source[], name: string) {
     data: {
       type: 'Create',
       sources: sources,
-      name: name
+      name: name,
     },
   })
 }
 
 export async function getGistList() {
   return await post<CreateResponseGist[]>('/api/editor/list')
+}
+
+export async function deleteGist(id: string) {
+  return await post<CreateResponseGist[]>('/api/editor/delete', {
+    data: { id },
+  })
 }
 
 export async function patchGist(id: string, sources: Source[]) {
