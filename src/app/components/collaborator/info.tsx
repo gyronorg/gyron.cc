@@ -89,8 +89,12 @@ function removeStreamWithCanvas(container: HTMLDivElement, id: string) {
 }
 
 function handlerCall(call: MediaConnection, container: HTMLDivElement) {
+  const _ids: string[] = []
   call.on('stream', (stream) => {
-    renderStreamWithCanvas(stream, container, call.connectionId)
+    if (!_ids.includes(stream.id)) {
+      _ids.push(stream.id)
+      renderStreamWithCanvas(stream, container, call.connectionId)
+    }
   })
   call.on('error', () => {
     removeStreamWithCanvas(container, call.connectionId)
@@ -242,6 +246,10 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         // TODO confirm continue
         const { peer } = await readyPeer(onClosePeer)
         const conn = peer.connect(targetRoomId.value)
+        conn.on('close', () => {
+          console.log('close', conn.connectionId)
+          handlePeerDisconnect(peer)
+        })
         // 获取到 remote sources 数据
         const sources = await getSources(conn)
         // 更新本地 sources
@@ -263,7 +271,9 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         config.disabledCreateRoom = config.disabledJoinRoom = false
         if (stream.current) {
           stream.current.getTracks().forEach((item) => item.stop())
-          removeStreamWithCanvas(canvasContainer.current, 'self')
+          canvasContainer.current.childNodes.forEach((node) => {
+            node.remove()
+          })
         }
       }
     }

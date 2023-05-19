@@ -1,5 +1,6 @@
 import { FC, createRef, onAfterMount, useReactive } from 'gyron'
 import { AudioIcon, VideoIcon } from '../icons'
+import classNames from 'classnames'
 
 interface CollaboratorListProps {
   id: string
@@ -65,13 +66,13 @@ export const Collaborator = FC<CollaboratorListProps>(({ id, stream }) => {
         <div class="absolute bottom-0 left-0 px-3 w-full h-[34px] text-white flex items-center gap-3 bg-black/30 backdrop-blur supports-backdrop-blur:bg-white/95">
           <button
             onClick={onAudio}
-            style={{ color: config.audio ? 'white' : 'red' }}
+            class={classNames(config.audio ? 'text-white' : 'text-red-700')}
           >
             <AudioIcon class="w-[18px]" />
           </button>
           <button
             onClick={onVideo}
-            style={{ color: config.video ? 'white' : 'red' }}
+            class={classNames(config.video ? 'text-white' : 'text-red-700')}
           >
             <VideoIcon />
           </button>
