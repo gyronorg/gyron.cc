@@ -12,7 +12,7 @@ export const Modal = FC<ModalProps>(
     return (
       <div
         class={classnames(
-          'fixed w-[0px] h-[0px] bg-black/60 backdrop-blur supports-backdrop-blur:bg-white/95 left-0 top-0 z-50 text-gray-800',
+          'fixed w-[0px] h-[0px] bg-black/60 backdrop-blur left-0 top-0 z-50 text-gray-800',
           {
             'w-full h-full': visible,
           }
