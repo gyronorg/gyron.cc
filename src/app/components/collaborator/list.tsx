@@ -64,7 +64,7 @@ export const Collaborator = FC<CollaboratorListProps>(({ id, stream }) => {
           background.width = width
           background.height = height
           ctxBg.putImageData(segmentationMapData, 0, 0)
-          ctxBg.filter = 'blur(6px)'
+          ctxBg.filter = 'blur(10px)'
           ctxBg.globalCompositeOperation = 'source-out'
           ctxBg.drawImage(video, 0, 0, background.width, background.height)
 

@@ -10,17 +10,25 @@ export interface ButtonProps {
 }
 
 export const Button = FC<Partial<ButtonProps>>(
-  ({ type = 'primary', disabled, children, className, style = {}, onClick }) => {
+  ({
+    type = 'primary',
+    disabled,
+    children,
+    className,
+    style = {},
+    onClick,
+  }) => {
     return (
       <button
         class={classNames(
-          className,
-          'block my-2 enabled:active:translate-x-0.5 enabled:active:translate-y-0.5 ',
+          'block my-2 enabled:active:translate-x-0.5 enabled:active:translate-y-0.5 enabled:cursor-pointer',
           {
             'text-white px-4 py-1 border rounded-sm border-sky-100 disabled:border-stone-700 disabled:text-stone-500 enabled:hover:bg-black/20 w-full':
               type === 'primary',
-            'text-gray-400 enabled:text-primary-500 enabled:hover:text-primary-300': type === 'text',
-          }
+            'text-gray-400 enabled:text-primary-500 enabled:hover:text-primary-300':
+              type === 'text',
+          },
+          className
         )}
         disabled={disabled || false}
         onClick={onClick}

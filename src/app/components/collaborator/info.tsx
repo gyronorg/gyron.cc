@@ -9,7 +9,7 @@ import {
   nextRender,
   useComputed,
 } from 'gyron'
-import { GithubIcon } from '../icons'
+import { CopyIcon, GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
 import { CLIENT_ID } from 'src/server/constant'
 import {
@@ -401,6 +401,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
                   type="text"
                   placeholder="请创建协同后拷贝分享"
                   value={share.value}
+                  suffix={<CopyIcon class="h-full" />}
                   disabled
                 />
               </FormItem>
