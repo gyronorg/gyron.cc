@@ -11,17 +11,12 @@ export interface InputProps {
   required: boolean
   placeholder: string
   suffix: VNode
+  onSuffixClick: (e: Event) => void
   onChange: (e: InputEvent) => void
 }
 
 export const Input = FC<Partial<InputProps>>(
-  ({ type, id, value, disabled, required, placeholder, suffix, onChange }) => {
-    function onSuffix(e: Event) {
-      e.preventDefault()
-      navigator.clipboard.writeText(value).then(() => {
-        notice('拷贝成果，快去分享吧！')
-      })
-    }
+  ({ type, id, value, disabled, required, placeholder, suffix, onChange, onSuffixClick }) => {
     return (
       <div class="relative">
         <input
@@ -38,7 +33,7 @@ export const Input = FC<Partial<InputProps>>(
           <Button
             disabled={!value}
             className="absolute right-0 top-0 h-full bg-gray-600 enabled:hover:bg-slate-800"
-            onClick={onSuffix}
+            onClick={onSuffixClick}
             style={merge(
               {
                 width: 'auto',

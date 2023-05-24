@@ -30,6 +30,7 @@ import { confirm } from '../confirm'
 import { Modal } from '../modal'
 import Peer, { DataConnection, MediaConnection } from 'peerjs'
 import type { WebrtcProvider } from 'y-webrtc'
+import { notice } from '../notice'
 
 interface CollaboratorInfoProps {
   token: string
@@ -304,6 +305,13 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         .catch(() => {})
     }
 
+    function onSuffix(e: Event) {
+      e.preventDefault()
+      navigator.clipboard.writeText(share.value).then(() => {
+        notice('拷贝成功，快去分享吧！')
+      })
+    }
+
     exposeComponent({
       leave: (id) => {
         if (connectMonacoInstance.current) {
@@ -402,6 +410,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
                   placeholder="请创建协同后拷贝分享"
                   value={share.value}
                   suffix={<CopyIcon class="h-full" />}
+                  onSuffixClick={onSuffix}
                   disabled
                 />
               </FormItem>
