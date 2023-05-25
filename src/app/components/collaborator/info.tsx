@@ -407,8 +407,9 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             </form>
           </div>
         ) : (
-          <Button onClick={onOAuth} className="py-2">
+          <Button onClick={onOAuth} className="flex items-center gap-2 py-2">
             <GithubIcon class="w-7 h-7 mx-auto" />
+            Login with Github
           </Button>
         )}
 
