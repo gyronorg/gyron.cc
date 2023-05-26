@@ -75,6 +75,7 @@
     "@gyron/dom-server": "^0.0.32",
     "@gyron/jsx-runtime": "^0.0.32",
     "@gyron/router": "^0.0.32",
+    "bufferutil": "^4.0.7",
     "gyron": "^0.0.32"
   },
   "prettier": {
