@@ -3,22 +3,38 @@ import { withGithub, withToken } from './github'
 import { withHTML } from './html'
 import { withBuild } from './build'
 import { createEditorSocket } from './yjs'
+import { withDBServer } from './db.server'
 import express from 'express'
 import path from 'path'
 import nocache from 'nocache'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
-import { withDBServer } from './db.server'
+import { ROOM_PATH } from './constant'
 
 const port = Number(process.env.RTC_PORT) || 3000
 const editorPort = Number(process.env.YJS_PORT) || 4000
 
 async function initial() {
   // TODO netlify service check
-  const { app, server } = await createServer(port)
+  const { app, server, wsServer } = await createServer(port)
 
   const wss = await createEditorSocket(editorPort)
+
+  server.on('upgrade', (request, socket, head) => {
+    console.log('upgrade', request.url)
+    if (request.url.startsWith('/api/rtc')) {
+      return wsServer.handleUpgrade(request, socket, head, (ws) => {
+        wsServer.emit('connection', ws, request)
+      })
+    }
+    if (request.url.startsWith('/api/yjs')) {
+      return wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request)
+      })
+    }
+    socket.destroy()
+  })
 
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
@@ -53,8 +69,13 @@ async function initial() {
 
 async function run() {
   const { server } = await initial()
-  server.addListener('error', (err) => {
-    console.log(err)
+  server.close(() => {
+    server.listen(port, () => {
+      console.log(`Started PeerServer on ::, port: ${port}, path: ${ROOM_PATH}`)
+    })
+    server.addListener('error', (err) => {
+      console.log(err)
+    })
   })
 
   process.once('message', () => {

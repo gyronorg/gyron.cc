@@ -2,6 +2,7 @@ import { FC, HTMLInputTypeAttribute, VNode } from 'gyron'
 import { Button } from './button'
 import { merge } from 'lodash-es'
 import { notice } from './notice'
+import classNames from 'classnames'
 
 export interface InputProps {
   value: any
@@ -16,7 +17,17 @@ export interface InputProps {
 }
 
 export const Input = FC<Partial<InputProps>>(
-  ({ type, id, value, disabled, required, placeholder, suffix, onChange, onSuffixClick }) => {
+  ({
+    type,
+    id,
+    value,
+    disabled,
+    required,
+    placeholder,
+    suffix,
+    onChange,
+    onSuffixClick,
+  }) => {
     return (
       <div class="relative">
         <input
@@ -32,16 +43,18 @@ export const Input = FC<Partial<InputProps>>(
         {suffix && (
           <Button
             disabled={!value}
-            className="absolute right-0 top-0 h-full bg-gray-600 enabled:hover:bg-slate-800"
-            onClick={onSuffixClick}
-            style={merge(
+            className={classNames(
+              'absolute right-0 top-0 h-full bg-gray-200 border-none enabled:hover:bg-gray-400 dark:bg-gray-600 enabled:dark:hover:bg-slate-800',
               {
-                width: 'auto',
-                margin: '0px',
-                padding: '6px',
-              },
-              disabled ? { borderColor: '#545454', color: '#7f7f7f' } : {}
+                'dark:text-[#7f7f7f]': disabled,
+              }
             )}
+            onClick={onSuffixClick}
+            style={merge({
+              width: 'auto',
+              margin: '0px',
+              padding: '6px',
+            })}
           >
             {suffix}
           </Button>

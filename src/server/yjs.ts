@@ -158,20 +158,8 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
 
 export function createEditorSocket(port: number) {
   return new Promise<ws.Server>((resolve) => {
-    const server = http.createServer((req, res) => {
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.end()
-    })
     const wss = new ws.Server({ noServer: true })
     wss.on('connection', withEditorRtcServer)
-    server.on('upgrade', (request, socket, head) => {
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request)
-      })
-    })
-    server.listen(port, '::', () => {
-      console.log(`Started YjsServer on ::, port: ${port}`)
-      resolve(wss)
-    })
+    resolve(wss)
   })
 }

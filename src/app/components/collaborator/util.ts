@@ -41,9 +41,7 @@ export async function connectMonaco(
   const ydoc = new Y.Doc()
   const signal = `${location.protocol === 'http:' ? 'ws' : 'wss'}://${
     location.hostname
-    // prod url is /api/yjs
-    // nginx proxy /api/yjs to 4000 server
-  }${process.env.NODE_ENV === 'development' ? ':4000' : '/api/yjs'}`
+  }${location.port ? `:${location.port}` : ''}/api/yjs`
 
   const provider = new WebrtcProvider(`${id}_${name}`, ydoc, {
     signaling: [signal],

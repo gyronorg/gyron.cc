@@ -1,6 +1,8 @@
-import { PeerServer, ExpressPeerServer, PeerServerEvents } from 'peer'
+import { PeerServer, PeerServerEvents } from 'peer'
 import { ROOM_KEY, ROOM_PATH } from './constant'
 import { Express } from 'express'
+import { omit } from 'lodash-es'
+import ws from 'ws'
 import http from 'node:http'
 import https from 'node:https'
 
@@ -8,18 +10,26 @@ export function createServer(port: number, server?: http.Server) {
   return new Promise<{
     app: Express & PeerServerEvents
     server: http.Server | https.Server
+    wsServer: ws.Server<ws.WebSocket>
   }>((resolve) => {
-    const path = ROOM_PATH
+    let wsServer: ws.Server<ws.WebSocket>
     const peerServer = PeerServer(
       {
         port: port,
-        path: path,
+        path: ROOM_PATH,
         key: ROOM_KEY,
+        createWebSocketServer(options) {
+          return (wsServer = new ws.Server({
+            ...omit(options, 'port', 'server'),
+            noServer: true,
+          }))
+        },
       },
       (server) => {
         resolve({
           app: peerServer,
           server,
+          wsServer,
         })
       }
     )
@@ -39,6 +49,5 @@ export function createServer(port: number, server?: http.Server) {
         `client id: ${client.getId()}. message: ${JSON.stringify(message)}`
       )
     })
-    console.log(`Started PeerServer on ::, port: ${port}, path: ${path}`)
   })
 }
