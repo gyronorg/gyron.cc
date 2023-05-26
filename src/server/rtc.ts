@@ -26,10 +26,12 @@ export function createServer(port: number, server?: http.Server) {
         },
       },
       (server) => {
-        resolve({
-          app: peerServer,
-          server,
-          wsServer,
+        server.close(() => {
+          resolve({
+            app: peerServer,
+            server,
+            wsServer,
+          })
         })
       }
     )

@@ -69,13 +69,11 @@ async function initial() {
 
 async function run() {
   const { server } = await initial()
-  server.close(() => {
-    server.listen(port, () => {
-      console.log(`Started PeerServer on ::, port: ${port}, path: ${ROOM_PATH}`)
-    })
-    server.addListener('error', (err) => {
-      console.log(err)
-    })
+  server.listen(port, () => {
+    console.log(`Started PeerServer on ::, port: ${port}, path: ${ROOM_PATH}`)
+  })
+  server.addListener('error', (err) => {
+    console.log(err)
   })
 
   process.once('message', () => {
@@ -87,8 +85,10 @@ async function run() {
 }
 
 if (process.env.PUBLISH_ENV === 'netlify') {
-  initial().then(({ app }) => {
-    module.exports.handler = serverless(app)
+  let app: express.Express
+  module.exports.handler = serverless(async (req, res) => {
+    app ??= (await initial()).app
+    return app(req, res)
   })
 } else {
   run()
