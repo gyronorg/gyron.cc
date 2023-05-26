@@ -4,13 +4,13 @@ import { withHTML } from './html'
 import { withBuild } from './build'
 import { createEditorSocket } from './yjs'
 import { withDBServer } from './db.server'
+import { ROOM_PATH } from './constant'
 import express from 'express'
 import path from 'path'
 import nocache from 'nocache'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
-import { ROOM_PATH } from './constant'
 
 const port = Number(process.env.RTC_PORT) || 3000
 const editorPort = Number(process.env.YJS_PORT) || 4000
@@ -85,8 +85,11 @@ async function run() {
 }
 
 if (process.env.PUBLISH_ENV === 'netlify') {
-  const { app } = await initial()
-  module.exports.handler = serverless(app)
+  let app: express.Express
+  const server = async (event: any, context: any) => {
+    return serverless(app || (app = (await initial()).app))(event, context)
+  }
+  module.exports.handler = server
 } else {
   run()
 }
