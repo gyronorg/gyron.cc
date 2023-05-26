@@ -156,7 +156,7 @@ export const withEditorRtcServer = (socket: ws.WebSocket) => {
   )
 }
 
-export function createEditorSocket(port: number) {
+export function createEditorSocket() {
   return new Promise<ws.Server>((resolve) => {
     const wss = new ws.Server({ noServer: true })
     wss.on('connection', withEditorRtcServer)

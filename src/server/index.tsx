@@ -12,14 +12,16 @@ import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
 
-const port = Number(process.env.RTC_PORT) || 3000
-const editorPort = Number(process.env.YJS_PORT) || 4000
+const port =
+  Number(process.env.RTC_PORT) || process.env.PUBLISH_ENV === 'netlify'
+    ? 3001
+    : 3000
 
 async function initial() {
   // TODO netlify service check
   const { app, server, wsServer } = await createServer(port)
 
-  const wss = await createEditorSocket(editorPort)
+  const wss = await createEditorSocket()
 
   server.on('upgrade', (request, socket, head) => {
     console.log('upgrade', request.url)
