@@ -30,6 +30,7 @@
     "@types/uuid": "^9.0.0",
     "autoprefixer": "^10.4.7",
     "body-parser": "^1.20.2",
+    "bufferutil": "^4.0.7",
     "classnames": "^2.3.1",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.7",
@@ -65,6 +66,7 @@
     "simple-node-logger": "^21.8.12",
     "tailwindcss": "^3.0.24",
     "tmp": "^0.2.1",
+    "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.0",
     "y-monaco": "^0.1.4",
     "y-webrtc": "^10.2.5",
@@ -75,7 +77,6 @@
     "@gyron/dom-server": "^0.0.32",
     "@gyron/jsx-runtime": "^0.0.32",
     "@gyron/router": "^0.0.32",
-    "bufferutil": "^4.0.7",
     "gyron": "^0.0.32"
   },
   "prettier": {
