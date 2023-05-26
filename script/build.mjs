@@ -142,6 +142,7 @@ buildClient(false, tempPath).then((appMeta) => {
         main: './index.js',
         dependencies: {
           esbuild: '0.14.49',
+          bufferutil: '4.0.7',
           '@babel/preset-typescript': '7.21.0',
         },
       })
