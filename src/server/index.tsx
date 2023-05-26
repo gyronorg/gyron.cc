@@ -85,13 +85,8 @@ async function run() {
 }
 
 if (process.env.PUBLISH_ENV === 'netlify') {
-  let app: express.Express
-  module.exports.handler = serverless(async (req, res) => {
-    console.log('netlify', req, res)
-    app ??= (await initial()).app
-    console.log('app', app)
-    return app(req, res)
-  })
+  const { app } = await initial()
+  module.exports.handler = serverless(app)
 } else {
   run()
 }
