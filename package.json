@@ -1,6 +1,6 @@
 {
   "name": "@gyron/docs",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -74,11 +74,11 @@
     "yjs": "^13.6.1"
   },
   "dependencies": {
-    "@gyron/babel-plugin-jsx": "^0.0.34",
-    "@gyron/dom-server": "^0.0.34",
-    "@gyron/jsx-runtime": "^0.0.34",
-    "@gyron/router": "^0.0.34",
-    "gyron": "^0.0.34"
+    "@gyron/babel-plugin-jsx": "^0.0.35",
+    "@gyron/dom-server": "^0.0.35",
+    "@gyron/jsx-runtime": "^0.0.35",
+    "@gyron/router": "^0.0.35",
+    "gyron": "^0.0.35"
   },
   "prettier": {
     "semi": false,
