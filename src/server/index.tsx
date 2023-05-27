@@ -70,7 +70,7 @@ function initial() {
 }
 
 async function run() {
-  const { server } = await initial()
+  const { server } = initial()
   server.listen(port, () => {
     console.log(`Started PeerServer on ::, port: ${port}, path: ${ROOM_PATH}`)
   })
@@ -88,7 +88,14 @@ async function run() {
 
 if (process.env.PUBLISH_ENV === 'netlify') {
   const { app } = initial()
-  module.exports.handler = serverless(app)
+  module.exports.handler = serverless(app, {
+    request: (...args) => {
+      console.log('request', args)
+    },
+    response: (...args) => {
+      console.log('response', args)
+    }
+  })
 } else {
   run()
 }

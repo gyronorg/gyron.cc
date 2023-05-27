@@ -1,5 +1,4 @@
-import { PeerServerEvents } from 'peer'
-import { Peer } from './peer'
+import { PeerServerEvents, ExpressPeerServer } from 'peer'
 import { ROOM_KEY, ROOM_PATH } from './constant'
 import { Express } from 'express'
 import { omit } from 'lodash-es'
@@ -11,7 +10,7 @@ export function createServer(
   app: Express & PeerServerEvents
 ) {
   let wsServer: ws.Server<ws.WebSocket>
-  const peerServer = Peer(server, {
+  const peerServer = ExpressPeerServer(server, {
     port: port,
     path: ROOM_PATH,
     key: ROOM_KEY,
