@@ -9,6 +9,7 @@ import {
   nextRender,
   useComputed,
   useWatchProps,
+  onDestroyed,
 } from 'gyron'
 import { CopyIcon, GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
@@ -182,6 +183,10 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     })
     const { getSources } = createEditorHook()
 
+    onDestroyed(() => {
+      onLeaveWorkspace()
+    })
+
     function onOpenGist() {
       getGistList().then((value) => {
         visible.value = true
@@ -274,6 +279,9 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             node.remove()
           })
         }
+      }
+      if (connectMonacoInstance.current) {
+        connectMonacoInstance.current.destroy()
       }
     }
 

@@ -54,25 +54,29 @@ export const Collaborator = FC<CollaboratorListProps>(({ id, stream }) => {
       const module = await loadModule()
       async function step() {
         if (video) {
-          const { height, width, segmentationMap } = await module.segment(video)
-          const segmentationMapData = new ImageData(
-            convertBlackToTransparent(segmentationMap),
-            width,
-            height
-          )
+          try {
+            const { height, width, segmentationMap } = await module.segment(
+              video
+            )
+            const segmentationMapData = new ImageData(
+              convertBlackToTransparent(segmentationMap),
+              width,
+              height
+            )
 
-          background.width = width
-          background.height = height
-          ctxBg.putImageData(segmentationMapData, 0, 0)
-          ctxBg.filter = 'blur(10px)'
-          ctxBg.globalCompositeOperation = 'source-out'
-          ctxBg.drawImage(video, 0, 0, background.width, background.height)
+            background.width = width
+            background.height = height
+            ctxBg.putImageData(segmentationMapData, 0, 0)
+            ctxBg.filter = 'blur(10px)'
+            ctxBg.globalCompositeOperation = 'source-out'
+            ctxBg.drawImage(video, 0, 0, background.width, background.height)
 
-          canvas.width = width
-          canvas.height = height
-          ctx.putImageData(segmentationMapData, 0, 0)
-          ctx.globalCompositeOperation = 'source-in'
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            canvas.width = width
+            canvas.height = height
+            ctx.putImageData(segmentationMapData, 0, 0)
+            ctx.globalCompositeOperation = 'source-in'
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+          } catch {}
 
           requestAnimationFrame(step)
         }
