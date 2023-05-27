@@ -11,17 +11,17 @@ import nocache from 'nocache'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
+import http from 'node:http'
 
-const port =
-  Number(process.env.RTC_PORT) || process.env.PUBLISH_ENV === 'netlify'
-    ? 3001
-    : 3000
+const port = Number(process.env.RTC_PORT) || 3000
 
-async function initial() {
-  // TODO netlify service check
-  const { app, server, wsServer } = await createServer(port)
+function initial() {
+  const app = express()
+  const server = http.createServer(app)
 
-  const wss = await createEditorSocket()
+  const { wsServer } = createServer(port, server, app as any)
+
+  const wss = createEditorSocket()
 
   server.on('upgrade', (request, socket, head) => {
     console.log('upgrade', request.url)
@@ -87,11 +87,8 @@ async function run() {
 }
 
 if (process.env.PUBLISH_ENV === 'netlify') {
-  let app: express.Express
-  const server = async (event: any, context: any) => {
-    return serverless(app || (app = (await initial()).app))(event, context)
-  }
-  module.exports.handler = server
+  const { app } = initial()
+  module.exports.handler = serverless(app)
 } else {
   run()
 }

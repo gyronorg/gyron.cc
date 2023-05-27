@@ -8,6 +8,7 @@ import {
   createInstance,
   nextRender,
   useComputed,
+  useWatchProps,
 } from 'gyron'
 import { CopyIcon, GithubIcon } from '../icons'
 import { get } from '@/utils/fetch'
@@ -31,6 +32,7 @@ import { Modal } from '../modal'
 import Peer, { DataConnection, MediaConnection } from 'peerjs'
 import type { WebrtcProvider } from 'y-webrtc'
 import { notice } from '../notice'
+import classNames from 'classnames'
 
 interface CollaboratorInfoProps {
   token: string
@@ -47,6 +49,7 @@ export interface ExposeInfo {
 
 function useGithubInfo(token: string) {
   const info = useValue<Partial<GithubInfo>>({})
+  const watch = useWatchProps<CollaboratorInfoProps>()
   function getInfo() {
     get('/api/github/user').then((data: GithubInfo) => {
       if (data.name) {
@@ -61,13 +64,8 @@ function useGithubInfo(token: string) {
     if (token) {
       getInfo()
     } else {
-      onAfterUpdate((b: CollaboratorInfoProps, a: CollaboratorInfoProps) => {
-        if (b.token !== a.token) {
-          b.token = a.token
-          if (b.token) {
-            getInfo()
-          }
-        }
+      watch('token', (token) => {
+        token && getInfo()
       })
     }
   }
@@ -346,82 +344,89 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
 
     return (
       <div class="text-white text-sm h-full flex flex-col">
-        {token ? (
-          <div class="mb-4">
-            {info.value.avatar_url ? (
-              <img
-                src={info.value.avatar_url}
-                alt="avatar"
-                class="mx-auto h-[100px] rounded-[50px]"
+        <div
+          class={classNames('mb-4', {
+            hidden: !token,
+          })}
+        >
+          {info.value.avatar_url ? (
+            <img
+              src={info.value.avatar_url}
+              alt="avatar"
+              class="mx-auto h-[100px] rounded-[50px]"
+            />
+          ) : (
+            <div class="h-[100px]"></div>
+          )}
+          <div class="text-center my-2">{info.value.name}</div>
+          <Button onClick={onOpenGist}>我的代码</Button>
+          <Modal
+            visible={visible.value}
+            onClose={() => (visible.value = false)}
+          >
+            <ul class="min-w-[400px]">
+              {gistList.value.map((item) => (
+                <li class="my-2 flex items-center justify-between">
+                  <div class="w-[160px] overflow-hidden text-ellipsis">
+                    {item.name}
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <Button
+                      type="text"
+                      disabled={item.id === gistId.current}
+                      onClick={() => onRemoveRoom(item)}
+                    >
+                      移除
+                    </Button>
+                    <Button type="text" onClick={() => onReopenRoom(item)}>
+                      开启
+                    </Button>
+                  </div>
+                </li>
+              ))}
+              {gistList.value.length === 0 && <div>无数据</div>}
+            </ul>
+          </Modal>
+          <form>
+            <FormItem name="房间名称">
+              <Input
+                type="text"
+                placeholder="请输入房间名"
+                required
+                value={roomName.value}
+                onChange={(e) =>
+                  (roomName.value = (e.target as HTMLInputElement).value)
+                }
               />
-            ) : (
-              <div class="h-[100px]"></div>
-            )}
-            <div class="text-center my-2">{info.value.name}</div>
-            <Button onClick={onOpenGist}>我的代码</Button>
-            <Modal
-              visible={visible.value}
-              onClose={() => (visible.value = false)}
+            </FormItem>
+            <Button
+              onClick={onCreateWorkspace}
+              disabled={config.disabledCreateRoom}
             >
-              <ul class="min-w-[400px]">
-                {gistList.value.map((item) => (
-                  <li class="my-2 flex items-center justify-between">
-                    <div class="w-[160px] overflow-hidden text-ellipsis">
-                      {item.name}
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <Button
-                        type="text"
-                        disabled={item.id === gistId.current}
-                        onClick={() => onRemoveRoom(item)}
-                      >
-                        移除
-                      </Button>
-                      <Button type="text" onClick={() => onReopenRoom(item)}>
-                        开启
-                      </Button>
-                    </div>
-                  </li>
-                ))}
-                {gistList.value.length === 0 && <div>无数据</div>}
-              </ul>
-            </Modal>
-            <form>
-              <FormItem name="房间名称">
-                <Input
-                  type="text"
-                  placeholder="请输入房间名"
-                  required
-                  value={roomName.value}
-                  onChange={(e) =>
-                    (roomName.value = (e.target as HTMLInputElement).value)
-                  }
-                />
-              </FormItem>
-              <Button
-                onClick={onCreateWorkspace}
-                disabled={config.disabledCreateRoom}
-              >
-                创建协同房间
-              </Button>
-              <FormItem name="分享">
-                <Input
-                  type="text"
-                  placeholder="请创建协同后拷贝分享"
-                  value={share.value}
-                  suffix={<CopyIcon class="h-full" />}
-                  onSuffixClick={onSuffix}
-                  disabled
-                />
-              </FormItem>
-            </form>
-          </div>
-        ) : (
-          <Button onClick={onOAuth} className="flex items-center gap-2 py-2">
-            <GithubIcon class="w-7 h-7 mx-auto" />
-            Login with Github
-          </Button>
-        )}
+              创建协同房间
+            </Button>
+            <FormItem name="分享">
+              <Input
+                type="text"
+                placeholder="请创建协同后拷贝分享"
+                value={share.value}
+                suffix={<CopyIcon class="h-full" />}
+                onSuffixClick={onSuffix}
+                disabled
+              />
+            </FormItem>
+          </form>
+        </div>
+
+        <Button
+          onClick={onOAuth}
+          className={classNames('flex items-center gap-2 py-2', {
+            hidden: token,
+          })}
+        >
+          <GithubIcon class="w-7 h-7 mx-auto" />
+          Login with Github
+        </Button>
 
         <form>
           <FormItem name="房间标识符">

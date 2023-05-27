@@ -1,6 +1,6 @@
 {
   "name": "@gyron/docs",
-  "version": "0.0.32",
+  "version": "0.0.34",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -8,7 +8,6 @@
     "build": "rimraf dist && node script/build.mjs"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.21.0",
     "@docsearch/js": "^3.1.0",
     "@gyron/monaco-jsx-highlight": "^0.0.1",
     "@gyron/rehype-highlight": "^0.0.8",
@@ -67,6 +66,7 @@
     "simple-node-logger": "^21.8.12",
     "tailwindcss": "^3.0.24",
     "tmp": "^0.2.1",
+    "typescript": "^5.0.4",
     "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.0",
     "y-monaco": "^0.1.4",
@@ -74,11 +74,11 @@
     "yjs": "^13.6.1"
   },
   "dependencies": {
-    "@gyron/babel-plugin-jsx": "^0.0.32",
-    "@gyron/dom-server": "^0.0.32",
-    "@gyron/jsx-runtime": "^0.0.32",
-    "@gyron/router": "^0.0.32",
-    "gyron": "^0.0.32"
+    "@gyron/babel-plugin-jsx": "^0.0.34",
+    "@gyron/dom-server": "^0.0.34",
+    "@gyron/jsx-runtime": "^0.0.34",
+    "@gyron/router": "^0.0.34",
+    "gyron": "^0.0.34"
   },
   "prettier": {
     "semi": false,
