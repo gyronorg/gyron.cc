@@ -81,26 +81,6 @@ const HelloWorld = FC(() => {
 
 上述高亮行部分就是 render 区域。也就是我们所熟知的 html 标签，当组件发生更新时这个区域会一直更新。
 
-```jsx
-import { FC } from 'gyron'
-
-interface HelloWorldProps {
-  message: string
-  update: () => void
-}
-
-const HelloWorld = FC<HelloWorldProps>(() => {
-  // bad
-  // ({ message }) => {}
-
-  // good
-  // () => {
-  //   const props = defineProps()
-  // }
-  return ({ message }) => <div onClick={update}>I Am {message}</div>
-})
-```
-
 ### 自动转换
 
 现在我们也提供一种选项，但是这个是基于`@gyron/babel-plugin-jsx`插件才能生效。
@@ -192,9 +172,72 @@ const App = FC(() => {
 })
 ```
 
-### TypesSript
+### useWatchProps
 
-Gyron.js 是完全支持 TypesSript 类型系统的，但是要接入 JSX 语法，还需要用包裹函数 FC、FCA、FCD 等，它完全不改变组件的行为，只是提供了一个类型提示，在编写组件和使用组件的时候可以提示用户。
+通常情况下，在编写一个组件时，我们需要在 setup 区域监听一个 props 数据然后处理业务逻辑，那我们就需要在组件中使用`onBeforeUpdate`生命周期勾子，来判断 props 是否发生了变更，我们简单实现一个根据 token 变更然后换取用户信息。
+
+```tsx
+import { FC, onAfterUpdate } from 'gyron'
+
+interface InformationProps {
+  token: string
+}
+
+const Information = FC<InformationProps>(({ token }) => {
+  const avatar_url = useValue('')
+  onAfterUpdate((perv: InformationProps, cur: InformationProps) => {
+    if (perv.token !== cur.token) {
+      if (cur.token) {
+        fetch(`/info?token=${cur.token}`).then(({ url }) => {
+          avatar_url.value = url
+        })
+      }
+    }
+  })
+  return <img src={avatar_url} />
+})
+```
+
+上述代码的逻辑就是当 token 发生变化的时候请求`/info`接口获取用户头像然后渲染。这种在业务开发中其实是一个高频操作，于是我们提供了`useWatchProps`方法，用此方法创建一个 watch 方法，然后传递需要监听的 props。接下来我们看看代码应该怎么改造
+
+```tsx
+import { FC, useWatchProps } from 'gyron'
+
+interface InformationProps {
+  token: string
+}
+
+const Information = FC<InformationProps>(({ token }) => {
+  const avatar_url = useValue('')
+  const watch = useWatchProps<InformationProps>()
+  watch('token', (token) => {
+    fetch(`/info?token=${token}`).then(({ url }) => {
+      avatar_url.value = url
+    })
+  })
+  return <img src={avatar_url} />
+})
+```
+
+`useWatchProps` 的返回值就是一个函数，并且会根据类型自动识别出第一个参数`'token'`和第二个参数的类型，你还可以这样
+
+```tsx
+interface InformationProps {
+  token: string
+  age: number
+}
+
+const Information = FC<InformationProps>(({ token, age }) => {
+  const watch = useWatchProps<InformationProps>()
+  watch(['token', 'age'], ([token, age]) => {
+    // ...
+  })
+})
+```
+
+### TypesScript
+
+Gyron.js 是完全支持 TypesScript 类型系统的，但是要接入 JSX 语法，还需要用包裹函数 FC、FCA、FCD 等，它完全不改变组件的行为，只是提供了一个类型提示，在编写组件和使用组件的时候可以提示用户。
 
 ```jsx
 import { FC } from 'gyron'

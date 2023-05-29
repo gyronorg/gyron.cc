@@ -18,6 +18,7 @@ import {
   CreateResponseGist,
   GithubInfo,
   clearGithubAccess,
+  getGithubInfo,
   setGithubInfo,
 } from '@/utils/github'
 import { createGist, deleteGist, getGistList, patchGist } from './gist'
@@ -48,8 +49,8 @@ export interface ExposeInfo {
   initial: (sources: Source[]) => void
 }
 
-function useGithubInfo(token: string) {
-  const info = useValue<Partial<GithubInfo>>({})
+function useGithubInfo(token: string, isSSR: boolean) {
+  const info = useValue<Partial<GithubInfo>>(isSSR ? {} : getGithubInfo() || {})
   const watch = useWatchProps<CollaboratorInfoProps>()
   function getInfo() {
     get('/api/github/user').then((data: GithubInfo) => {
@@ -172,7 +173,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
       disabledCreateRoom: false,
       disabledJoinRoom: false,
     })
-    const info = useGithubInfo(token)
+    const info = useGithubInfo(token, isSSR)
     const canvasContainer = createRef<HTMLDivElement>()
     const connectMonacoInstance = createRef<WebrtcProvider>()
     const connectPeer = createRef<Peer>()
@@ -357,15 +358,11 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             hidden: !token,
           })}
         >
-          {info.value.avatar_url ? (
-            <img
-              src={info.value.avatar_url}
-              alt="avatar"
-              class="mx-auto h-[100px] rounded-[50px]"
-            />
-          ) : (
-            <div class="h-[100px]"></div>
-          )}
+          <img
+            src={info.value.avatar_url}
+            alt="avatar"
+            class="mx-auto h-[100px] rounded-[50px]"
+          />
           <div class="text-center my-2">{info.value.name}</div>
           <Button onClick={onOpenGist}>我的代码</Button>
           <Modal
