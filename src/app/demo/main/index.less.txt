@@ -16,7 +16,7 @@ li {
 button {
   position: sticky;
   bottom: 0;
-  border-color: inherit;
+  border-color: #4ea7a5;
   border-radius: 4px;
   padding: 4px 16px;
   border-width: 1px;

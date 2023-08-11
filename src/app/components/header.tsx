@@ -54,14 +54,17 @@ export const Header = FC(() => {
   return (
     <header
       class={classnames(
-        'sticky top-0 z-50 h-[58px] border-b border-solid border-gray-300/30 backdrop-blur dark:border-gray-700 py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-300/20 dark:border-slate-50/[0.06] bg-opacity-60 dark:bg-slate-900/75'
+        'sticky top-0 z-50 h-[58px] backdrop-blur py-4 w-full px-4 md:px-8 transition-colors duration-500 lg:z-50 bg-opacity-60 dark:bg-slate-900/75'
       )}
     >
       <div
         class={classnames(
+          'lg:m-auto lg:max-w-[86rem] pb-4',
+          'border-b border-solid border-gray-300/30 dark:border-gray-700 lg:border-b lg:border-slate-300/20 dark:border-slate-50/[0.06]',
           'flex items-center justify-between sm-down:max-w-none dark:text-slate-200',
           {
             'text-slate-200': isUesLightTheme(router.path),
+            'border-none': router.path === '/' || router.path === '/explorer',
           }
         )}
       >

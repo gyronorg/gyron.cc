@@ -16,8 +16,8 @@ export const Layout = FC(({ children }) => {
         }
       )}
     >
+      <Header />
       <div class="flex flex-col min-h-screen lg:m-auto lg:max-w-[90rem]">
-        <Header />
         <div class={classnames('overflow-hidden')}>{children}</div>
       </div>
     </div>
