@@ -3,6 +3,8 @@ import { FC, FCA } from 'gyron'
 import { Nav } from '@/components/nav'
 import { DOCS_NAV, CORE_NAV } from '@/pages'
 import { Skeleton } from '@/components/skeleton'
+import { CardCode, CardImage } from '@/components/card'
+import { ComponentIcon, LightningIcon } from '@/components/icons'
 
 const AsyncExplorer = FCA(() =>
   import('@/pages/explorer').then(({ Explorer }) => <Explorer />)
@@ -40,43 +42,78 @@ export const Home = FC(() => {
           </div>
           <div class="mt-8 mb-2">
             <Link to="/explorer" className="underline">
-              在线编辑(online playground)
+              在线编辑器(online playground)
             </Link>
           </div>
         </div>
         <div class="container mt-16 mb-16 max-w-5xl mx-auto text-slate-200 dark:text-slate-50">
-          <ul class="flex justify-around space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-12">
-            <li class="flex-1">
-              <h2 class="text-lg">简单</h2>
-              <p class="mt-4 opacity-80">
-                只需要了解JavaScript基本语法和jsx语法糖就可以完全构建一个可交互的应用程序。使用脚手架还可以快速开始本地应用。
-              </p>
+          <ul class="">
+            <li class="overflow-auto">
+              <CardCode
+                url="/docs/instance"
+                title={
+                  <span className="flex items-center space-x-2">
+                    <LightningIcon />
+                    <span>上手简单</span>
+                  </span>
+                }
+                desc="只需要了解JavaScript基本语法和jsx语法糖就可以完全构建一个可交互的应用程序。在渲染过程中，所有结果和行为完全是可预见的，没有任何黑魔法。"
+                codes={[
+                  {
+                    type: 'tsx',
+                    value: `import { createInstance } from 'gyron'\ncreateInstance(<div>Hello, Gyron</div>).render('#root')`,
+                  },
+                ]}
+              />
             </li>
-            <li class="flex-1">
-              <h2 class="text-lg">组件</h2>
-              <p class="mt-4 opacity-80">
-                以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。
-              </p>
+            <li class="overflow-auto">
+              <CardCode
+                url="/docs/component"
+                title={
+                  <span className="flex items-center space-x-2">
+                    <ComponentIcon />
+                    <span>组件化模式</span>
+                  </span>
+                }
+                desc="以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。"
+                codes={[
+                  {
+                    type: 'tsx',
+                    name: 'simple.tsx',
+                    value: `import { FC } from 'gyron'\nexport default FC(() => <div>Hello, Gyron</div>)`,
+                  },
+                  {
+                    type: 'tsx',
+                    name: 'index.tsx',
+                    value: `import { createInstance } from 'gyron'\nimport Hello from './simple'\n\ncreateInstance(<Hello />).render('#root')`,
+                  },
+                ]}
+              />
             </li>
-            <li class="flex-1">
-              <h2 class="text-lg">小巧</h2>
-              <p class="mt-4 opacity-80">
-                核心代码仅9kb(gzip)左右，但是功能却十分完善。不仅支持 SPA
-                模式，还支持 SSR 模式，只需要做少许改动就可以让组件支持 SSR。
-              </p>
+            <li class="overflow-auto">
+              <CardImage
+                src="/assets/image/ant.webp"
+                url="https://github.com/gyronorg/core#%E6%A0%B8%E5%BF%83"
+                title="体积非常小"
+                desc="核心代码小于10kb(gzip)，但是功能却十分完善。不仅支持 SPA模式，还支持 SSR 模式，只需要做少许改动就可以让组件支持 SSR。"
+              />
             </li>
-            <li class="flex-1">
-              <h2 class="text-lg">类型</h2>
-              <p class="mt-4 opacity-80">
-                完全支持最新的 Typescript 类型推断，在构建大型项目上更加友好。
-              </p>
+            <li class="overflow-auto">
+              <CardImage
+                reversal
+                url="https://www.typescriptlang.org/"
+                src="/assets/image/elephant.webp"
+                title="强壮的生命力"
+                desc="完全支持最新的 Typescript 类型推断，在构建大型项目上更加友好，在多人协作时也尤其重要。试想，当你的同事修改了一个组件的接口没有告知时，这次修改可能就是一个隐患。"
+              />
             </li>
           </ul>
         </div>
+        <h2 className="text-white text-2xl px-4">在线编辑</h2>
+        <p className="text-slate-100 my-6 px-4">
+          在线使用，在左边编辑完成后等待3秒即可预览效果。在后面阅读文档时发现代码都可以贴在编辑器中实时预览。
+        </p>
         <AsyncExplorer fallback={<Skeleton length={3} />} />
-        <div class="text-xs ml-auto mr-auto mt-4 pl-4">
-          在线使用，在左边编辑完成后点击运行按钮即可预览效果。在后面阅读文档时发现代码都可以贴在编辑器中实时预览。
-        </div>
       </main>
       <footer class="pt-28 pb-10 border-slate-200 text-slate-500 dark:border-slate-200/5 text-center">
         <div class="flex justify-center">

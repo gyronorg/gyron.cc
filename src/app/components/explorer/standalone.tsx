@@ -17,8 +17,9 @@ export function getEnvironment(namespace: string) {
     `#container_${namespace}`
   ) as HTMLIFrameElement
   return {
-    window: standalone.contentWindow,
-    document: standalone.contentDocument || standalone.contentWindow.document,
+    window: standalone?.contentWindow,
+    document:
+      standalone?.contentDocument || standalone?.contentWindow?.document,
   }
 }
 
@@ -31,17 +32,19 @@ export const Standalone = FC<StandaloneProps>(
     })
     useMountWithStandalone(() => {
       const { document } = getEnvironment(namespace)
-      const name =
-        window.localStorage.getItem('theme') ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light')
-      const style = document.createElement('style')
-      style.appendChild(document.createTextNode(defaultCss))
-      createInstance(children as VNode).render(document.body)
-      document.documentElement.classList.add(name)
-      document.head.append(style)
-      doc = document
+      if (document) {
+        const name =
+          window.localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light')
+        const style = document.createElement('style')
+        style.appendChild(document.createTextNode(defaultCss))
+        createInstance(children as VNode).render(document.body)
+        document.documentElement.classList.add(name)
+        document.head.append(style)
+        doc = document
+      }
     })
     return (
       <div class="h-full w-full">
