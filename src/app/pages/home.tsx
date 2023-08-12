@@ -40,7 +40,7 @@ export const Home = FC(() => {
               查看教程
             </Link>
           </div>
-          <div class="mt-8 mb-2">
+          <div class="mt-16 mb-2">
             <Link to="/explorer" className="underline">
               在线编辑器(online playground)
             </Link>
@@ -48,7 +48,7 @@ export const Home = FC(() => {
         </div>
         <div class="container mt-16 mb-16 max-w-5xl mx-auto text-slate-200 dark:text-slate-50">
           <ul class="">
-            <li class="overflow-auto">
+            <li>
               <CardCode
                 url="/docs/instance"
                 title={
@@ -66,7 +66,7 @@ export const Home = FC(() => {
                 ]}
               />
             </li>
-            <li class="overflow-auto">
+            <li>
               <CardCode
                 url="/docs/component"
                 title={
@@ -75,7 +75,7 @@ export const Home = FC(() => {
                     <span>组件化模式</span>
                   </span>
                 }
-                desc="以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。"
+                desc="以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。如果组件更新很慢，那么还可以尝试使用 FCD 定义组件，具体表现可以点击了解更多按钮查看详情。"
                 codes={[
                   {
                     type: 'tsx',
@@ -90,15 +90,15 @@ export const Home = FC(() => {
                 ]}
               />
             </li>
-            <li class="overflow-auto">
+            <li class="border border-transparent">
               <CardImage
                 src="/assets/image/ant.webp"
                 url="https://github.com/gyronorg/core#%E6%A0%B8%E5%BF%83"
                 title="体积非常小"
-                desc="核心代码小于10kb(gzip)，但是功能却十分完善。不仅支持 SPA模式，还支持 SSR 模式，只需要做少许改动就可以让组件支持 SSR。"
+                desc="核心代码小于10kb(gzip)，但是功能却十分完善。不仅支持 SPA模式，还支持 SSR 模式，只需要做少许改动就可以让组件支持 SSR。所有功能都是可以拆分，比如路由管理，如果仅仅是一个 demo 页面完全不需要引用。"
               />
             </li>
-            <li class="overflow-auto">
+            <li class="border border-transparent">
               <CardImage
                 reversal
                 url="https://www.typescriptlang.org/"
@@ -109,7 +109,7 @@ export const Home = FC(() => {
             </li>
           </ul>
         </div>
-        <h2 className="text-white text-2xl px-4">在线编辑</h2>
+        <h2 className="text-white text-2xl px-4 mt-52">在线编辑</h2>
         <p className="text-slate-100 my-6 px-4">
           在线使用，在左边编辑完成后等待3秒即可预览效果。在后面阅读文档时发现代码都可以贴在编辑器中实时预览。
         </p>

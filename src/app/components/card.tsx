@@ -16,7 +16,7 @@ interface CardProps {
 
 export const CardCode = FC<CardProps>(({ title, desc, codes, url }) => {
   return (
-    <section className="my-16">
+    <section className="py-16">
       <h2 className="mt-4 text-xl sm:text-2xl dark:text-slate-100 font-extrabold tracking-tight text-slate-50">
         {title}
       </h2>
@@ -45,16 +45,16 @@ interface CardImageProps {
 export const CardImage = FC<CardImageProps>(
   ({ src, title, desc, url, reversal = false }) => {
     return (
-      <div
+      <section
         className={classNames(
-          'my-24 flex h-96 space-x-6 rounded-xl shadow-xl ring-slate-900/5 overflow-auto',
+          'my-24 flex h-96 rounded-xl shadow-xl ring-slate-900/5 overflow-auto',
           reversal ? 'flex-row-reverse' : 'flex-row'
         )}
       >
         <div className="w-1/2">
           <img className="h-full w-full object-cover" src={src} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 px-6">
           <h2 className="mt-4 text-xl sm:text-2xl dark:text-slate-100 font-extrabold tracking-tight text-slate-50">
             {title}
           </h2>
@@ -68,7 +68,7 @@ export const CardImage = FC<CardImageProps>(
             了解更多
           </a>
         </div>
-      </div>
+      </section>
     )
   }
 )
