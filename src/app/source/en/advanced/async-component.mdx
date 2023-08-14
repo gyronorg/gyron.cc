@@ -1,0 +1,47 @@
+## Asynchronous Components
+
+Sometimes our components only render after certain actions complete. Especially during SSR rendering with pre-rendering based on user data, and code splitting with modern bundlers, asynchronous components can play an important role.
+
+### FCA 
+
+FCA is the built-in asynchronous component wrapper, enabling async syntax internally via the FCA function, e.g.:
+
+```jsx
+import { FCA } from 'gyron'
+
+const App = FCA(() => {
+  return getUserInfo().then((data) => <div>{data.name}</div>) 
+})
+```
+
+The App function is an async component that displays user info after getUserInfo fetches it. 
+
+Another example:
+
+```jsx filename=index.jsx
+const App = FCA(() => {
+  return import('./dashboard').then(({ Dashboard }) => <Dashboard />)
+})
+```
+
+```jsx filename=dashboard.jsx
+import { FC } from 'gyron'
+
+export const Dashboard = FC(() => {
+  return <div>Dashboard</div> 
+})
+```
+
+The App component in index.jsx is async, responsible for async import of the component in dashboard.jsx.
+
+Then split dashboard.jsx file content using e.g. webpack's `optimization.splitChunks` or esbuild's `splitting` attribute in final entry file.
+
+### fallback
+
+Async components have a `fallback` param rendered before async complete, mainly as a placeholder to indicate loading data or resources.
+
+```jsx
+import { createInstance, App } from './index'
+
+createInstance(<App fallback={<span>loading...</span>} />)
+```

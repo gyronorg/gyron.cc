@@ -1,0 +1,85 @@
+## Event Handling
+
+Event handling in Gyron.js is consistent with JavaScript, just with some differences in syntax.
+
+In traditional mode, onclick can only be bound once, while in Gyron.js, using addEventListener binds the method to the element, and triggers in sequence according to the order.
+
+Traditional syntax:
+
+```html
+<button onclick="myClick()">click me</button>
+```
+
+It's a bit different in Gyron.js. Property names starting with on are all converted to JavaScript events.
+
+```jsx
+const button = <button onClick={myClick}>click me</button>
+```
+
+### Prevent Default Behavior
+
+Sometimes we need to prevent the browser's default behavior, such as anchor tag navigation, scrollbar scrolling, etc. We can use the `preventDefault` method. The bound event value is the second parameter of addEventListener, and the behavior will be consistent with it.
+
+```jsx line=2
+const myClick = (e) => {
+  e.preventDefault()
+
+  pv(e.target).then(() => {
+    location.href = e.target.href 
+  })
+}
+
+const a = (
+  <a href="https://github.com/Linkontoask/gyron/issues" onClick={myClick}>
+    Github Gyron.js
+  </a>
+)
+```
+
+When we click the Github Gyron link, the click is recorded before jumping.
+
+### Passing Parameters 
+
+When writing reusable code, functions are usually encapsulated and different results are obtained by changing function parameters. For example, in loops, the current value in item needs to be passed to the event.
+
+```jsx line=10
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  const onPay = (id) => {
+    pay(id)
+  }
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li onClick={() => onPay(order.id)}>{order.name}</li>
+      ))}
+    </ul>
+  )
+})
+```
+
+### Third Parameter
+
+The third parameter of the event is used to control the behavior of the Listener. For example, to trigger the event only once and then destroy it automatically, set `once` to `true`.
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return (
+    <div
+      onClick={{
+        handleEvent: () => {},
+        options: {
+          once: true,
+        },
+      }}
+    ></div>
+  )
+})
+```
+
+The `options` parameter is the third parameter passed to the `addEventListener` function, and the behavior is completely consistent with [addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
+
+> So, the special places to pay attention to are the same. Listeners registered at different times need to be destroyed separately, that is, events registered in the capture phase must be destroyed by passing `capture`, and vice versa.

@@ -1,0 +1,188 @@
+> The types described in this document require downloading via npm to view. Only parameter types and return values are outlined here. Feel free to contribute to improving the docs if you have time.
+
+## createStore
+
+Create a store plugin, accepts same args as Redux's `configureStore` - supports `reducer`, `middleware`, `devTools`, `preloadedState`, `enhancers`.
+
+**Type Declaration**
+
+```ts
+declare function createStore<
+  S extends object,
+  A extends Action = AnyAction,
+  M extends Middlewares<S> = [ThunkMiddlewareFor<S>]
+>(options: ConfigureStoreOptions<S, A, M>): Plugin<EnhancedStore<S, A, M>>
+```
+
+**Example**
+
+```jsx 
+import { createStore } from '@gyron/redux'
+
+export default createStore({
+  reducer: {}, 
+})
+```
+
+## useSelector
+
+Get state from store, supports string or function. Function is passed current state.
+
+**Type Declaration** 
+
+```ts
+declare function useSelector(sliceName?: string | ((state: any) => any)): any
+```
+
+**Example**
+
+```jsx
+import { useSelector, FC } from '@gyron/redux'
+
+const App = FC(() => {
+  const state = useSelector()
+  return <div>{state.value}</div> 
+})
+```
+
+## useStore
+
+Get the store object.
+
+**Type Declaration**
+
+```ts
+declare function useStore(): StorePlugin<any> 
+```
+
+**Example**
+
+```jsx
+import { useStore, FC } from '@gyron/redux'
+
+const App = FC(() => {
+  const { state } = useStore()
+  return <div>{state.name}</div>
+})
+```
+
+## useDispatch
+
+Returns dispatch to trigger state changes. 
+
+**Type Declaration**
+
+```ts
+declare function useDispatch(): (
+  action: Partial<{
+    payload: any
+    type: any 
+  }>
+) => void
+```
+
+**Example**
+
+```jsx 
+import { useDispatch, FC } from '@gyron/redux'
+
+const App = FC(() => {
+  const dispatch = useDispatch()
+  dispatch({ type: 'counter/increment' })
+  return <div>{state.name}</div> 
+})
+```
+
+## createAction
+
+Create an action trigger, same as Redux `createAction`. See [createAction](https://redux-toolkit.js.org/api/createAction).
+
+**Type Declaration**
+
+```ts
+declare function createAction<P = void, T extends string = string>(
+  type: T
+): PayloadActionCreator<P, T>
+```
+
+**Example**
+
+```jsx
+import { createAction } from '@gyron/redux'
+
+const increment = createAction('counter/increment')
+
+increment() 
+// { type: 'counter/increment' }
+```
+
+## createReducer
+
+Simplify reducer creation. See [createReducer](https://redux-toolkit.js.org/api/createReducer).
+
+**Type Declaration**
+
+```ts  
+declare function createReducer<S extends NotFunction<any>>(
+  initialState: S | (() => S),
+  builderCallback: (builder: ActionReducerMapBuilder<S>) => void
+): ReducerWithInitialState<S>
+```
+
+**Example**
+
+```jsx
+import { createAction, createReducer } from '@gyron/redux'
+
+const increment = createAction('counter/increment')
+
+const initialState = { value: 0 }
+
+const counterReducer = createReducer(initialState, (builder) => {
+  builder.addCase(increment, (state, action) => {
+    state.value++  
+  })
+})
+```
+
+## createSlice
+
+Create a slice of state logic. See [createSlice](https://redux-toolkit.js.org/api/createSlice).
+
+**Type Declaration**
+
+```ts
+declare function createSlice<
+  State,
+  CaseReducers extends SliceCaseReducers<State>,
+  Name extends string = string
+>(
+  options: CreateSliceOptions<State, CaseReducers, Name>
+): Slice<State, CaseReducers, Name>
+```
+
+**Example** 
+
+```jsx
+import { createSlice } from '@gyron/redux'
+
+const counter = createSlice({
+  name: 'counter',
+  initialState: {
+    count: 0,
+  },
+  reducers: {
+    increment(state) {
+      state.count++
+    },
+  },
+})
+```
+
+## createAsyncThunk
+
+See [createAsyncThunk](https://redux-toolkit.js.org/api/createAsyncThunk).
+
+## createEntityAdapter
+
+See [createEntityAdapter](https://redux-toolkit.js.org/api/createEntityAdapter).

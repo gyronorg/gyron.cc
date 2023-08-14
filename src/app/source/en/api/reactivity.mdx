@@ -1,0 +1,292 @@
+## useReactive
+
+Make an object reactive.
+
+**Parameters**
+
+- `target`: object - Data to make reactive.
+- `readonly`: boolean - Whether data is read only.
+
+**Return**  
+
+Proxied object, uses Proxy internally.
+
+**Type Declaration**
+
+```ts
+declare function useReactive<T extends object>(target: T, readonly?: boolean): T
+```
+
+**Example**
+
+```js
+import { useReactive } from 'gyron'
+
+const original = {
+  x: 0,
+  y: 0,
+}
+const observed = useReactive(original)
+original !== observed // true
+```
+
+## isResponsive
+
+Check if object is reactive.
+
+**Type Declaration**
+
+```ts
+declare function isResponsive(target: any): boolean
+```
+
+**Example**
+
+```js
+import { isResponsive } from 'gyron' 
+
+isResponsive({}) // false
+isResponsive(useReactive({})) // true
+```
+
+## useValue
+
+Make primitive data reactive using value property. Internally uses `useReactive` and proxies value property.
+
+**Parameters**
+
+- `value`: any - Data to proxy, can be primitive like number or boolean.
+
+**Return**
+
+Proxied object, accessed via `.value`.
+
+**Type Declaration**
+
+```ts
+declare function useValue<T = any>(value: T): Primitive<T>
+```
+
+**Example** 
+
+```js
+import { useValue } from 'gyron'
+
+const original = useValue(0)
+original.value === 0 // true
+```
+
+## useComputed
+
+Like JavaScript accessor properties, but dependency change triggers computed value update.
+
+**Parameters**
+
+- `getter`: Function - Get reactive data.
+- `setter`: Function - Set reactive data.
+- `dependency`: () => T - Computed dependency.
+
+**Return**
+
+Proxied object, reads and writes observable. 
+
+**Type Declaration**
+
+```ts
+declare function useComputed<T>(getter: () => T): Computed<T>
+declare function useComputed<T>(
+  getter: () => T,
+  dependency: Dependency[]  
+): Computed<T>
+declare function useComputed<T>(
+  getter: () => T,
+  setter: (value: T) => void,
+  dependency: Dependency[]
+): Computed<T>
+```
+
+**Example**
+
+```js
+import { useValue, useComputed } from 'gyron'
+
+const original = useValue(0)
+const observed = useComputed(() => {
+  return original.value + 1  
+})
+original.value = 10
+observed.value === 11 // true
+```
+
+## useMemo
+
+Same as above but with one difference.
+
+Value will not update if dependencies have not changed. Use useComputed to address this.
+
+**Example**
+
+```js
+import { useValue, useMemo } from 'gyron'
+
+const original = useValue(0)
+const memo = useMemo(() => {
+  return Date.now() + original.value 
+})
+memo.value === memo.value // true 
+```
+
+## useEffect 
+
+Re-runs function when dependencies change, can watch data changes.
+
+**Parameters**
+
+- `fn`: Function - Function to run on change. 
+- `dependency`: () => T - Custom dependencies.
+
+**Return**
+
+`ReactiveEffectRunner` - Returns function. useEffect property can stop reactivity.
+
+**Type Declaration**
+
+```ts
+declare function useEffect<T = any>(
+  fn: (...args: any) => T,
+  dependency?: Dependency[]  
+): ReactiveEffectRunner<T>
+```
+
+**Example**
+
+```js
+import { useValue, useComputed } from 'gyron'
+
+const original = useValue(0)
+let dummy: number
+const s = useEffect(() => {
+  dummy = original.value
+})
+original.value = 10  
+dummy === original.value // true
+s.useEffect.stop()
+original.value = 20
+dummy === original.value // false
+```
+
+## pauseTrack
+
+Pause automatic effect collection, re-enable with `enableTrack`. 
+
+**Example**
+
+```js
+import { useValue, pauseTrack, enableTrack } from 'gyron'
+
+const original = useValue(0)
+pauseTrack() 
+// Accessing original will not be collected, 
+// i.e. dependencies not updated
+enableTrack()
+```
+
+## enableTrack
+
+Enable automatic effect collection, pause with `pauseTrack`.
+
+**Example** 
+
+```js
+import { useValue, pauseTrack, enableTrack } from 'gyron'  
+
+const original = useValue(0)
+pauseTrack()
+// Accessing original will not be collected,
+// i.e. dependencies not updated  
+enableTrack() 
+```
+
+## cleanupTrackEffect
+
+Clear data dependencies, useful when accidentally collected.
+
+**Example**
+
+```js
+import { useValue, useEffect, cleanupTrackEffect } from 'gyron'
+
+const original = useValue(0)
+let dummy: number
+useEffect(() => {
+  dummy = original.value
+})
+cleanupTrackEffect(original, 'value')
+original.value = 1  
+dummy === 0 // true
+```
+
+## asyncTrackEffect
+
+Manually collect dependencies in async.
+
+**Example**
+
+```js
+const original = useValue(0)
+let dummy: number
+const useEffect = new ReactiveEffect(
+  () => {
+    Promise.resolve().then(() => {
+      asyncTrackEffect(useEffect)
+      dummy = original.value 
+      clearTrackEffect()
+    })
+  }, 
+  () => {
+    dummy = original.value
+  }
+)
+useEffect.run()
+await Promise.resolve()
+dummy === 0 // true 
+original.value = 10
+dummy === 10 // true
+```
+
+## clearTrackEffect 
+
+Typically with `asyncTrackEffect`, clear side effects caused by it.
+
+## toRaw
+
+Access original unproxied data of observed object, useful for complex objects. Unwraps value object in useValue, returns original value.
+
+**Parameters**
+
+- `observed`: object - Reactive data.
+
+**Return** 
+
+Original unproxied data, non-reactive.
+
+**Type Declaration**
+
+```ts
+declare function toRaw<T>(observed: T): T
+```
+
+**Example**
+
+```js
+import { useValue } from 'gyron'
+
+const original = useValue(0)
+let dummy: number 
+useEffect(() => {
+  dummy = toRaw(original)
+})
+dummy === 0 // true
+original.count = 1
+dummy === 0 // true 
+```

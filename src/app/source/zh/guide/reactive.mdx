@@ -62,7 +62,7 @@ patch 会先调用 App 这个函数，然后把当前 useEffect（SchedulerJob�
 
 我们把返回一个函数的组件叫做`有状态组件`，直接返回元素的组件叫做`无状态组件`。
 
-因为响应式内部是依赖 [Proxy](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy) 特性，所以对于数组的变更也是直接支持，但是会触发不止一次更新前的检查。
+因为响应式内部是依赖 [Proxy](https://developer.mozilla.org/zh-CN-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy) 特性，所以对于数组的变更也是直接支持，但是会触发不止一次更新前的检查。
 
 比如拿上一个例子说明问题，当我们每点击一次，就会往 list 数组压入一个数字，这在内部会发生两次 set。
 

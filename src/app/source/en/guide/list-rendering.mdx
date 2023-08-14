@@ -1,0 +1,106 @@
+## List Rendering
+
+When we have a scenario that needs to display an order list, where users can filter out some orders for quick operation, we can accomplish this via inline map and filter.
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return (
+    <ul>
+      {orders
+        .filter((order) => order.price > 2000)
+        .map((order) => (
+          <li>{order.name}</li>
+        ))}
+    </ul>
+  )
+})
+```
+
+We first filter out orders with prices greater than 2000 via filter, then render them via map. This is a common usage. Conditional logic can also be used in map to accomplish this.
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => {
+        if (order.price > 2000) {
+          return <li style={{ color: 'red' }}>{order.name}</li>
+        }
+        return <li>{order.name}</li>
+      })}
+    </ul>
+  )
+})
+```
+
+We can make the text of orders over 2000 more conspicuous via conditional logic. The above code can also be simplified to:
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li style={{ color: order.price > 2000 ? 'red' : 'inherit' }}>
+          {order.name}
+        </li>
+      ))}
+    </ul>
+  )
+})
+```
+
+### Key
+
+In loop rendering, if there is a key value, the key will be used as the comparison criterion in the loop to minimize updating DOM nodes.
+
+```jsx line=7
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li key={order.id}>{order.name}</li>
+      ))}
+    </ul>
+  )
+})
+```
+
+When orders change, we will compare based on the passed id. If we find that only the order has changed, Gyron.js will only update their order in the DOM tree instead of re-rendering.
+
+### memo Parameter
+
+It can greatly improve rendering speed and response speed in some loop rendering examples. Using memo in benchmark tests can increase update operations and select operations by 5 to 15 times. You don't need to use this parameter for optimization if it's just general logical rendering.
+
+```jsx line=10
+import { FC, useValue } from 'gyron'
+
+const Table = FC(() => {
+  const rows = useValue([])
+
+  return (
+    <table>
+      <tbody>
+        {rows.value.map(({ id, label }) => {
+          return (
+            <tr
+              key={id}
+              class={id === selected.value ? 'danger' : null}
+              memo={[id === selected.value, label]}
+            ></tr>
+          )
+        })}
+      </tbody>
+    </table>
+  )
+})
+```
+
+The memo attribute tells Gyron.js to continue rendering child nodes only when the value in the attribute changes, otherwise the child nodes will be skipped. Especially useful in loops. For update info see benchmark test results [https://krausest.github.io/js-framework-benchmark/current.html](https://krausest.github.io/js-framework-benchmark/current.html)

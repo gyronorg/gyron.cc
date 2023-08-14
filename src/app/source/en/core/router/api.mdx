@@ -1,0 +1,543 @@
+> The types described in this document require downloading via npm to view. Only parameter types and return values are outlined here. Feel free to contribute to improving the docs if you have time.
+
+## createRouter
+
+Create a Router, then use via `<Router router={/* ... */}>`.
+
+**Return**
+
+Returns `Plugin<RouterBase>` type object.
+
+**Type Declaration** 
+
+```ts
+declare function createRouter(option: Partial<RouterOption>): Plugin<RouterBase>
+```
+
+**Example**
+
+```jsx
+import { createBrowserHistory } from 'history'
+import { createInstance } from 'gyron'
+import { createRouter, Router, Route, Routes } from '@gyron/router'
+
+const router = createRouter({
+  history: createBrowserHistory(), 
+})
+
+createInstance(
+  <Router router={/* router */}>
+    <Routes>
+      <Route path="" strict element={<Welcome />}></Route>
+      <Route path="user" element={<User />}>
+        <Route path=":id">
+          <Route path="member" element={<Member />}></Route>
+          <Route path="setting" element={<Setting />}></Route>
+        </Route>
+      </Route>
+      <Route path="*" element={<Mismatch />}></Route>
+    </Routes>
+  </Router>
+).render(document.getElementById('root'))
+```
+
+## createBrowserRouter
+
+Create browser history router - combines `createRouter` and `createBrowserHistory`.
+
+**Example**
+
+```jsx
+import { createBrowserHistory } from 'history'
+import { createRouter } from '@gyron/router'
+
+const router = createRouter({
+  history: createBrowserHistory(),
+})
+```
+
+## createHashRouter  
+
+Create hash history router - combines `createRouter` and `createHashHistory`.
+
+**Example**
+
+```jsx
+import { createHashHistory } from 'history'
+import { createRouter } from '@gyron/router'
+
+const router = createRouter({
+  history: createHashHistory(),
+})
+```
+
+## createMemoryRouter
+
+Create memory history router for SSR - combines `createRouter` and `createMemoryRouter`.
+
+**Example**
+
+```jsx 
+import { createMemoryRouter } from 'history'
+import { createRouter } from '@gyron/router'
+
+const router = createRouter({
+  history: createMemoryRouter(), 
+})
+```
+
+## Routes
+
+Router route entry point to manage and collect Routes. See [Declarative Routing](quick-start#declarative-routing).
+
+**Type Declaration**
+
+```ts
+declare const Routes: ComponentSetupFunction<object, false> 
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { Router, Routes, Route } from '@gyron/router'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="/" element={<span>Home</span>} />
+      </Routes> 
+    </Router>
+  )
+})
+```
+
+## Route  
+
+Declarative routing container. See [Declarative Routing](quick-start#declarative-routing).
+
+**Type Declaration**
+
+```ts
+declare const Route: ComponentSetupFunction<
+  Partial<
+    Omit<RouteRecord, 'extra'> & Omit<RouteRecordExtra, keyof RouteTransfer>
+  >,
+  false
+>
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { Router, Routes, Route } from '@gyron/router'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="/" element={<span>Home</span>} />
+      </Routes>
+    </Router>
+  )
+})
+```
+
+## Link
+
+Navigation component, renders anchor tag. See [Navigation](quick-start#navigation).
+
+**Type Declaration**
+
+```ts 
+declare const Link: ComponentSetupFunction<LinkProps, false>
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { Link } from '@gyron/router'
+
+const Navigation = FC(() => {
+  return (
+    <div>
+      <Link to="/">Home</Link>
+      <Link to="/about">About</Link>
+    </div>
+  )
+})
+```
+
+## Outlet
+
+Nested route outlet. See [Nested Routes (Outlet)](quick-start#nested-routes-outlet).
+
+**Type Declaration**
+
+```ts
+declare const Outlet: ComponentSetupFunction<object, false>
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = FC(() => {
+  return (
+    <div>
+      <div>
+        <Link to="/docs">Docs</Link>
+        <Link to="/helper">Help</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  )
+})
+```
+
+## Redirect 
+
+Redirects routes, usually to fix links after route changes. See [Redirects](quick-start#redirects).
+
+**Type Declaration**
+
+```ts
+declare const Redirect: ComponentSetupFunction<RedirectProps, false>
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron' 
+import { Router, Redirect } from '@gyron/router'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Redirect path="oldPath" redirect="newPath"></Redirect>
+      </Routes> 
+    </Router>
+  )
+})
+```
+
+## useRouter
+
+Get Router instance in components.
+
+**Type Declaration**
+
+```ts
+declare function useRouter(): RouterBase
+```
+
+**Example** 
+
+```jsx
+import { FC } from 'gyron'
+import { useRouter } from '@gyron/router'
+
+const App = FC(() => {
+  const router = useRouter()
+  const login = () => {
+    router.push('/login')
+  }
+  return <button onClick={login}>Login</button>
+})
+```
+
+## useRoutes
+
+Programmatically configure routes, takes `RouteRecordConfig[]`.
+
+**Type Declaration**
+
+```ts
+declare function useRoutes(routes: RouteRecordConfig[]): VNode<VNodeType> 
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { useRoutes } from '@gyron/router'
+
+const App = FC(() => {
+  return useRoutes([
+    {
+      path: '',
+      strict: true,
+      element: <Welcome />, 
+    },
+    {
+      path: 'user',
+      element: <User />,
+      children: [
+        {
+          path: ':id',
+          children: [
+            {
+              path: 'member',
+              element: <Member />,
+            },
+            {
+              path: 'setting',
+              element: <Setting />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '*',
+      element: <Mismatch />,
+    },
+  ])
+})
+```
+
+## useRoute  
+
+Get current matched route.
+
+**Type Declaration**
+
+```ts
+declare function useRoute(): Primitive<RouteRecord>
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { useRoute } from '@gyron/router'
+
+const Dashboard = FC(() => {
+  const route = useRoute()
+  route.value // RouteRecord
+  return <div>Dashboard</div> 
+})
+```
+
+## useHref
+
+Format route path string, supports `Path` arg conversion to string.
+
+**Type Declaration**
+
+```ts
+declare function useHref(to: To): string
+```
+
+**Example**
+
+```jsx
+import { useHref } from '@gyron/router'
+
+const path = useHref({
+  pathname: '/user',
+  search: '?id=admin', 
+})
+// /user?id=admin
+```
+
+## useParsePath 
+
+Convert string path to object path.
+
+**Type Declaration**
+
+```ts  
+declare function useParsePath(path: string): Partial<history.Path>
+```
+
+**Example**
+
+```jsx
+import { useParsePath } from '@gyron/router'
+
+const path = useParsePath('/user?id=admin')
+/**
+ * {
+ *   pathname: '/user',
+ *   search: '?id=admin',
+ * } 
+ */
+```
+
+## useParams
+
+Get route param matches.
+
+**Type Declaration**
+
+```ts
+declare function useParams(): TypeParamsRaw
+```
+
+**Example**
+
+```jsx 
+import { FC } from 'gyron'
+import { useParams } from '@gyron/router'
+
+const Dashboard = FC(() => {
+  const params = useParams()
+  return <div>Dashboard</div> 
+})
+```
+
+## useOutlet
+
+Get nested route matches at path.
+
+**Type Declaration**
+
+```ts
+declare function useOutlet(): TypeOutletRaw
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { useOutlet } from '@gyron/router'
+
+const Dashboard = FC(() => {
+  const outlet = useOutlet()
+  /**
+   * {
+   *   matches: RouteRecord[];
+   *   depth: number;
+   * } 
+   */
+})
+```
+
+## useMatch
+
+Check if path matches.
+
+**Type Declaration**
+
+```ts
+declare function useMatch(path: string): boolean
+```
+
+**Example**
+
+```jsx 
+import { FC } from 'gyron'
+import { useMatch } from '@gyron/router'
+
+const Dashboard = FC(() => {
+  const matched = useMatch('/dashboard')
+})
+```
+
+## onBeforeRouteEach
+
+Triggered before route change, `next` param can redirect. 
+
+**Type Declaration**
+
+```ts
+declare function onBeforeRouteEach(listener: RouterHookBeforeEach): void
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { onBeforeRouteEach } from '@gyron/router'
+
+const App = FC(() => {
+  onBeforeRouteEach((from, to, next) => {
+    next()
+  })
+  return <div></div>
+})
+```
+
+## onBeforeRouteUpdate
+
+Triggered before route change if component still matched after change.
+
+**Type Declaration**
+
+```ts 
+declare function onBeforeRouteUpdate(listener: RouterHookBeforeUpdate): void
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { onBeforeRouteUpdate } from '@gyron/router'
+
+const App = FC(() => {
+  onBeforeRouteUpdate((from, to) => {
+    // ...
+  })
+  return <div></div>
+}) 
+```
+
+## onAfterRouteEach
+
+Triggered after route change, do cleanup work.
+
+**Type Declaration**
+
+```ts
+declare function onAfterRouteEach(listener: RouterHookAfterEach): void
+```
+
+**Example** 
+
+```jsx
+import { createRef, nextRender, FC } from 'gyron'
+import { onAfterRouteEach } from '@gyron/router'
+
+const App = FC(() => {
+  const ref = createRef()
+  onAfterRouteEach((from, to) => {
+    nextRender().then(() => {
+      ref.current // div 
+    })
+  })
+  return <div ref={ref}></div>
+})
+```
+
+## onAfterRouteUpdate  
+
+Triggered after route change if component still alive.
+
+**Type Declaration**
+
+```ts
+declare function onAfterRouteUpdate(listener: RouterHookAfterUpdate): void
+```
+
+**Example**
+
+```jsx
+import { FC } from 'gyron'
+import { onAfterRouteUpdate } from '@gyron/router'  
+
+const App = FC(() => {
+  onAfterRouteUpdate((from, to) => {
+    // ...
+  })
+  return <div></div>
+})
+```

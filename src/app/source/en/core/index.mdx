@@ -1,0 +1,42 @@
+## Core
+
+The author of Gyron.js has developed some tools to help developers build front-end environments, such as common route managers and global state managers. If you want to adapt some community resources to Gyron.js, please contact us for help.
+
+- Discord: https://discord.gg/fETVZtD
+- Email: linkorgs@163.com
+
+### Router
+
+Router is a JavaScript library that helps users build interfaces and has powerful APIs. It is small yet fully functional, allows different ways to declare routes, and works on different rendering platforms (CSR/SSR).
+
+```jsx
+import { FC } from 'gyron'
+
+import { Router, Route, Routes } from '@gyron/router'  
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="" strict element={<div>Home</div>}></Route>
+        <Route path="about" element={<div>About</div>}></Route>
+      </Routes> 
+    </Router>
+  )
+})
+```
+
+### Redux
+
+Redux is a Gyron.js state management library based on Redux that incorporates all the functionality of Redux and is reactive. [https://redux.js.org/](https://redux.js.org/)
+
+If you don't want such complex functionality, you can use `useReactive` to simulate a small state library without features like predictability and Devtool, but it also has reactivity.
+
+```js
+import { useReactive } from 'gyron'
+
+export const storeState = useReactive({
+  user: {},
+  order: {}, 
+})
+```

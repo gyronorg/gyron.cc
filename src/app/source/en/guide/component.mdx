@@ -1,0 +1,519 @@
+import { Explorer } from '@/pages'
+
+## Components
+
+Components are an important part of building page elements. They allow you to create reusable elements and modules, similar to web components, with many possibilities worth exploring.
+
+## Functions
+
+Functions are an important feature of JavaScript. Functions can be logic blocks used to control task execution and interruption. 
+
+Using functions as components is a very developer-friendly approach. It is not only simple, but also facilitates code reuse.
+
+Here is a simple example:
+
+```jsx
+import { FC } from 'gyron'
+
+const HelloWorld = FC(() => {
+  return <div>Hello World</div>
+})
+```
+
+HelloWorld is our function component, used to render a div element displaying "Hello world".
+
+If you want to use this component in different places, you just need to import this component and use it like writing elements.
+
+```jsx line=9
+import { FC } from 'gyron'
+
+const HelloWorld = FC(() => {
+  return <div>Hello World</div> 
+})
+const App = FC(() => {
+  return (
+    <div class="container">
+      <HelloWorld />
+    </div>
+  )
+})
+```
+
+### Setup and Render
+
+> If you are using the scaffolding method or our babel plugin, you don't need to read this section. This is for third party developers.
+
+Function components are divided into two areas, one is the setup scope, and the other is the render scope.
+The setup scope is only executed once during component rendering. It will only be executed again after the component is destroyed and rendered again.
+As the name suggests, the render scope is responsible for component updates, executed whenever dependent data changes or `forceUpdate` is used for forced update.
+
+If you look closely, you will find that the App component and the HelloWorld component are slightly different. The App component returns a function to render the page. Why can be found in the previous tutorial, which explains in detail.
+
+[Why Components Should Return a Function](/docs/reactive#component-updates)
+
+When using destructuring in the `setup` function of a `stateful component`, special attention needs to be paid to props not being updated. To access props, use "props.xxxxx".
+
+```jsx line=4,5,6,7
+import { useValue, FC } from 'gyron'
+
+const HelloWorld = FC(() => {
+  const count = useValue(0)
+  function update() {
+    count.value++
+  }
+  return <div onClick={update}>counter {count.value}</div> 
+})
+```
+
+The highlighted part above is the setup area. The blocks in it will only be executed once, and then the states inside will be cached with closures for later updates, which will only update the render area.
+
+```jsx line=8  
+import { useValue, FC } from 'gyron'
+
+const HelloWorld = FC(() => {
+  const count = useValue(0)
+  function update() {
+    count.value++
+  }
+  return <div onClick={update}>counter {count.value}</div>
+})
+```
+
+The highlighted part above is the render area, aka the html tags we are familiar with. It keeps updating when the component updates.
+
+### Auto Transform
+
+We now also provide an option that relies on the `@gyron/babel-plugin-jsx` plugin to work.
+You just need to pass `setup` as `true` in the plugin options, and the plugin will automatically identify these two different modes, and convert all stateless components into stateful components, so you don't need to care whether the return value of the component is a function or `JSX.Element`.
+
+```js line=8
+import esbuild from 'esbuild'
+import { babelESBuildJsx } from '@gyron/babel-plugin-jsx'
+
+esbuild.build({
+  // ...
+  plugins: [
+    babelESBuildJsx({
+      setup: true, 
+    }),
+  ],  
+})
+```
+
+```tsx line=18
+import { FC } from 'gyron'
+
+const App = FC<{ msg: string }>((props) => {
+  const count = useValue(0)
+  function onClick() {
+    count.value++
+  }
+  return (
+    <div onClick={onClick}>
+      {props.msg} - {count.value}
+    </div>
+  )
+})
+
+// ↓ ↓ ↓ ↓ ↓
+const App = FC<{ msg: string }>((props) => {
+  // ...
+  return (props) => (
+    <div onClick={onClick}>
+      {props.msg} - {count.value}
+    </div>
+  )
+})
+```
+
+After configuring the plugin, when defining a component with FC, the plugin will automatically identify and convert it to the code shown by the arrow below.
+
+If you need to define methods, variables, etc. in the render area of the component, the component can return a function. In this case, the plugin will do nothing.
+
+
+### Props
+
+Sometimes we want the component to be more versatile. Data may need to be passed to the component for different feedback. This is the role of Props.
+
+The usage is the same as functions, but note that some internal parameter names have been occupied:
+
+- children (for passing child components/elements to the component) 
+- isSSR (whether the current environment is in SSR, this parameter can be used to write more versatile code)
+
+A common example:
+
+```jsx
+const HelloWorld = ({ message }) => {
+  return <div>I Am {message}</div>
+}
+const App1 = <HelloWorld message="Legend" />
+const App2 = <HelloWorld message="Legend 2" />
+```
+
+We pass a message parameter to the HelloWorld component. In the first case it will display "I Am Legend", and in the second case it will display "I Am Legend 2".
+
+Data in components often flows in one direction, but sometimes child components need to change the data of the parent component. We recommend passing an update function to the child component, and then calling the update function in the child component to update the data.
+
+```jsx 
+import { useValue, FC } from 'gyron'
+
+const HelloWorld = ({ message, update }) => {
+  return <div onClick={update}>I Am {message}</div>
+}
+const App = FC(() => {
+  const name = useValue('Legend')
+  return (
+    <div class="container">
+      <HelloWorld  
+        message={name.value}
+        update={() => (name.value = 'Legend 2')}
+      />
+    </div>
+  )
+})
+```
+
+### useWatchProps
+
+Usually when writing a component, we need to listen to a props data in the setup area and then handle business logic. So we need to use the `onBeforeUpdate` lifecycle hook in the component to determine if props have changed. Let's implement a simple example of getting user info by changing token.
+
+```tsx
+import { FC, onAfterUpdate } from 'gyron'
+
+interface InformationProps {
+  token: string
+}
+
+const Information = FC<InformationProps>(({ token }) => {
+  const avatar_url = useValue('')
+  onAfterUpdate((perv: InformationProps, cur: InformationProps) => {
+    if (perv.token !== cur.token) {
+      if (cur.token) {
+        fetch(`/info?token=${cur.token}`).then(({ url }) => {
+          avatar_url.value = url
+        })
+      }
+    }
+  })
+  return <img src={avatar_url} />
+})
+```
+
+The logic above is that when the token changes, request the `/info` interface to get the user avatar and then render it. This is actually a high-frequency operation in business development. So we provide the `useWatchProps` method to create a watch method and pass the props to listen to. Let's see how the code should be refactored:
+
+```tsx
+import { FC, useWatchProps } from 'gyron'
+
+interface InformationProps {
+  token: string
+}
+
+const Information = FC<InformationProps>(({ token }) => {
+  const avatar_url = useValue('')
+  const watch = useWatchProps<InformationProps>()
+  watch('token', (token) => {
+    fetch(`/info?token=${token}`).then(({ url }) => {
+      avatar_url.value = url
+    })
+  })
+  return <img src={avatar_url} />
+})
+```
+
+The return value of `useWatchProps` is a function. It automatically identifies the type of the first parameter `'token'` and the second parameter based on the type. You can also do:
+
+```tsx
+interface InformationProps {
+  token: string
+  age: number
+}
+
+const Information = FC<InformationProps>(({ token, age }) => {
+  const watch = useWatchProps<InformationProps>()
+  watch(['token', 'age'], ([token, age]) => {
+    // ...
+  })
+}) 
+```
+
+### TypesScript
+
+Gyron.js fully supports the TypesScript type system, but to introduce JSX syntax, wrapper functions like FC, FCA, and FCD are still needed. It does not change the behavior of the component at all, just provides type hints for prompting users when writing and using components.
+
+```jsx 
+import { FC } from 'gyron'
+
+interface HelloWorldProps {
+  message: string
+  update: () => void
+}
+
+const HelloWorld = FC<HelloWorldProps>(({ message, update }) => {
+  return <div onClick={update}>I Am {message}</div>
+})
+```
+
+### Ref
+
+Sometimes we need custom rendering or want to get the real element information. We can use the `createRef` method to create an object that exposes a `current` property, and then bind it to the corresponding component or element using ref.
+
+```jsx line=4,11
+import { createRef, onAfterMount, FC } from 'gyron'
+
+const App = FC(() => {
+  const ref = createRef()
+
+  onAfterMount(() => {
+    console.log(ref.current)
+    // HTMLDivElement
+  })
+
+  return <div ref={createRef}></div>
+})
+```
+
+### Lifecycle Hooks
+
+If you have read this article and just want to confirm the execution order of lifecycles, you can check out the [lifecycle diagram](/docs/instance#lifecycle) in the Instance tutorial below.
+
+When building a complex application, more logic is often needed to improve the application. For example, when requesting backend data or when the component is destroyed, some custom processing is required. Lifecycle hooks can help you complete these functions.
+
+```jsx line=4
+import { onAfterMount } from 'gyron'
+
+const HelloWorld = ({ message }) => {
+  onAfterMount(({ $el }) => {
+    // Change the text color to blue after component rendering is complete
+    $el.style.color = 'blue'
+  })
+  return <div>I Am {message}</div>
+}
+```
+
+Or remove timers in the component when the component is destroyed.
+
+```jsx line=9
+import { onDestroyed, FC } from 'gyron'
+
+const HelloWorld = FC(({ message }) => {
+  const timer = setInterval(() => {
+    console.log(Date.now())
+  }, 1000)
+  onDestroyed(() => {
+    // Remove timer
+    clearInterval(timer)
+  })
+  return <div>I Am {message}</div> 
+})
+```
+
+When the component is destroyed, the `timer` will be removed.
+
+Or we can use Gyron.js to complete some high-frequency dom operations. For example, changing the position of elements without updating the dom in time. In previous programming patterns, the position of dom elements would be changed directly, resulting in bloated and unmaintainable code. With Gyron, these problems can be easily solved.
+
+```jsx line=10
+import { useReactive, onBeforeUpdate, FC } from 'gyron'
+
+const HelloWorld = FC(({ message }) => {
+  const state = useReactive({
+    allowUpdate: false,
+    x: 0,
+    y: 0,
+  })
+  onBeforeUpdate(() => {
+    return state.allowUpdate
+  })
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: position.x + 'px',
+        top: position.y + 'px',
+      }}
+    >
+      I Am {message} 
+    </div>
+  )
+})
+```
+
+We can tell the Gyron framework whether this data change needs to be automatically updated by changing the value of `state.allowUpdate`. Thus, even if `state.x` or `state.y` changes, it is controllable.
+
+### Stateful Components and Stateless Components
+
+After reading the Setup and Render section, you should have a general understanding of why there are `stateless` components and `stateful` components in Gyron.js.
+
+A `stateful` component refers to a component with internal data that is not refreshed during the next update. When the return value of a component is a function and the return value of the function is a node, we call it a `stateful` component.
+
+```jsx line=4
+import { useValue, FC } from 'gyron'
+
+const HelloWorld = FC(() => {
+  const count = useValue(0)
+  return <div>{count}</div>
+})
+```
+
+In some cases, you just want to encapsulate some UI components whose states all come from the parent component, that is, they don't need to manage these states internally, just manage the UI presentation and respond to user events properly. `Stateless` components have better migration capabilities.
+
+When a component directly returns a node, it is a `stateless` component. `Stateless` components cannot have internal states. The function will be executed once again on each update. If you need to retain the internal state of the component, please use a `stateful` component.
+
+```jsx line=4
+import { useValue, FC } from 'gyron'  
+
+const HelloWorld = FC(({ count }) => {
+  return <div>{count}</div>
+})
+```
+
+## Cache Components
+
+Cache components can automatically maintain the state of components. When the component is invisible, the state of the component will be retained. When the component is activated again, the state will be automatically restored.
+
+```jsx 
+import { keepComponent, useValue, FC } from 'gyron'
+
+const App = keepComponent(
+  FC(() => {
+    const count = useValue(0)
+
+    function increment() {
+      count.value++
+    }
+
+    return <div onClick={increment}>Cache Component {count.value}</div>
+  })
+)
+```
+
+When the props of a cache component change, the cache component will automatically update. When the dependent data of the component changes, the component will also automatically update.
+You can optimize components with the keepComponent method. Do not overuse keepComponent components, because this uses a Map internally to save these components. If the cache component is determined to no longer be used, you can use the `clearCacheComponent` method to clear the local cache and disconnect the component's dependencies.
+
+```jsx line=9
+import { clearCacheComponent, keepComponent, FC } from 'gyron'
+
+const App = keepComponent(
+  FC(() => {
+    // ...
+  })  
+)
+
+clearCacheComponent(App)
+```
+
+## Async Components
+
+Async components can be used for lazy loading of pages to reduce the resources needed to load on the homepage.
+
+Async components can also do some other things that will be covered in detail in the advanced tutorials. [Async Components](/docs/async-component)
+
+## FCD
+
+`FCD` is used to define components with deferred updates. As the name implies, components defined with FCD, updates will not block UI rendering and user behavior.
+
+It is used the same way as FC. Define a component with FCD.
+
+```tsx line=1
+const SlowItem = FCD<{ text: string }>(({ text }) => {
+  const startTime = performance.now()
+  while (performance.now() - startTime < 1) {
+    // ...
+  }
+
+  return <li>Text: {text}</li> 
+})
+```
+
+When our component update is very time consuming, FCD can be used to define the component. Let's look at the difference between FC and FCD with two practical examples below.
+
+import sourceFCDTSX from '@/demo/fcd/index.tsx.txt'
+import sourceFCDListTSX from '@/demo/fcd/list.tsx.txt'
+import sourceFCDItemTSX from '@/demo/fcd/item.tsx.txt'
+import sourceFCDLESS from '@/demo/fcd/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={400}
+  sources={[
+    {
+      code: sourceFCDTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCDListTSX,
+      type: 'typescript',
+      name: 'list.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCDItemTSX,
+      type: 'typescript',
+      name: 'item.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCDLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
+    },
+  ]}
+/>
+
+In the example above, a component is defined with FCD. Each time it is modified, the update task of `SlowItem` will enter a deferred update queue. If the tasks in this queue exceed 5ms, the next update will enter an idle queue. 
+
+import sourceFCTSX from '@/demo/fc/index.tsx.txt'
+import sourceFCListTSX from '@/demo/fc/list.tsx.txt'
+import sourceFCItemTSX from '@/demo/fc/item.tsx.txt'
+import sourceFCLESS from '@/demo/fc/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={400}
+  sources={[
+    {
+      code: sourceFCTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCListTSX,
+      type: 'typescript',
+      name: 'list.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCItemTSX,
+      type: 'typescript',
+      name: 'item.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceFCLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
+    },
+  ]}
+/>
+
+In comparison, it can be found that in the first example, the user's input is always responded by the browser at any time, but in the second example, each modification by the user may cause the UI to freeze.

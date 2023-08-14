@@ -1,0 +1,57 @@
+## Context
+
+Context is also an important part of Gyron, many features rely on it. For example, the userRouter provided by the Router library, and the useStore provided by the Redux library, are both implemented via context.
+
+### Provide & Inject
+
+Sometimes we don't care what happens in intermediate components, but need to know content from upper components. Form data management is a good example.
+
+Passing form data often encounters hierarchy issues. Intermediate layout components may be inserted, and data propagation downstream can be forgotten. We can use Provide and Inject for cross component communication.
+
+```jsx filename=form.jsx line=9
+import { useReactive, useProvide, FC } from 'gyron'
+import { FormItem } from './formItem'
+
+const Form = FC(() => {
+  const state = useReactive({
+    value: 'Gyron.js',
+  })
+
+  useProvide()('form-data', state)
+
+  return <FormItem></FormItem>
+})
+```
+
+We first declare a Form component, using a generic FormItem component to manage each form input item.
+
+```jsx filename=formItem.jsx
+import { Input, FC } from './input'
+
+const FormItem = FC(() => {
+  return <Input />
+})
+```
+
+Here FormItem just simply indicates one level, there may be more nested components in actual use.
+
+```jsx filename=input.jsx line=4
+import { useInject, FC } from 'gyron'
+
+const Input = FC(() => {
+  const state = useInject()('form-data')
+
+  return (
+    <input
+      value={state.value}
+      onChange={(e) => (state.value = e.target.value)}
+    />
+  )
+})
+```
+
+The Input component uses useInject to receive the data passed from the Form, and modifies it here.
+
+### RootContext
+
+RootContext mainly serves third party library developers, needing createPlugin. See links for details. [Plugins](/docs/instance#plugins)

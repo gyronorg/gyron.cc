@@ -1,0 +1,164 @@
+Here is my attempt to translate the main contents of this document into English:
+
+## Core Concepts
+
+> This document mainly discusses the ideas behind Router and its implementation principles. Reading it for the first time may be abstruse, but when you are very familiar with using it, reading it again will give you an enlightening feeling. If you just want to know how to use it, you can go to [Quick Start](/core/router/quick-started).
+
+The birth of Router is the author's reference to the excellent open source cases in the community, combined with the characteristics of the Gyron.js framework. 
+
+The Router you see now is actually the second major version. The first version was developed using the provide and inject features of Gyron.js. It has a fatal flaw that there will be matching fallback (matching priority) at runtime, so when you match a redirect route, you need to fall back to the redirect route and then match again, or when matching the "*" and normal route, repeat matching and messy states will appear.
+Therefore, the second version completely abandons the runtime mechanism of the first version, and instead opts for collecting Routes and then handling fallback matching and other tasks.
+
+This version collects Routes through the `<Routes />` component (Routes.children / Route.children), then matches the routing tree through the url, and finally renders it.
+
+It is not just mapping url to components, but a complete user solution. It can be adapted to different application scenarios with different components. Its core concepts can be summarized as the following three:
+
+- History Stack
+- Mapping url to components 
+- Match url and render components
+
+### Glossary
+
+Before reading the following documents, we need to understand some terms first so as not to be at a loss when we see them later.
+
+- `URL`: This is the same as the url we see in the browser, only the internal url is a managed data.
+- `History`: The interface allows you to operate the session history of previously visited tabs or frames in the browser.
+- `History Stack`: Record the state of user navigation.
+- `Route`: Define component mappings for urls. You can declare a complete set of routing rules through Route.
+- `Index Route`: The default route, the route displayed after complete matching. It is usually used as the default display interface for a route in nested routes.
+- `Outlet`: Render matching nested routes.
+- `Relative Path`: Relative path, will automatically inherit the parent route path during matching.
+- `Absolute Path`: Absolute path, starting with `/`, participates directly in matching.
+- `RouteRecord`: Formatted Route data.
+- `Match Route Tree`: Matched routing tree, generally there is only one node in the tree, but if you match two routes at the same level, both will be rendered (only [normal routes](quick-started#routing-rules) will appear). 
+
+## History Stack
+
+Router uses the `history` library, which provides an upper wrapper of Window History, such as event listening and state management.
+
+When the user actively accesses a certain route, the listening of Router will not be triggered. The listening of Router can only be triggered by calling the pushState method on the history object or other similar methods that change the state. So only useRouter or the Link component can avoid full page refresh (the differences between the two will not be distinguished below).
+
+For example, if the user clicks on the links in the table below on the page, the browser stack list will be as shown in the table. (The bolded state represents the current state)
+
+| Action | Stack |
+|-|-|
+| Click `/user` | **`/user`** |   
+| Click `/admin` | `/user` **`/admin`** |
+| Click `/admin/setting` | `/user` `/admin` **`/admin/setting`** |
+| Click browser back button | `/user` **`/admin`** `/admin/setting` |
+| Click `/user` | `/user` `/admin` **`/user`** |
+
+The browser's history stack is a snapshot of the current history collection. When the user returns and re-accesses a new route, the previous snapshot will be overwritten. That is, in the fifth step above, you will find that `/admin/setting` has been deleted from the browser's history stack.
+
+> A basic principle of Router implementation is that state changes do not trigger server requests, and allow local listening and modification of state.
+
+### Navigation
+
+Router provides five different forms of navigation. It also provides `beforeEach` and `afterEach` hooks that execute before and after user navigation, which is a `Function Set` object.
+
+- `push`: Adds a state to the current browser session history stack.
+- `replace`: Replaces the current state in the browser session history stack.
+- `back`: Same as `history.back`, move back one page in session history. If there is no previous page, this method does nothing.
+- `forward`: Same as `history.forward`, move session history forward by one page. It has the same effect as calling history.go(delta) with delta parameter set to 1.
+- `go`: Same as `history.go`, load a specific page from the session history.
+
+### State
+
+When using `push` and `replace`, you can pass state to them, which will be pushed to the current history stack.
+
+> When using state, please note not to use `back`, `current`, and `forward` as names, because they are used by Router as built-in properties for handling `from` and `to` in the lifecycle.
+
+```jsx
+import { useRouter } from '@gyron/router'
+
+export const UserDetail = () => {
+  const router = useRouter()
+  useRouter.push('/login', { reson: 'Invaldate Access Token' }) 
+}
+```
+
+We have built in three states on `history.state.usr` that you can use as needed.
+
+- `back`: The previous one in the route stack, no current state if accessed for the first time.
+- `current`: The current route, equivalent to `location.pathname + location.search`.
+- `forward`: The next one in the route stack, only valid when `index < stack.length` (index is the current route position, stack is the number of routes in the stack).
+
+### Hash Mode
+
+Modern browsers all support history mode, but single page applications usually become blank after refresh, because after refresh, the requested url cannot be handled properly by the browser, for example, in nginx, other routes must be redirected to index.html.
+If hash mode is used, front-end routing can be fully utilized without server cooperation.
+
+```jsx
+import { createHashRouter } from '@gyron/router'
+
+createHashRouter()
+```
+
+## Matching 
+
+Before matching, the declared routes will be formatted into `RouteRecord`. Then the matching routes are found recursively internally and assembled into a `Match Route Tree`, and finally rendered through `<Routes />`.
+
+Router also retains the `<Redirect />` route, which is slightly different from the "Not Found" route. The former can manage multiple redirections in a declarative way, while the "Not Found" route needs to implement equivalent code in the element component.
+
+```jsx
+import { FC } from 'gyron'
+import { useRoutes } from '@gyron/router'
+
+const App = FC(() => {
+  return useRoutes([
+    {
+      path: '',
+      strict: true,
+      element: <Welcome />,
+    },
+    {
+      path: 'user',
+      element: <User />,
+      children: [
+        {
+          path: ':id',
+          children: [
+            {
+              path: 'member',
+              element: <Member />,
+            },
+            {
+              path: 'setting',
+              element: <Setting />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '*',
+      element: <Mismatch />,
+    },
+  ])
+})
+```
+
+## Rendering
+
+After finding the `Match Route Tree`, it will be rendered through `<Routes />`. During rendering, `<Outlet />` component can be used to render nested matching routes.
+
+> Note that we will not delete any of your route rules, even if their configurations are the same. If we encounter the same matching rules, we will render all matching routes with a `Fragment` node.
+
+```jsx line=12
+import { FC } from 'gyron'
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = FC(() => {
+  return (
+    <div>
+      <div>
+        <Link to="/docs">文档</Link>
+        <Link to="/helper">帮助</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  )
+})
+```

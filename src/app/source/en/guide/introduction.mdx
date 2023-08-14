@@ -1,0 +1,169 @@
+import { Explorer } from '@/pages'
+
+# Gyron
+
+> `Gyron.js` has been officially released. You can use it in production environments. We will release official UI components and more practical application scenarios in the future. Stay tuned!
+
+`Gyron.js` is a flexible reactive frontend framework that can be reduced to 9KB when compressed. Compared to other frameworks, it has greater advantages in terms of size.
+
+Benchmark test results of `Gyron.js` runtime can be found at [js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html).
+
+The benchmark test results before version 0.0.16 of `Gyron.js` were not ideal. Version 0.0.16 has optimized a large part of performance. In some scenarios, the speed has increased by about 7 times. Specific performance can be found in [this image](https://i.imgur.com/QZdm5NW.png) (screenshot pieced together, not very beautiful).
+
+## Online Experience
+
+If you want to develop with `Gyron.js` but don't have the relevant environment on your computer, you can visit our online experience address with your browser's Sandbox. You can write any user code in it and get real-time feedback.
+
+Go to [codesandbox](https://codesandbox.io/s/gyron-next-ppwrlp?file=/src/index.tsx) for online experience directly.
+
+You can also experience it directly using our online editing platform we provided.
+
+import sourceTSX from '@/demo/helloworld/index.tsx.txt'
+import sourceLESS from '@/demo/helloworld/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={300}
+  sources={[
+    {
+      code: sourceTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
+    },
+  ]}
+/>
+
+## Using Gyron on Websites
+
+We can access our code through various CDN services. Add a `script` tag to your page, add the `type="module"` attribute, then import the `createInstance` method in esm module form, and create a Gyron.js app instance.
+
+```html
+<div id="root"></div>
+
+<script type="module">
+  import { createInstance, h } from 'https://cdn.skypack.dev/gyron'
+
+  createInstance(h('button', 'Like')).render('#root')
+</script>
+```
+
+In most cases, JSX syntax is closer to native syntax and has a low learning cost, so we recommend using JSX to build our apps.
+
+You can try JSX through the [online compiler](https://codesandbox.io/s/gyron-v0-0-16-ppwrlp).
+
+The above code in JSX is:
+
+```jsx
+import { createInstance } from 'gyron'
+
+createInstance(<button>Like</button>)
+```
+
+## Create a New Gyron App
+
+Next, the tutorial will show you how to build a development environment from scratch and launch a HelloWorld project.
+
+### Through CLI
+
+First, we need to install `@gyron/cli` globally, then run `gyron create <instance-name>`.
+
+Or use `npx @gyron/cli create <instance-name>`, then follow the prompts for the next step.
+
+After completion, enter the corresponding directory according to the prompts and execute the install dependency command `npm install`. After installing the dependencies, you can start the project with `npm run start`. After running, open the browser and enter [http://localhost:3000](http://localhost:3000) to see our app.
+
+Convert the above description into commands as follows:
+
+```bash
+# Install CLI globally
+npm install @gyron/cli -g
+
+# Create project
+gyron create <instance-name>
+
+# Enter project
+cd <instance-name>
+
+# Install dependencies
+npm install
+
+# Run
+npm run start
+```
+
+### From Scratch
+
+Creating a frontend app is usually done by these toolchains:
+
+- Package manager. Such as `yarn`, `npm`, `pnpm`.
+- Bundler. Such as `webpack`, `vite`, `esbuild`.
+- Compiler. Such as `babel`, `tsc`.
+
+When reading the following tutorials, there will be a prerequisite that node and npm need to be installed on your computer. And node version must be greater than 14.
+
+First initialize a project with a package manager. See [npm init](https://docs.npmjs.com/cli/v8/commands/npm-init) for details.
+
+Then install related dependencies:
+
+```bash
+npm install gyron @gyron/babel-plugin-jsx vite -D
+```
+
+Then write a start script and build script in the package.json file.
+
+```json filename=package.json
+{
+  "scripts": {
+    "build": "vite build",
+    "start": "vite"
+  }
+}
+```
+
+After installation, create a `vite.config.js` file in the root directory of the project, and write the following:
+
+```javascript filename=vite.config.js
+import { babelViteJsx } from '@gyron/babel-plugin-jsx'
+import { defineConfig } from 'vite'
+
+export default ({ mode }) => {
+  return defineConfig({
+    define: {
+      __DEV__: mode === 'development',
+    },
+    plugins: [babelViteJsx({ hmr: mode === 'development', setup: true })],
+  })
+}
+```
+
+Then create an index.html entry file in the root directory. And specify a root node file, usually called index.jsx.
+
+```html filename=index.html
+<div id="root"></div>
+
+<script type="module" src="./src/index.jsx"></script>
+```
+
+```jsx filename=src/index.jsx
+import { createInstance } from 'gyron'
+
+createInstance(<button>Like</button>).render('#root')
+```
+
+Finally run the script `npm run start`, then open the browser and enter the address [http://localhost:3000](http://localhost:3000). You can see a button. This completes the process from 0 to 1 for a project.
+
+At this point, only the basic structure of the project is completed. Excellent libraries like [eslint](https://eslint.org/docs/user-guide/getting-started), [prettier](https://prettier.io/docs/en/install.html), and [typescript](https://www.typescriptlang.org/) can also be introduced, especially useful for collaborative development.
+
+Glossary:
+
+- `Gyron.js` is the framework name. It is `gyron` on npm, so run `npm install gyron` when installing.

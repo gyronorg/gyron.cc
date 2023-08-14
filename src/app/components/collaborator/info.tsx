@@ -35,6 +35,7 @@ import Peer, { DataConnection, MediaConnection } from 'peerjs'
 import type { WebrtcProvider } from 'y-webrtc'
 import { notice } from '../notice'
 import classNames from 'classnames'
+import { $t } from '@/langs'
 
 interface CollaboratorInfoProps {
   token: string
@@ -296,7 +297,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         onCreateWorkspace(null, gist.id)
       }
       if (disabledActionRoom.value) {
-        confirm(`确认离开当前房间，进入 "${gist.name}" ?`)
+        confirm($t('TemplateLiteral_299_16_299_46', gist.name))
           .then(go)
           .catch(() => {})
       } else {
@@ -305,7 +306,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     }
 
     async function onRemoveRoom(gist: CreateResponseGist) {
-      confirm(`确定删除 ${gist.name} 房间吗?`)
+      confirm($t('TemplateLiteral_308_14_308_38', gist.name))
         .then(() => {
           deleteGist(gist.id).then(onOpenGist)
         })
@@ -315,7 +316,7 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
     function onSuffix(e: Event) {
       e.preventDefault()
       navigator.clipboard.writeText(share.value).then(() => {
-        notice('拷贝成功，快去分享吧！')
+        notice($t('StringLiteral_318_15_318_28'))
       })
     }
 
@@ -363,8 +364,9 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
             alt="avatar"
             class="mx-auto h-[100px] rounded-[50px]"
           />
+
           <div class="text-center my-2">{info.value.name}</div>
-          <Button onClick={onOpenGist}>我的代码</Button>
+          <Button onClick={onOpenGist}>{$t('JSXText_367_39_367_43')}</Button>
           <Modal
             visible={visible.value}
             onClose={() => (visible.value = false)}
@@ -381,22 +383,24 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
                       disabled={item.id === gistId.current}
                       onClick={() => onRemoveRoom(item)}
                     >
-                      移除
+                      {$t('JSXText_383_21_385_20')}
                     </Button>
                     <Button type="text" onClick={() => onReopenRoom(item)}>
-                      开启
+                      {$t('JSXText_386_75_388_20')}
                     </Button>
                   </div>
                 </li>
               ))}
-              {gistList.value.length === 0 && <div>无数据</div>}
+              {gistList.value.length === 0 && (
+                <div>{$t('JSXText_392_51_392_54')}</div>
+              )}
             </ul>
           </Modal>
           <form>
-            <FormItem name="房间名称">
+            <FormItem name={$t('JSXAttribute_396_22_396_33')}>
               <Input
                 type="text"
-                placeholder="请输入房间名"
+                placeholder={$t('JSXAttribute_399_16_399_36')}
                 required
                 value={roomName.value}
                 onChange={(e) =>
@@ -408,12 +412,12 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
               onClick={onCreateWorkspace}
               disabled={config.disabledCreateRoom}
             >
-              创建协同房间
+              {$t('JSXText_410_13_412_12')}
             </Button>
-            <FormItem name="分享">
+            <FormItem name={$t('JSXAttribute_413_22_413_31')}>
               <Input
                 type="text"
-                placeholder="请创建协同后拷贝分享"
+                placeholder={$t('JSXAttribute_416_16_416_40')}
                 value={share.value}
                 suffix={<CopyIcon class="h-full" />}
                 onSuffixClick={onSuffix}
@@ -434,10 +438,10 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
         </Button>
 
         <form>
-          <FormItem name="房间标识符">
+          <FormItem name={$t('JSXAttribute_437_20_437_32')}>
             <Input
               id="other"
-              placeholder="请输入房间ID或者访问分享的链接"
+              placeholder={$t('JSXAttribute_440_14_440_44')}
               required
               value={targetRoomId.value}
               onChange={(e) =>
@@ -447,13 +451,13 @@ export const CollaboratorInfo = FC<CollaboratorInfoProps>(
           </FormItem>
           <div class="flex items-center justify-between gap-3">
             <Button onClick={onAddWorkspace} disabled={config.disabledJoinRoom}>
-              加入
+              {$t('JSXText_449_80_451_12')}
             </Button>
             <Button
               onClick={onLeaveWorkspace}
               disabled={!config.disabledJoinRoom}
             >
-              离开
+              {$t('JSXText_455_13_457_12')}
             </Button>
           </div>
         </form>

@@ -13,6 +13,7 @@ import {
 import { ArrowRightIcon } from './icons'
 import { Skeleton } from './skeleton'
 import classnames from 'classnames'
+import { $t } from '@/langs'
 
 export type Navigation = () => Promise<typeof import('*.mdx')>
 
@@ -113,7 +114,7 @@ export const Guidance = FC<GuidanceProps>(({ isSSR }) => {
       )}
     >
       <h5 class="text-slate-900 font-semibold mb-4 text-sm leading-6 dark:text-slate-100">
-        页面导航栏
+        {$t('JSXText_115_90_117_6')}
       </h5>
       <ul class="text-slate-700 text-sm leading-6 list-none">
         {loading.value ? (

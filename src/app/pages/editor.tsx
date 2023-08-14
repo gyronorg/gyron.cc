@@ -17,8 +17,13 @@ import { post } from '@/utils/fetch'
 import { generateSafeUuid } from '@/utils/uuid'
 import { defaultSources } from './explorer'
 import classNames from 'classnames'
+import { Lang } from '@/components/translate'
 
-export const Editor = FC(({ isSSR }) => {
+interface EditorProps {
+  lang?: string
+}
+
+export const Editor = FC<EditorProps>(({ lang = Lang.ZH, isSSR }) => {
   const token = useValue('')
   const sources = useValue<Source[]>(normalizedSource(defaultSources))
   const namespace = generateSafeUuid()

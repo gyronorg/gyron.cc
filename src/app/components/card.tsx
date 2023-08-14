@@ -1,6 +1,7 @@
 import { FC, VNode } from 'gyron'
 import { CodeHighlight } from './highlight'
 import { Link } from '@gyron/router'
+import { $t } from '@/langs'
 import classNames from 'classnames'
 
 interface CardProps {
@@ -25,7 +26,7 @@ export const CardCode = FC<CardProps>(({ title, desc, codes, url }) => {
         className="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-sky-50 text-sky-600 hover:bg-sky-100 hover:text-sky-700 focus:ring-sky-600 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600 dark:hover:text-white dark:focus:ring-slate-500 my-8"
         to={url}
       >
-        了解更多
+        {$t('JSXText_27_7_29_6')}
       </Link>
       <div className="my-2">
         <CodeHighlight content={codes} />
@@ -65,7 +66,7 @@ export const CardImage = FC<CardImageProps>(
             referrerPolicy="no-referrer"
             target="_blank"
           >
-            了解更多
+            {$t('JSXText_67_11_69_10')}
           </a>
         </div>
       </section>

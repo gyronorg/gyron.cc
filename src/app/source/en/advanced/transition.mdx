@@ -1,0 +1,165 @@
+import { Explorer } from '@/pages'
+
+## Transition
+
+Transitions allow you to define different transition effects when an element changes between different states. For example, you can use opacity to create a fade in/out effect.
+
+In our framework, you just need to use the built-in `Transition` component to achieve this quickly.
+
+```tsx filename=index.tsx
+import { Transition, FC } from 'gyron'
+
+const App = FC(() => {
+
+  const visible = useValue(true)
+
+  return (
+    <div>
+      <button onClick={(visible.value = !visible.value)}>toggle</button>
+      
+      <Transition name="fade">
+        {visible.value && <aside>menu</aside>}
+      </Transition>
+    </div>
+  )
+})
+```
+
+After defining the component, we can start writing CSS. We recommend using preprocessors like Less, Sass, etc.
+
+```less filename=index.less
+.fade {
+
+  &-active {
+    transition: opacity 0.2s;
+    $-before {
+      opacity: 0;
+    }
+  }
+  
+  &-leave {
+    transition: opacity 0.2s;
+    opacity: 0;
+  }
+
+}
+```
+
+Then import the written Less into our module and click the button to experience what `Transition` brings intuitively.
+
+```tsx filename=index.tsx line=2 
+// ...
+import './index.less'
+// ...
+```
+
+### Live Transition Demo
+
+import sourceTSX from '@/demo/transition/index.tsx.txt'
+import sourceLESS from '@/demo/transition/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={400}
+  sources={[
+    {
+      code: sourceTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true, 
+      remove: true,
+    },
+  ]}
+/>
+
+### Component Rendering
+
+`Transition` can also wrap components. For example, I have component A and B which are mutually exclusive. We can use logical operators to control which one renders.
+
+```tsx
+import { FC, useValue, Transition } from 'gyron'
+
+const A = FC(({ children }) => {
+  return <div>{children}</div>
+})
+
+const B = FC(({ children }) => {
+  return <div>{children}</div> 
+})
+
+const App = FC(() => {
+
+  const visible = useValue(true)
+
+  const count = useValue(0)
+
+  return (
+    <div>
+      <button onClick={onChange}>toggle</button>
+      
+      <Transition name="visible">
+        {visible.value ? <A>{count.value}</A> : <B>{count.value}</B>}
+      </Transition>
+    </div>
+  )
+  
+  function onChange() {
+    visible.value = !visible.value
+    count.value++ 
+  }
+})
+```
+
+### Execution Timing 
+
+To use in real apps, we need to understand how it works and consider edge cases.
+
+The following diagram shows the execution timing of `Transition` and what it does in each phase to transition elements.
+
+![gyron transition lifecycle](/assets/image/transition.png)
+
+As shown, transition is divided into two parts - entering and leaving. We number the phases:
+
+- `0 -> 1` is `active`, element entering transition cycle.
+
+- `1 -> 0` is `leave`, element leaving transition cycle.
+
+Transition classNames in CSS:
+
+- `active-before`: Class before element enters, usually sets initial entering state.
+
+- `active`: Element rendered in DOM until transition ends, usually sets `transition: all 0.1s`.
+
+- `leave-before`: Element state before leaving, sets initial leaving state.
+
+- `leave`: Exists during leave, also sets `transition: all 0.1s`. 
+
+### Implementation 
+
+To seamlessly transition before effects are visible, we use `requestAnimationFrame` which executes callback before next repaint.
+
+### Edge Cases
+
+If user triggers rapid operations, a transition cycle may start immediately after the previous one finishes. We simply shorten transition duration to 0 seconds to allow the next cycle to proceed immediately.
+
+In numbers:
+
+```bash
+# Cycle 1  
+0 -> 0.5
+
+# Cycle 2
+0.5 -> 1 # Finish instantly 
+
+# Cycle 3
+1 -> 0
+```

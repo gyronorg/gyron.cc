@@ -1,0 +1,93 @@
+## registerErrorHandler
+
+Register custom error handling in component.
+
+**Parameters**
+
+- `handler`: Function - Callback triggered on render/update errors.
+
+**Type Declaration**
+
+```ts
+declare function registerErrorHandler(handler: BoundariesHandler): void
+```
+
+**Example**
+
+```js
+import { registerErrorHandler, h } from 'gyron'
+
+const App = h(() => {
+
+  registerErrorHandler(({ message }) => {
+    message // Uncaught exceptions
+  })
+
+  throw new Error('Uncaught exceptions')
+  
+})
+```
+
+## registerWarnHandler
+
+Register custom warning handling in component.
+
+**Parameters**
+
+- `handler`: Function - Callback triggered on render/update warnings.
+
+**Type Declaration**
+
+```ts 
+declare function registerWarnHandler(handler: BoundariesHandler): void
+```
+
+**Example**
+
+```js
+import { registerWarnHandler, useInject, h } from 'gyron'
+
+const App = h(() => {
+
+  registerWarnHandler(({ message }) => {
+    message // Contextual information not obtained ...
+  })
+
+  useInject()('a')
+
+  return h('div', 'hello world')
+
+})
+```
+
+## manualErrorHandler
+
+Custom error handling in component, useful in async or callbacks.
+
+**Parameters**
+
+- `error`: Error | unknown - Error info, can be custom then handle in ErrorBoundary fallback.
+
+- `component`: Component - Current component, from params or getCurrentComponent.
+
+**Type Declaration**
+
+```ts
+declare function manualErrorHandler(
+  error: Error | unknown,
+  component: Component
+): any
+```
+
+**Example**
+
+```js
+import { manualErrorHandler, h } from 'gyron'
+
+const App = h(() => {
+  Promise.reject('Error: Uncaught exceptions').catch((e) => {
+    manualErrorHandler(e, component)
+  })
+  return h('div', 'hello world')
+})
+```

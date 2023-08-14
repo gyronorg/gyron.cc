@@ -1,0 +1,171 @@
+## createInstance
+
+Create app instance, render to actual DOM nodes via `render` method.
+
+**Parameters**
+
+- `root`: VNode - A VNode created with h function.
+
+- `isHydrate`: boolean - For SSR, truthy means using "hydration" to make reactive.
+
+**Return**  
+
+An app object, plain JS object.
+
+**Type Declaration**
+
+```ts
+interface Instance {
+  container: Element | null
+  render: (containerOrSelector: string | HTMLElement) => Instance
+  destroy: () => Instance
+  readonly plugins: Set<Plugin>
+  get root(): VNode
+}
+
+declare function createInstance(root: VNode, isHydrate?: boolean): Instance
+```
+
+**Example**
+
+```js
+import { h, createInstance } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+createInstance(h(App)).render('#root')
+```
+
+## createSSRInstance
+
+Create server app instance. Component isSSR is always true.
+
+**Parameters**
+
+- `root`: VNode - VNode created with h function.
+
+**Return**
+
+Server app instance. See [SSR](/docs/ssr) for details.
+
+**Type Declaration**
+
+```ts
+declare function createSSRInstance(vnode: VNode): Instance
+```
+
+**Example**
+
+```js
+import { h, createSSRInstance, renderToString } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'hello world') 
+})
+
+const { root } = createSSRInstance(h(App))
+
+renderToString(root).then((html) => {
+  console.log(html)
+  // <div>hello world</div>
+})
+```
+
+## createSSRContext
+
+Hydrate with this after createSSRInstance on client. Accepts object with `message` property usually generated automatically:
+
+Object `key` is component position and name. 
+
+Object `value` is component `props` injected by Gyron.
+
+**Type Declaration**
+
+```ts
+declare function createSSRContext(context: SSRContext): {
+  render: ( 
+    vnode: VNode,
+    containerOrSelector: string | HTMLElement  
+  ) => VNode<VNodeType>
+}
+```
+
+**Example** 
+
+```js
+import { h, createSSRContext } from 'gyron'
+
+const App = h(({ msg }) => {
+  return h('div', msg)  
+})
+
+createSSRContext({
+  message: {
+    '/test?name=App': {
+      msg: 'hello world',
+    },
+  },
+}).render(App, '#app')
+```
+
+## render
+
+Render instance to actual DOM node.
+
+**Parameters**
+
+- `containerOrSelector`: string | HTMLElement - Selector string or HTMLElement node.
+
+**Return**
+
+App instance with real DOM node as container value.
+
+**Type Declaration**
+
+```ts 
+interface Instance {
+  // ...
+  render: (containerOrSelector: string | HTMLElement) => Instance
+}
+```
+
+**Example**
+
+```js
+import { h, createInstance } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+createInstance(h(App)).render('#root') 
+```
+
+## destroy
+
+Destroy app, all component instances destroyed, lifecycle hooks called.
+
+**Type Declaration**
+
+```ts
+interface Instance {
+  // ...
+  destroy: () => Instance
+}
+```
+
+**Example** 
+
+```js
+import { createInstance, h } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'hello world')
+})
+
+const app = createInstance(h(App))
+
+app.destroy()
+```

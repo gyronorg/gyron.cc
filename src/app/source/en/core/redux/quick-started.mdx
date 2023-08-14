@@ -1,0 +1,168 @@
+## Quick Start
+
+> Get familiar with `redux` state management before starting. Our `redux` is fully based on `redux`. Go to [https://redux.js.org/](https://redux.js.org/) to learn if unfamiliar.
+
+`Redux` is the Gyron.js state management library for `redux`. Makes state changes reactive without breaking immutability.
+
+Uses a reactive variable internally as state copy. Just sync state to this on changes. External modifications impossible, only via dispatch, ensuring stability.
+
+### Create Store 
+
+Use `createStore` to create a store plugin, then export.
+
+```js filename=store.js
+import { createStore } from '@gyron/redux'
+
+export default createStore({
+  reducer: {}, 
+})
+```
+
+### Use State in Components
+
+After creating store, add global state in reducers as needed.
+
+```js filename=login.js line=3
+createStore({
+  reducer: (state = { value: 0 }) => {
+    return state
+  },
+})
+```
+
+Then state can be used anywhere in app.
+
+```js
+import { useSelector, FC } from '@gyron/redux'
+
+const App = FC(() => {
+  const state = useSelector()
+  return <div>{state.value}</div>
+})
+```
+
+### Create Module
+
+Above satisfies simple cases, but complex scenarios like custom middleware, separating state by page need `createSlice` to create state slices.
+
+```js filename=counter.js
+import { createSlice } from '@gyron/redux'
+
+const counter = createSlice({
+  name: 'counter',
+  initialState: {
+    count: 0, 
+  },
+  reducers: {
+    increment(state) {
+      state.count++
+    },
+  },
+})
+
+export const { increment } = counter.actions
+export const counter = counter.reducer
+```
+
+Use the module:
+
+```js line=5  
+import { counter } from './counter'
+
+createStore({
+  reducer: {
+    counter,
+  },
+})
+```
+
+### Update Store
+
+External state updates will error. Use dispatch to update.
+
+```js
+import { createStore } from '@gyron/redux'
+
+const store = createStore({
+  reducer: (state = { value: 0 }, action) => {
+    switch (action.type) {
+      case 'counter/incremented':
+        return { value: state.value + 1 }
+      case 'counter/decremented':
+        return { value: state.value - 1 }
+      default:
+        return state
+    }
+    return state
+  }, 
+})
+
+const state = store.extra.getState()
+
+// Wrong update
+state.value = 1
+
+// Correct update  
+store.extra.dispatch({ type: 'counter/incremented' })
+```
+
+### Complete Example
+
+Shows using `@gyron/redux` with Gyron and Redux. Can also use Redux ecosystem tools like [redux-devtools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd).
+
+```jsx filename=store.ts 
+import { createStore, createSlice } from '@gyron/redux'
+
+import Counter from './module/counter'
+
+const counter = createSlice({
+  name: 'counter',
+  initialState: {
+    count: 0,
+  },
+  reducers: {
+    increment(state) {
+      state.count++
+    },
+  },
+})
+
+export const store = createStore({
+  reducer: {
+    Counter: counter.reducer,
+  },
+})
+
+export const { increment } = counter.actions
+```
+
+```jsx filename=index.tsx
+import { createInstance, FC } from 'gyron'
+
+import { Provider } from '@gyron/redux'
+
+import { useSelector, useDispatch } from '@gyron/redux'
+
+import { store, increment } from './store'
+
+const App = FC(() => {
+
+  const { Counter } = useSelector()
+
+  const dispatch = useDispatch()
+
+  return (
+    <div onClick={() => dispatch(increment())}>
+      Counter Demo: {Counter.count} 
+    </div>
+  ) 
+})
+
+createInstance(
+  <Provider store={store}>
+    <App />
+  </Provider>
+).render('#root')
+```
+
+Clicking the counter text will increment the count. With the Redux plugin, can use time travel to jump to any state.

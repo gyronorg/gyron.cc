@@ -1,0 +1,302 @@
+## createVNode
+
+Create a VNode, returns a plain object. Can run directly in browser, mainly for writing apps without compile.
+
+> Differs from `h` in that it does not auto merge props and children.
+
+**Parameters**
+
+- `tag`: any, can be string tag or component.
+- `props`: VNodeProps - Node properties, passed as args if tag is function.
+- `children`: Children | Children[] - Child nodes, can be VNode or string.
+
+**Type Declaration** 
+
+```ts
+declare function createVNode(
+  tag: unknown,
+  props?: Partial<VNodeProps>,
+  children?: Children | Children[]
+): VNode
+```
+
+**Example**
+
+```js
+import { createVNode } from 'gyron'
+
+const App = createVNode(() => {
+  return createVNode('div', null, 'hello world')
+})
+```
+
+## createComponent
+
+Same as above, create a component.
+
+**Parameters**
+
+- `componentFunction`: Component function.  
+- `props`: VNodeProps - Node properties, passed as args if tag is function.
+- `children`: Children | Children[] - Child nodes, can be VNode or string.
+
+**Type Declaration**
+
+```ts
+declare function createComponent(
+  componentFunction: ComponentSetupFunction,
+  props?: Partial<VNodeProps>,
+  children?: Children | Children[] 
+): VNode<ComponentSetupFunction>
+```
+
+**Example**
+
+```js
+import { createComponent, h } from 'gyron'
+
+const App = createComponent(() => {
+  return h('div', null, 'hello world') 
+})
+```
+
+## createFragment
+
+Same as above, create nodes without a parent. 
+
+**Parameters**
+
+- `children`: Children[] - Child nodes, can be VNode or string.
+
+**Type Declaration**
+
+```ts
+declare function createFragment(children: Children[]): VNode<typeof Fragment>
+```
+
+**Example**
+
+```js
+import { createFragment, h } from 'gyron'
+
+const App = h(() => {
+  return createFragment(['hello', 'world']) 
+})
+```
+
+## createText
+
+Same as above, create a text node.
+
+**Parameters**
+
+- `children`: string | number | boolean | null | undefined - Text content.
+
+**Type Declaration**
+
+```ts
+declare function createText(children: TextContent): VNode<typeof Text> 
+```
+
+**Example**
+
+```js
+import { createText, h } from 'gyron'
+
+const App = h(() => {
+  return createText('hello world')
+})
+```
+
+## createElement
+
+Same as above, create an element.
+
+**Parameters**
+
+- `tag`: Tag name.
+- `props`: VNodeProps - Node properties, applied via `setAttribute`.
+- `children`: Children | Children[] - Child nodes, can be VNode or string.
+
+**Type Declaration**
+
+```ts
+declare function createElement(
+  tag: string,
+  props?: Partial<VNodeProps>,
+  children?: Children | Children[]  
+): VNode
+```
+
+**Example**
+
+```js
+import { createElement, h } from 'gyron'
+
+const App = h(() => {
+  return createElement('div', { class: 'container' }, 'hello world') 
+})
+```
+
+## createComment
+
+Same as above, create a comment node.
+
+**Parameters**
+
+- `children`: string - Comment content.
+
+**Type Declaration**
+
+```ts
+declare function createComment(children?: string): VNode<typeof Comment>
+```
+
+**Example** 
+
+```js
+import { createComment, h } from 'gyron'
+
+const App = h(() => {
+  return createComment('async anchor')
+})
+```
+
+## cloneVNode
+
+Clone VNode to avoid same node address and skipped updates.
+
+**Parameters**
+
+- `vnode`: VNode | VNode[] - Node(s) to clone.
+
+**Type Declaration**
+
+```ts
+declare function cloneVNode(vnode: VNode | VNode[]): VNode | VNode[]
+```
+
+**Example**
+
+```js
+import { createComment, cloneVNode, h } from 'gyron'
+
+const App = h(() => {
+  return createComment('async anchor') 
+})
+
+App !== cloneVNode(App) // true
+```
+
+## mergeVNode
+
+Merge props into target node.
+
+**Parameters**
+
+- `vnode`: VNode | VNode[] - Node(s) to merge. 
+- `props`: VNodeProps - Properties to copy.
+
+**Type Declaration**
+
+```ts
+declare function mergeVNode(
+  vnode: VNode | VNode[],
+  props: Partial<VNodeProps>
+): VNode<VNodeType> | VNode<VNodeType>[]
+```
+
+**Example**
+
+```js
+import { createComment, mergeVNode, h } from 'gyron'
+
+const Child = h(() => {
+  return createComment('async anchor') 
+})
+
+const App = mergeVNode(Child, { class: 'container' })
+App.props.class === 'container' // true
+```
+
+## isVNode
+
+Check if object is VNode, avoid confusion with regular nodes.
+
+**Parameters**
+
+- `n`: Object to check.
+
+**Type Declaration**
+
+```ts
+declare function isVNode(n: any): n is VNode
+```
+
+**Example**
+
+```js
+import { isVNode, h } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'async anchor')
+})
+
+isVNode(App) // true
+```
+
+## isVNodeText
+
+Same as above, check if node is text node. 
+
+**Example**
+
+```js
+import { isVNodeText, createText } from 'gyron'
+
+const node = createText('hello world')
+
+isVNodeText(node) // true
+```
+
+## isVNodeComment
+
+Same as above, check if node is comment node.
+
+**Example**
+
+```js 
+import { isVNodeComment, createComment } from 'gyron'
+
+const node = createComment()
+
+isVNodeComment(node) // true
+```
+
+## isVNodeElement
+
+Same as above, check if node is element node.
+
+**Example**
+
+```js
+import { isVNodeElement, createElement } from 'gyron'
+
+const node = createElement('div', {}, 'hello world')
+
+isVNodeElement(node) // true
+```
+
+## isVNodeFragment 
+
+Same as above, check if node is Fragment node.
+
+**Example**
+
+```js
+import { isVNodeFragment, createFragment } from 'gyron'
+
+const node = createFragment(['hello', 'world']) 
+
+isVNodeFragment(node) // true
+```

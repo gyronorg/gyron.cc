@@ -1,0 +1,58 @@
+## Installation
+
+> Note: The APIs described in this document may be inconsistent with the version. Please refer to the installed type files.
+
+`Gyron.js` is a lightweight reactive framework, similar to Vue and React. Based on the mature community environment, it integrates a routing manager and state manager adapted to `Gyron.js`.
+
+`Gyron.js` provides SSR support. This document is developed with the SSR capability of `Gyron.js`.
+
+### Installation Methods
+
+Different installation methods can be used for different scenarios to better fit our project.
+
+- Reference using [CDN](#cdn).
+- Quickly generate templates using [CLI](tutorial#through-cli).
+- Reference using [npm](#npm).
+- Use after download. [Reference](#use-after-download)
+
+### CDN
+
+There are some free CDN service providers in the community. Here are some commonly used ones.
+
+- [https://unpkg.com/gyron](https://unpkg.com/gyron)
+- [https://cdn.jsdelivr.net/npm/gyron](https://cdn.jsdelivr.net/npm/gyron)
+- [https://cdn.skypack.dev/gyron](https://cdn.skypack.dev/gyron)
+
+### NPM
+
+This way of referencing is recommended. It can easily use community resources and support more different browser versions.
+
+```bash
+npm install gyron -D
+```
+
+### Use After Download
+
+Although you can download and then use our framework, it is not recommended, because some bugs may not get fixed in time.
+
+After downloading through the CDN service, save it as gyron.js, then import it via the script tag.
+
+```html
+<div id="root"></div>
+
+<script type="module">
+  import { createInstance, h } from './gyron.js'
+
+  createInstance(h('button', 'Like')).render('#root')
+</script>
+```
+
+### Version
+
+The latest version in public npm is !\[npm (scoped)\](https://img.shields.io/npm/v/gyron?style=flat-square)
+
+| File                                                                          | Module   | Note                                                                                                  |
+| ----------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| [dist/esm/index.js](https://unpkg.com/gyron@0.0.23/dist/esm/index.js)         | ESModule | Recommended if using bundlers                                                                         |
+| [dist/cjs/index.js](https://unpkg.com/gyron@0.0.23/dist/cjs/index.js)         | CommonJS | Suitable for server-side rendering                                                                    |
+| [dist/browser/index.js](https://unpkg.com/gyron@0.0.23/dist/browser/index.js) | ESModule | This version does not contain environment related information and can be used directly in the browser |

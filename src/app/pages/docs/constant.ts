@@ -23,6 +23,29 @@ import {
   ApiContext,
   ApiVNode,
   ApiHandler,
+  InstallationEn,
+  InstanceEn,
+  IntroductionEn,
+  HelloWorldEn,
+  ReactiveEn,
+  ComponentEn,
+  ConditionalRenderingEn,
+  ListRenderingEn,
+  EventBindEn,
+  BuiltPropsEn,
+  ContextEn,
+  FormEn,
+  AsyncComponentEn,
+  TransitionEn,
+  SSREn,
+  ErrorBoundaryEn,
+  ApiGlobalEn,
+  ApiInstanceEn,
+  ApiReactivityEn,
+  ApiComponentEn,
+  ApiContextEn,
+  ApiVNodeEn,
+  ApiHandlerEn,
 } from '@/source'
 import { wrapAsyncMdxContent } from '@/utils/mdx'
 
@@ -277,4 +300,256 @@ export const DOCS_NAV: Menu = [
   },
 ]
 
+export const DOCS_NAV_EN: Menu = [
+  {
+    name: 'Getting Started',
+    path: '/en-US/docs',
+    children: [
+      {
+        path: 'tutorial',
+        name: 'Introduction',
+        anchor: IntroductionEn,
+        component: wrapAsyncMdxContent(IntroductionEn),
+        meta: {
+          page: 'guide/introduction',
+          title: 'Getting Started Introduction',
+        },
+      },
+      {
+        path: 'installation',
+        name: 'Installation',
+        anchor: InstallationEn,
+        component: wrapAsyncMdxContent(InstallationEn),
+        meta: {
+          page: 'guide/installation',
+          title: 'Getting Started Installation',
+        },
+      },
+      {
+        path: 'instance',
+        name: 'Application Instance',
+        anchor: InstanceEn,
+        component: wrapAsyncMdxContent(InstanceEn),
+        meta: {
+          page: 'guide/instance',
+          title: 'Getting Started Application Instance',
+        },
+      },
+      {
+        path: 'hello-world',
+        name: 'Minimal Demo',
+        anchor: HelloWorldEn,
+        component: wrapAsyncMdxContent(HelloWorldEn),
+        meta: {
+          page: 'guide/hello-world',
+          title: 'Getting Started Minimal Demo',
+        },
+      },
+      {
+        path: 'reactive',
+        name: 'Data Reactivity',
+        anchor: ReactiveEn,
+        component: wrapAsyncMdxContent(ReactiveEn),
+        meta: {
+          page: 'guide/reactive',
+          title: 'Getting Started Data Reactivity',
+        },
+      },
+      {
+        path: 'component',
+        name: 'Components',
+        anchor: ComponentEn,
+        component: wrapAsyncMdxContent(ComponentEn),
+        meta: {
+          page: 'guide/component',
+          title: 'Getting Started Components',
+        },
+      },
+      {
+        path: 'conditional-rendering',
+        name: 'Conditional Rendering',
+        anchor: ConditionalRenderingEn,
+        component: wrapAsyncMdxContent(ConditionalRenderingEn),
+        meta: {
+          page: 'guide/conditional-rendering',
+          title: 'Getting Started Conditional Rendering',
+        },
+      },
+      {
+        path: 'list-rendering',
+        name: 'List Rendering',
+        anchor: ListRenderingEn,
+        component: wrapAsyncMdxContent(ListRenderingEn),
+        meta: {
+          page: 'guide/list-rendering',
+          title: 'Getting Started List Rendering',
+        },
+      },
+      {
+        path: 'event-bind',
+        name: 'Event Handling',
+        anchor: EventBindEn,
+        component: wrapAsyncMdxContent(EventBindEn),
+        meta: {
+          page: 'guide/event',
+          title: 'Getting Started Event Handling',
+        },
+      },
+      {
+        path: 'built-attr',
+        name: 'Built-in Properties',
+        anchor: BuiltPropsEn,
+        component: wrapAsyncMdxContent(BuiltPropsEn),
+        meta: {
+          page: 'guide/built-attr',
+          title: 'Getting Started Built-in Properties',
+        },
+      },
+    ],
+  },
+  {
+    name: 'Advanced Guide',
+    path: '/en-US/docs',
+    children: [
+      {
+        path: 'context',
+        name: 'Context',
+        anchor: ContextEn,
+        component: wrapAsyncMdxContent(ContextEn),
+        meta: {
+          page: 'advanced/context',
+          title: 'Advanced Guide Context',
+        },
+      },
+      {
+        path: 'form',
+        name: 'Form',
+        anchor: FormEn,
+        component: wrapAsyncMdxContent(FormEn),
+        meta: {
+          page: 'advanced/form',
+          title: 'Advanced Guide Form',
+        },
+      },
+      {
+        path: 'async-component',
+        name: 'Async Components',
+        anchor: AsyncComponentEn,
+        component: wrapAsyncMdxContent(AsyncComponentEn),
+        meta: {
+          page: 'advanced/async-component',
+          title: 'Advanced Guide Async Components',
+        },
+      },
+      {
+        path: 'transition',
+        name: 'Transition Components',
+        anchor: TransitionEn,
+        component: wrapAsyncMdxContent(TransitionEn),
+        meta: {
+          page: 'advanced/transition',
+          title: 'Advanced Guide Transition Components',
+        },
+      },
+      {
+        path: 'ssr',
+        name: 'Server-side Rendering',
+        anchor: SSREn,
+        component: wrapAsyncMdxContent(SSREn),
+        meta: {
+          page: 'advanced/ssr',
+          title: 'Advanced Guide Server-side Rendering',
+        },
+      },
+      {
+        path: 'error-boundary',
+        name: 'Error Boundaries',
+        anchor: ErrorBoundaryEn,
+        component: wrapAsyncMdxContent(ErrorBoundaryEn),
+        meta: {
+          page: 'advanced/error-boundary',
+          title: 'Advanced Guide Error Boundaries',
+        },
+      },
+    ],
+  },
+  {
+    name: 'API',
+    path: '/en-US/docs',
+    children: [
+      {
+        name: 'Global API',
+        path: 'global-api',
+        anchor: ApiGlobalEn,
+        component: wrapAsyncMdxContent(ApiGlobalEn),
+        meta: {
+          page: 'api/global',
+          title: 'API Global API',
+        },
+      },
+      {
+        name: 'Application API',
+        path: 'instance-api',
+        anchor: ApiInstanceEn,
+        component: wrapAsyncMdxContent(ApiInstanceEn),
+        meta: {
+          page: 'api/instance',
+          title: 'API Application',
+        },
+      },
+      {
+        name: 'Reactivity API',
+        path: 'reactivity-api',
+        anchor: ApiReactivityEn,
+        component: wrapAsyncMdxContent(ApiReactivityEn),
+        meta: {
+          page: 'api/reactivity',
+          title: 'API Reactivity',
+        },
+      },
+      {
+        name: 'Components',
+        path: 'component-api',
+        anchor: ApiComponentEn,
+        component: wrapAsyncMdxContent(ApiComponentEn),
+        meta: {
+          page: 'api/component',
+          title: 'API Components',
+        },
+      },
+      {
+        name: 'Context',
+        path: 'context-api',
+        anchor: ApiContextEn,
+        component: wrapAsyncMdxContent(ApiContextEn),
+        meta: {
+          page: 'api/context',
+          title: 'API Context',
+        },
+      },
+      {
+        name: 'VNode',
+        path: 'vnode-api',
+        anchor: ApiVNodeEn,
+        component: wrapAsyncMdxContent(ApiVNodeEn),
+        meta: {
+          page: 'api/vnode',
+          title: 'API VNode',
+        },
+      },
+      {
+        name: 'Error Handlers',
+        path: 'handler-api',
+        anchor: ApiHandlerEn,
+        component: wrapAsyncMdxContent(ApiHandlerEn),
+        meta: {
+          page: 'api/handler',
+          title: 'API Error Boundaries',
+        },
+      },
+    ],
+  },
+]
+
 export const ROUTE_MENUS = DOCS_NAV.map((Menu) => Menu.children).flat()
+export const ROUTE_MENUS_EN = DOCS_NAV_EN.map((Menu) => Menu.children).flat()

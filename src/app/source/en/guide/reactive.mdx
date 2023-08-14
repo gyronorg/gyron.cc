@@ -1,0 +1,95 @@
+## Data Reactivity
+
+A major feature of `Gyron.js` is reactive updates. Views that depend on data are automatically updated when the data is modified. To solve multiple updates in one task, Gyron's updates use Promise - meaning if you modify the data multiple times, the view will only update once in the microtask queue.
+
+What is a microtask and why do we need microtask?
+
+There are related introductory articles online. You can check out [https://html.spec.whatwg.org/multipage/webappapis.html#task-queue](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue) to find out more.
+
+Below shows how to get data changes, and what can be done after changes.
+
+Let's start with a simple usage:
+
+```javascript
+import { useReactive, useEffect } from '@gyron/reactivity'
+
+const original = useReactive({
+  count: 0,
+})
+
+useEffect(() => {
+  console.log(original.count)
+  // Print 0 first
+  // Print 1 second
+})
+
+original.count = 1
+```
+
+This is actually the core example of reactivity. What exactly happens internally? Want to learn more, come to [Discord](https://discord.gg/fETVZtD) to discuss together.
+
+## Reactivity
+
+Let's look at another example:
+
+```jsx
+import { useValue, FC } from 'gyron'
+
+export const App = FC(() => {
+  const list = useValue([0])
+
+  return (
+    <div>
+      {list.map((item) => (
+        <div onClick={() => list.value.push(list.value.length)}>{item}</div>
+      ))}
+    </div>
+  )
+})
+```
+
+Next we will explain the dependency collection and component update inside.
+
+### Dependency Collection
+
+Where it is needed, we can use the `<App />` syntax, which will be converted to `h(App)`. Then it will enter the patch process. (Omitting many irrelevant processes)
+
+Patch will first call the App function, then take the current useEffect (SchedulerJob) as the task to be executed after list is updated. When list changes, all effects of list will be called, then enter the component update process.
+
+### Component Update
+
+We created an App component, and the return value of the component's render function is a group of div elements, each of which binds a click event. When the user clicks on one, a line will be added at the end.
+
+If App component did not return a function but directly returned a group of div elements, the state of list would be incorrect, because App component uses the entire App function statement during update, that is, App function is executed again.
+
+To ensure the correctness of the state inside the component, we use the characteristics of closures, returning a function as the render function. During the next update, only the returned function will be used, thus ensuring the persistence of the state inside the function.
+
+We call components that return a function `stateful components`, and components that directly return elements `stateless components`.
+
+Since reactivity relies internally on the [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) feature, changes to arrays are also directly supported, but more than one update check before update will be triggered.
+
+To illustrate the problem, take the previous example. Each time we click, a number will be pushed into the list array, which will cause two sets internally.
+
+- The first set changed the value of the second element in list, changing `[0]` to `[0, 1]`.
+
+- The second changed the length property of list, changing the length from `1` to `2`.
+
+Precisely because of this, we use a value called uuid during update. It saves the current component id. When the component changes, the task will be pushed to a stack (queue).
+
+Since the update occurs in microtask, and the two sets are performed synchronously, in the second set, the update task with the same uuid value before will be deleted to ensure that only one update occurs in the component in a task queue.
+
+### Task Breakdown
+
+If a task execution exceeds 5ms or a user is entering input, the task will automatically be divided into browser idle status for continued execution. This benefits from the `navigator.scheduling.isInputPending` API submitted by Facebook engineers to Chrome.
+
+### Diagram
+
+Text descriptions may not be intuitive. Below we use diagrams to restate the dependency collection and update of the code above.
+
+Collection process diagram:
+
+![gyron component track](/assets/image/track.png)
+
+Update process diagram:
+
+![gyron component update](/assets/image/update.png)

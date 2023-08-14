@@ -1,11 +1,4 @@
-import {
-  FC,
-  nextRender,
-  onAfterMount,
-  useValue,
-  VNode,
-  WrapperFunction,
-} from 'gyron'
+import { FC, useValue, VNode, WrapperFunction } from 'gyron'
 import { Dropdown, DropdownItem } from './dropdown'
 import { SourceType } from './editor'
 import { OnAdd, Source } from './wrapper'
@@ -14,8 +7,9 @@ import { Explorer } from './constant'
 import { getEditorWithElement, getModal } from './hook'
 import { getEnvironment, useMountWithStandalone } from './standalone'
 import { encode } from 'js-base64'
-import classnames from 'classnames'
 import { notice } from '../notice'
+import { $t } from '@/langs'
+import classnames from 'classnames'
 
 interface TabProps {
   source: Source
@@ -158,6 +152,7 @@ const TabEditContainer = FC<TabEditContainerProps>(
               'border-transparent': !(
                 active === uuid || uuid === Explorer.Preview
               ),
+
               'ml-auto order-last': uuid === Explorer.Preview,
             }
           )}
@@ -170,6 +165,7 @@ const TabEditContainer = FC<TabEditContainerProps>(
             onActiveChange={onActiveChange}
             onTabRemove={onRemoveTab}
           />
+
           {uuid !== Explorer.Preview && (
             <Component class="fill-black/5 dark:fill-white/5 absolute left-1/2 -translate-x-1/2 h-10" />
           )}
@@ -230,9 +226,9 @@ export const Tabs = FC<TabsProps>(
         const hash = encode(JSON.stringify(sources))
         await navigator.clipboard.writeText(`${origin}#${hash}`)
         location.hash = hash
-        notice('拷贝成功，快去分享吧')
+        notice($t('StringLiteral_233_15_233_27'))
       } catch {
-        notice('拷贝失败，请允许访问粘贴板')
+        notice($t('StringLiteral_235_15_235_30'))
       }
     }
 

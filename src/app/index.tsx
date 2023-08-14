@@ -1,5 +1,5 @@
 import { createBrowserRouter, Route, Router, Routes } from '@gyron/router'
-import { createSSRContext, FC } from 'gyron'
+import { createSSRContext, FC, useBeforeUpdate } from 'gyron'
 import { MdxHelper } from './components/helper'
 import { MdxContainer, ParentPath } from './components/mdx'
 import { Mismatch } from './components/mismatch'
@@ -16,84 +16,170 @@ import {
   Editor,
   BlogDocs,
   BLOG_ROUTE_MENUS,
+  ROUTE_MENUS_EN,
+  CORE_ROUTE_MENUS_EN,
+  BLOG_ROUTE_MENUS_EN,
 } from './pages'
 import { storeState } from './store'
+import { Lang } from './components/translate'
+import { $t, TranslateProvider } from './langs'
+import { CORE_INDEX_EN } from './pages/core'
 
 const base = process.env.PUBLISH_BASE
 
 const Content = FC<{
   menu: ContentMenu
   parentPath: ParentPath
-}>(({ menu, parentPath }) => {
+  lang: Lang
+}>(({ menu, parentPath, lang }) => {
   return (
-    <MdxContainer menu={menu} parentPath={parentPath}>
-      <menu.component
-        fallback={<Skeleton length={3} />}
-        components={MdxHelper}
-      />
-    </MdxContainer>
+    <TranslateProvider lang={lang}>
+      <MdxContainer menu={menu} parentPath={parentPath}>
+        <menu.component
+          fallback={<Skeleton length={3} />}
+          components={MdxHelper}
+        />
+      </MdxContainer>
+    </TranslateProvider>
   )
 })
 
 export const ExposeRoutes = FC(() => {
   return (
     <Routes>
-      <Route path="" strict meta={{ title: '文档' }} element={<Home />}></Route>
-      <Route path="docs" element={<Docs />}>
+      <Route path={Lang.EN}>
+        <Route
+          path=""
+          strict
+          meta={{ title: $t('StringLiteral_54_25_54_29', Lang.EN) }}
+          element={
+            <TranslateProvider lang={Lang.EN}>
+              <Home />
+            </TranslateProvider>
+          }
+        ></Route>
+        <Route path="docs" element={<Docs lang={Lang.EN} />}>
+          {ROUTE_MENUS_EN.map((menu) => (
+            <Route
+              path={menu.path}
+              meta={menu.meta}
+              element={
+                <Content menu={menu} parentPath="en-US/docs" lang={Lang.EN} />
+              }
+            />
+          ))}
+        </Route>
+        <Route path="core" element={<CoreDocs lang={Lang.EN} />}>
+          <Route
+            index
+            meta={CORE_INDEX_EN.meta}
+            element={
+              <Content
+                menu={CORE_INDEX_EN}
+                parentPath="en-US/core"
+                lang={Lang.EN}
+              />
+            }
+          />
+          {CORE_ROUTE_MENUS_EN.map((menu) => (
+            <Route
+              path={menu.path}
+              meta={menu.meta}
+              element={
+                <Content menu={menu} parentPath="en-US/core" lang={Lang.EN} />
+              }
+            />
+          ))}
+        </Route>
+        <Route path="blog" element={<BlogDocs lang={Lang.EN} />}>
+          {BLOG_ROUTE_MENUS_EN.map((menu) => (
+            <Route
+              path={menu.path}
+              meta={menu.meta}
+              element={
+                <Content menu={menu} parentPath="en-US/blog" lang={Lang.EN} />
+              }
+            />
+          ))}
+        </Route>
+        <Route
+          path="explorer"
+          meta={{ title: $t('StringLiteral_103_25_103_44', Lang.EN) }}
+          element={
+            <TranslateProvider lang={Lang.EN}>
+              <Editor />
+            </TranslateProvider>
+          }
+        />
+      </Route>
+      <Route
+        path=""
+        strict
+        meta={{ title: $t('StringLiteral_110_23_110_27', Lang.ZH) }}
+        element={
+          <TranslateProvider lang={Lang.ZH}>
+            <Home />
+          </TranslateProvider>
+        }
+      ></Route>
+      <Route path="docs" element={<Docs lang={Lang.ZH} />}>
         {ROUTE_MENUS.map((menu) => (
           <Route
             path={menu.path}
             meta={menu.meta}
-            element={<Content menu={menu} parentPath="docs" />}
+            element={<Content menu={menu} parentPath="docs" lang={Lang.ZH} />}
           />
         ))}
       </Route>
-      <Route path="core" element={<CoreDocs />}>
+      <Route path="core" element={<CoreDocs lang={Lang.ZH} />}>
         <Route
           index
           meta={CORE_INDEX.meta}
-          element={<Content menu={CORE_INDEX} parentPath="core" />}
+          element={
+            <Content menu={CORE_INDEX} parentPath="core" lang={Lang.ZH} />
+          }
         />
+
         {CORE_ROUTE_MENUS.map((menu) => (
           <Route
             path={menu.path}
             meta={menu.meta}
-            element={<Content menu={menu} parentPath="core" />}
+            element={<Content menu={menu} parentPath="core" lang={Lang.ZH} />}
           />
         ))}
       </Route>
-      <Route path="blog" element={<BlogDocs />}>
+      <Route path="blog" element={<BlogDocs lang={Lang.ZH} />}>
         {BLOG_ROUTE_MENUS.map((menu) => (
           <Route
             path={menu.path}
             meta={menu.meta}
-            element={<Content menu={menu} parentPath="blog" />}
+            element={<Content menu={menu} parentPath="blog" lang={Lang.ZH} />}
           />
         ))}
       </Route>
       <Route
         path="explorer"
-        meta={{ title: '在线/协同 Gyron.js编辑器' }}
+        meta={{ title: $t('StringLiteral_153_23_153_42', Lang.ZH) }}
         element={<Editor />}
       />
       <Route
         path="*"
-        meta={{ title: '404 未找到页面' }}
+        meta={{ title: $t('StringLiteral_158_23_158_34', Lang.ZH) }}
         element={<Mismatch />}
       ></Route>
     </Routes>
   )
 })
 
-export const App = FC(({ isSSR }) => {
+export const App = FC<{ lang: Lang }>(({ isSSR, lang = Lang.ZH }) => {
   return (
-    <Layout>
+    <Layout lang={lang}>
       <ExposeRoutes />
     </Layout>
   )
 })
 
-export const app = () => {
+export const app = (lang = Lang.ZH) => {
   const router = createBrowserRouter({
     base: base || '/',
     beforeEach: (from, to, next) => {
@@ -123,7 +209,7 @@ export const app = () => {
   })
   return createSSRContext({ message: {} }).render(
     <Router router={router}>
-      <App />
+      <App lang={lang} />
     </Router>,
     '#app'
   )

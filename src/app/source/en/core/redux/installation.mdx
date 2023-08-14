@@ -1,0 +1,52 @@
+## Installation
+
+Installation depends on your platform. For modern bundlers, use package manager `yarn` or `npm`. For browser `type="module"`, reference CDN.
+
+Using package manager:
+
+```bash
+yarn add -D @gyron/redux
+
+# or 
+
+npm install --save-dev @gyron/redux
+```
+
+Using browser modules: 
+
+```html
+<script type="module">
+  import { createStore } from 'https://cdn.skypack.dev/@gyron/redux' 
+</script>
+```
+
+### Using Store
+
+After installing, create a store and use `<Provider>` on root, passing `store` prop created via `createStore`.
+
+```jsx
+import { createInstance } from 'gyron'
+
+import { Provider, createStore } from '@gyron/redux'
+
+function counterReducer(state = { value: 0 }, action) {
+  switch (action.type) {
+    case 'counter/incremented':
+      return { value: state.value + 1 }
+    case 'counter/decremented':
+      return { value: state.value - 1 }
+    default:
+      return state
+  }
+}
+
+const store = createStore({
+  reducer: counterReducer, 
+})
+
+createInstance(<Provider store={store}>/* ... */</Provider>) 
+
+store.extra.dispatch({ type: 'counter/incremented' })
+
+// {value: 1}
+```

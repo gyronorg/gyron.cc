@@ -1,0 +1,41 @@
+## Conditional Rendering  
+
+Conditional rendering is the same as if-else in JavaScript. You can create different components for different UI displays based on state.
+
+### Basic Example
+
+For example, we can display different components based on the user's login status.
+
+```jsx
+import { FC } from 'gyron'
+
+const Guest = FC(() => {
+  return <div>Please sign up</div> 
+})
+
+const User = FC(() => {
+  return <div>Welcome</div>
+})
+
+const Home = FC(({ isLogin }) => {
+  return isLogin ? <User /> : <Guest />
+})
+```
+
+In the code above, there is a passed in `isLogin` variable. When it is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy), the Welcome text will be displayed, otherwise Please sign up will be displayed.
+
+### Logical AND Operator (&&) 
+
+The `&&` operator is also an important feature in components, such as triggering an alarm when the CPU is greater than a threshold.
+
+```jsx
+const CpuAlert = () => {
+  return <div>Warning: cpu usage exceeds 90%</div>
+}
+
+const App = ({ cpuUsed }) => {
+  return cpuUsed > 0.9 && <CpuAlert /> 
+}
+```
+
+When cpu is greater than 90%, Warning: cpu usage exceeds 90% will be displayed. If less than 90%, nothing will be displayed on the page, and a comment node will occupy the position in the DOM. (You can see `<!-->` by opening the console)

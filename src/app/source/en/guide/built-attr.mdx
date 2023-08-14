@@ -1,0 +1,117 @@
+## Built-in Properties
+
+This document will introduce the built-in properties in Gyron, what these properties do, and how users should use them. Some built-in properties are for optimizing rendering speed, while others are for convenient rendering.
+
+### ref
+
+ref can be applied on components or element nodes. For specific usage, see [The Usage of Ref](/docs/component#ref-usage).
+
+When used on components, ref is the exposed object of the component. When used on element nodes, ref is the real element.
+
+```jsx line=4,11
+import { createRef, onAfterMount, exposeComponent, FC } from 'gyron'
+
+const Child = FC(() => {
+  exposeComponent({
+    msg: 'Gyron', 
+  })
+  return //...
+})
+
+const App = FC(() => {
+  const ref = createRef()
+
+  onAfterMount(() => {
+    console.log(ref.current)
+    // {
+    //   msg: 'Gyron',
+    // }
+  })
+  
+  return <Child ref={createRef}></Child> 
+})
+```
+
+### key 
+
+In loop rendering, it is a unique value used to compare nodes. They should not be array indexes.
+
+When the user defines key, it is in keyed mode. In this mode, many internal operations will become faster because the algorithm will automatically find unchanged nodes in the same layer data and reuse them.
+
+When the user does not define key, rendering is in Non keyed mode. In this mode, some behaviors may become slower, such as updating a record.
+
+Here is a keyed example:
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return (
+    <ul>
+      {orders.map((order) => (
+        <li key={order.id}>{order.name}</li>
+      ))}
+    </ul>
+  )
+})
+```
+
+### memo
+
+memo is usually used in loop rendering. Using it makes up for the inadequacy of just passing key. It is different from keepComponent. keepComponent ensures the state of the component remains unchanged, while memo is used for node updates.
+
+After passing memo, when rendering, it will compare whether the value in memo has changed. If not, it will be skipped directly. If changed, the diff algorithm will be executed for update.
+
+For a more detailed explanation, see [How to Use memo Correctly](/docs/list-rendering#memo-param).
+
+### html
+
+The html attribute is for resolving the insertion of dynamic child nodes during server-side rendering. It can also be used in client-side rendering.
+
+```jsx 
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return <div html="<h1>Gyron</h1>"></div>
+})
+```
+
+If html attribute is used while children are also used, children now take precedence and a warning will be reported in the console.
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return <div html="<h1>Hello Gyron</h1>">Welcome Gyron</div> 
+})
+
+// <div>Welcome Gyron</div>
+```
+
+### static
+
+> When writing a complex component, a lot of browser performance is often consumed during updates.
+
+This attribute only takes effect when the component is updated, that is, if a node in gyron contains this attribute, gyron will completely skip the nodes and subnodes with static set during the next update.
+
+It is different from memo because the value of memo is a boolean array with values used to tell gyron whether an update is needed. In other words, the value of memo is dynamically changeable, and will only update after changes occur between the last and this time.
+
+While static is different, static only accepts boolean values, and compiler auto-setting will be supported later.
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(({ orders }) => {
+  return <div static>Hello Gyron</div> 
+})
+```
+
+### children
+
+When writing components, the children property should not be explicitly passed. The JSX syntax sugar capability should be used to automatically generate children.
+
+### isSSR
+
+isSSR is an attribute used when writing server-side rendering. In many cases, isSSR can be used to distinguish the current environment of the component. If true, it is currently in the server-side rendering environment, where window or document objects cannot be accessed. Otherwise, it is in the browser environment and can use browser environment APIs normally.
+
+For specific examples, see [The Usage of isSSR](/docs/ssr#what-is-ssr).

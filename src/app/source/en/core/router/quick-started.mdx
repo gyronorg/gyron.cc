@@ -1,0 +1,592 @@
+## Quick Start
+
+After reading the previous document and knowing how to install Router, this document will tell you how to quickly build code for different application scenarios.
+
+### Declarative Routing
+
+Before writing code, you need to know some basics about routing. Routes is the carrier of routes. Only Routes declared under Routes will be matched by routing rules. If you need to use Layout and other scenarios, you can use the [Outlet](<#nested-rendering-outlet>) component.
+
+```jsx
+import { createInstance } from 'gyron'
+import { createBrowserRouter, Router, Route, Routes } from '@gyron/router'
+
+const router = createBrowserRouter() 
+
+createInstance(
+  <Router router={router}>
+    <Routes>
+      <Route path="" strict element={<Welcome />}></Route>
+      <Route path="user" element={<User />}>
+        <Route path=":id">
+          <Route path="member" element={<Member />}></Route>
+          <Route path="setting" element={<Setting />}></Route>
+        </Route>
+      </Route>
+      <Route path="*" element={<Mismatch />}></Route>
+    </Routes>
+  </Router>
+).render(document.getElementById('root'))
+```
+
+The above code declares a default page, user page and 404 page. Under the user page, different components can be matched according to the user ID and route suffix.
+For example, when I visit `/user/admin/member`, Routes will render the equivalent code below.
+
+```jsx
+<User>
+  <Member /> 
+</User>
+```
+
+And the user ID can be accessed in the Member component through the `useParams` hook.
+
+```jsx filename=member.jsx line=7
+import { FC } from 'gyron'
+import { useParams } from '@gyron/router'
+
+const Member = FC(() => {
+  const params = useParams()
+  return <div>{params.id}</div> //<div>admin</div>
+})
+```
+
+When we visit an unmatched route, such as `/teams/gyron`, Routes will render the equivalent code below. 
+
+```jsx
+<Mismatch />
+```
+
+Routes is smart. Even if you put the `*` route at the top, Routes can still handle it correctly.
+
+```jsx
+<Routes>
+  <Route path="*" element={<Mismatch />}></Route>
+  <Route path="" strict element={<Welcome />}></Route> 
+</Routes>
+```
+
+There is also a priority situation in Route. For example, a directly matched route has a [higher priority](#routing-rules) than a regex matched route.
+
+```jsx
+<Routes>
+  <Route path=":id" element={<User />}></Route>
+  <Route path="admin" strict element={<Admin />}></Route>
+</Routes>
+```
+
+Visiting `/admin` will match `<Admin />` instead of `<User />`.
+
+### Configuration Routing 
+
+When writing applications, complex situations are often encountered. Some routes need to go through complex permission checks, some routes are loaded asynchronously, and it may not be very intuitive to implement the above scenarios with declarative routing, making it difficult to read.
+
+At this point, configuration routing can play its role. It is just a plain object array, corresponding to the type `Array<RouteRecordConfig>` in Router.
+
+```jsx
+import { FC } from 'gyron'
+import { useRoutes } from '@gyron/router'
+
+const App = FC(() => {
+  return useRoutes([
+    {
+      path: '',
+      strict: true,
+      element: <Welcome />,
+    },
+    {
+      path: 'user',
+      element: <User />,
+      children: [
+        {
+          path: ':id',
+          children: [
+            {
+              path: 'member',
+              element: <Member />,
+            },
+            {
+              path: 'setting',
+              element: <Setting />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '*',
+      element: <Mismatch />,
+    },
+  ])
+})
+```
+
+The above is the syntax for configuration routing, which is equivalent to the first example in this document. You will find that it is cumbersome to configure this way. Yes, it is not suitable for static scenarios like this. 
+
+If you encounter routes that need permission checks or backend control, configuration routing will come in handy.
+
+```jsx line=23
+import { useValue } from 'gyron'
+import { useRoutes } from '@gyron/router'
+
+const routes = [
+  {
+    path: '',
+    strict: true,
+    element: <Welcome />,
+  },
+  {
+    path: '*',
+    element: <Mismatch />,
+  },
+]
+
+const getPermissionList = () => {
+  const list = useValue([])
+  // Process list...
+  return list
+}
+
+const App = () => {
+  const list = getPermissionList()
+  return () => {
+    return useRoutes(
+      routes.concat(
+        list.value.map((route) => {
+          return {
+            path: route.path,
+            element: route.element,
+          }
+        })
+      )
+    )
+  }
+}
+```
+
+### Navigation
+
+Router provides the `Link` component for page navigation. It prevents the default behavior of the browser and changes to using `push` or `replace` provided by `useRouter`.
+
+```jsx 
+import { FC } from 'gyron'
+import { Link } from '@gyron/router'
+
+const Navigation = FC(() => {
+  return (
+    <div>
+      <Link to="/">Home</Link>
+      <Link to="/about">About</Link>
+    </div>
+  )
+})
+```
+
+The Link component also provides a navigation mode. Passing in `replace` will replace the current history state.
+
+```jsx
+<Link to="/" replace>
+  Home 
+</Link>
+```
+
+The route indicator can prominently tell the user where they currently are. The Link component provides `activeClassName` and `activeStyle` parameters that you just need to add when using.
+
+```jsx 
+<Link to="/" activeClassName="active-link" activeStyle={{ color: 'green' }}>
+  Home
+</Link> 
+```
+
+## Routing Rules
+
+When developing Router, nested routing is the most basic and critical feature. It can reduce users writing complex and incomprehensible components, which can be completely handed over to Router for association with urls.
+
+Routes are roughly divided into three types:
+
+- Normal routes
+- Regex routes
+- Default routes 
+- Redirect routes
+- "Not Found" routes
+
+These routes may be matched at the same time. In order to solve the problem of being matched at the same time and to conform to coding habits, we added the concept of matching priority.
+
+Their priority is: `(Normal routes | Default routes | Redirect routes)` > `Regex routes` > `"Not Found" routes`.
+
+For example, with the following routing code:
+
+```jsx 
+<Routes>
+  <Route path="user" element={<User />}>
+    <Route index element={<span>Default route</span>}></Route>
+    <Route path="admin" element={<span>Normal route</span>}></Route>
+    <Route path=":id" element={<span>Regex route</span>}></Route>
+    <Route path="*" element={<span>"Not Found" route</span>}></Route>
+    <Redirect path="tenant" redirect="admin"></Redirect>
+  </Route>
+</Routes>
+```
+
+> The above is just to demonstrate matching priority. In actual use, code maintainability should be considered to avoid the above situation.
+
+| Route | Render |
+|-|-|
+| /user | Default route |
+| /user/admin | Normal route |
+| /user/tenant | Redirect route (Normal route) | 
+| /user/member | Regex route |
+| /user/visitor/setting | "\*" route |
+
+### Nested Routing
+
+When nested, the child routes inherit the parent route in a certain way. If the child route starts with `/`, it will not inherit.
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="invoices" element={<Invoices />}>
+          <Route path=":invoiceId" element={<Invoice />} />
+          <Route path="sent" element={<SentInvoices />} />
+        </Route>
+      </Routes>
+    </Router>
+  )
+})
+```
+
+The above code describes three routes:
+
+- `/invoices`  
+- `/invoices/sent`
+- `/invoices/:invoiceId`
+
+The user visits the route and the corresponding component tree is as follows:
+
+| Route | Render |
+|-|-|
+| /invoices/sent | Invoices > SentInvoices |
+| /invoices/AABBCC | Invoices > Invoice |
+
+So how should the `Invoices` component be defined? We provide an `<Outlet />` component to render matching child routes.
+
+```jsx filename=invoices.jsx
+import { FC } from 'gyron'
+import { Outlet } from '@gyron/router'
+
+const Invoices = FC(() => {
+  return (
+    <div>
+      <h1>Invoices</h1>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  )
+})
+```
+
+Now the DOM tree will render as:
+
+```jsx
+<div>
+  <h1>Invoices</h1>
+  <div>
+    <SentInvoices />
+  </div> 
+</div>
+```
+
+Sometimes when defining routes, some top-level elements need to be written, such as some top jump links. We can take advantage of the matching mechanism of Route and `<Outlet />` to create a top-level Layout component.
+
+```jsx filename=layout.jsx
+import { FC } from 'gyron' 
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = FC(() => {
+  return (
+    <div>
+      <div>
+        <Link to="/docs">Docs</Link>
+        <Link to="/helper">Helper</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div> 
+    </div>
+  )
+})
+```
+
+```jsx filename=app.jsx
+import { FC } from 'gyron'
+import { Layout } from './layout'
+
+const Docs = FC(() => {
+  // ...
+})
+
+const Helper = FC(() => {
+  // ... 
+})
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="" element={<Layout />}>
+          <Route path="docs" element={<Docs />}></Route>
+          <Route path="helper" element={<Helper />}></Route> 
+        </Route>
+      </Routes>
+    </Router>
+  )
+})
+```
+
+We wrote a "\*" matching Route at the top level without giving it the `strict` attribute. When accessing `/docs` or `/helper`, it will match all routes, thus achieving the layout function.
+
+### Nested Rendering (Outlet)
+
+After matching the nested routing tree, we need to know where to render the child routes. Based on the previous example, use `<Outlet />` to render the child routes.
+
+```jsx line=12 
+import { FC } from 'gyron'
+import { Link, Outlet } from '@gyron/router'
+
+export const Layout = FC(() => {
+  return (
+    <div>
+      <div>
+        <Link to="/docs">Docs</Link>
+        <Link to="/helper">Helper</Link>
+      </div>
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  ) 
+})
+```
+
+When the user visits `/docs`, the `<Outlet />` component will render `<Docs />`, and the `<Outlet />` component will also pass deeper matching routes down.
+
+### Default Route
+
+In common systems, users are generally welcomed with a default page after login, or some quick action page is displayed when all tabs are closed. At this point, the default page just meets the business scenario.
+
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="dashboard" element={<Dashboard />}>  
+          <Route index element={<Welcome />}></Route>
+          <Route path="invoices" element={<Invoices />}></Route> 
+        </Route>
+      </Routes>
+    </Router>
+  )
+})
+```
+
+The user visits the route and the corresponding component tree is as follows:
+
+| Route | Render | 
+|-|-|
+| /dashboard | Dashboard > Welcome |
+| /dashboard/invoices | Dashboard > Invoices |
+
+
+### Redirect
+
+URL redirection, also known as URL forwarding, is a technique that keeps links available when actual resources such as individual pages, forms, or entire web applications are moved to new URLs.
+
+Front-end route redirection is also implemented in Router. Its meaning is the same as the HTTP 301 status code.
+
+```jsx
+import { FC } from 'gyron'  
+import { Router, Routes, Redirect } from '@gyron/router'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Redirect path="oldPath" redirect="newPath"></Redirect>
+      </Routes>
+    </Router>
+  )
+})
+```
+
+Redirect follows the nested routing rules like Route. When `oldPath` is matched, Routes will redirect to `newPath`. You can also change the value of redirect to `/newPath`. In this case, it will start finding matching routes from the beginning.
+
+### "Not Found"
+
+In actual applications, users may access routes without permission or already migrated. Thus the "Not Found" route is created.
+
+```jsx
+<Routes>
+  <Route path="" strict element={<Welcome />}></Route>
+  <Route path="*" element={<Mismatch />}></Route>
+</Routes> 
+```
+
+When a user accesses an unmatched route, the "Not Found" route will be matched. This is equivalent to `.*` in regular expressions.
+
+### Lifecycle
+
+Lifecycle functions provided by Router can be used in each route. They are triggered at different times.
+
+- `onBeforeRouteEach` Triggered before route change, the third parameter `next` can change the target route.
+- `onAfterRouteEach` Triggered after route change, some cleanup work can be done here.  
+- `onBeforeRouteUpdate` Triggered before route change, different from the first one in that it is only triggered when the current component is still wrapped by the matched route after route change.
+- `onAfterRouteUpdate` Triggered after route change, same as `onBeforeRouteUpdate`, triggered when the component is not destroyed after route change.
+
+When using `onBeforeRouteEach` and `onAfterRouteEach`, note that they will still be triggered once after route jump when the current component is destroyed. If you don't want them to be triggered after destruction, please use the `onBeforeRouteUpdate` or `onAfterRouteUpdate` event.
+
+#### onBeforeRouteEach
+
+It accepts a function that will carry three parameters when executed: `from`, `to`, `next`. The last parameter is a function. After registering `onBeforeRouteEach`, the `next` function must be called because route jump is asynchronous and `next` is equivalent to resolve. 
+
+You can pass parameters to the next function. If it is a string or a `To` object, the route will navigate to the corresponding address of the parameter.
+
+```jsx line=6
+import { FC } from 'gyron'
+import { onBeforeRouteEach } from '@gyron/router'
+
+const App = FC(() => {
+  onBeforeRouteEach((from, to, next) => {
+    next()
+  })
+  return <div></div> 
+})
+```
+
+#### onAfterRouteEach
+
+Triggered after route change. You can get the real DOM data after `nextRender`.
+
+```jsx line=8
+import { createRef, nextRender, FC } from 'gyron'
+import { onAfterRouteEach } from '@gyron/router'
+
+const App = FC(() => {
+  const ref = createRef()
+  onAfterRouteEach((from, to) => {
+    nextRender().then(() => {
+      ref.current // div
+    })
+  })
+  return <div ref={ref}></div> 
+})
+```
+
+## Navigation Guards
+
+Navigation guards are the underlying implementation of component lifecycle hooks. We provide two different types of guards, one before jumping, and one after jumping.
+
+When you use `push` or `replace` to jump, the navigation guards execute normally. But when you use `back`/`forward`/`go` for jumping, the execution timing of navigation guards is different from the previous one.
+
+But you don't need to care about the differences between them, because the latter executes guards in the microtask list, as there is no way to know the data in the stack.
+
+Next we will try a simple example to see how navigation guards are used.
+Validate in navigation guards that when the user is not logged in, return to the login page.
+
+```jsx
+import { createBrowserRouter } from '@gyron/router'
+
+const router = createBrowserRouter({
+  beforeEach: (from, to, next) => {
+    const token = sessionStorage.getItem('token')
+    if (token) {
+      next()
+    } else {
+      next('/login')
+    }
+  },
+})
+```
+
+Next look at another example, perform some cleanup work or modify the page title after jumping is complete.
+
+```jsx  
+import { createBrowserRouter } from '@gyron/router'
+
+const router = createBrowserRouter({
+  afterEach: (from, to) => {
+    document.title = to.meta.title
+  },
+})
+```
+
+## Hooks
+
+Router provides some hook functions that can be used to conveniently obtain desired information.
+
+> Note: Some hooks can be used in any situation, while others can only be used in the top-level scope of the setup function. Refer to the list below.
+
+Hooks not listed below can be used anywhere, unlike those that can only be used in the top-level scope of the setup function.
+
+- useRouter
+- useRoute  
+- useRoutes
+- useParams
+- useOutlet
+- useMatch
+
+### useRouter
+
+Use useRouter to get the Router object, which contains all routing related information. Refer to [useRouter](/core/router/api#useRouter) for the type description of Router.
+
+```jsx
+import { FC } from 'gyron'
+import { useRouter } from '@gyron/router'
+
+const App = FC(() => {
+  const router = useRouter()
+  const login = () => {
+    router.push('/login') 
+  }
+  return <button onClick={login}>Login</button>
+})
+```
+
+### useParams
+
+You can also use the "regex route" with the `useParams` method to get routing information.
+
+```jsx filename=index.jsx line=8
+import { FC } from 'gyron'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="user" element={<User />}>
+          <Route path=":id" element={<UserDetail />}></Route> 
+        </Route>
+      </Routes>
+    </Router>
+  )
+})
+```
+
+```jsx filename=user-detail.jsx line=5
+import { FC } from 'gyron'
+import { useParams } from '@gyron/router'
+
+export const UserDetail = FC(() => {
+  const params = useParams()
+  return <span>{params.id}</span> 
+})
+```
+
+After Routes matches the `<UserDetail />` component, it will return the user ID on the current route. This is a very simple example, you can also explore more challenging scenarios.
+
+You can also check out the [API](/core/router/api) documentation to learn more.

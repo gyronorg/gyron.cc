@@ -3,8 +3,9 @@ import { useRouter } from '@gyron/router'
 import { Header } from '@/components/header'
 import { isUesLightTheme } from '@/hooks/light'
 import classnames from 'classnames'
+import { Lang } from '@/components/translate'
 
-export const Layout = FC(({ children }) => {
+export const Layout = FC<{ lang: Lang }>(({ lang, children }) => {
   const router = useRouter()
   return (
     <div
@@ -16,8 +17,8 @@ export const Layout = FC(({ children }) => {
         }
       )}
     >
-      <Header />
-      <div class="flex flex-col min-h-screen lg:m-auto lg:max-w-[90rem]">
+      <Header lang={lang} />
+      <div class="flex flex-col lg:m-auto lg:max-w-[90rem]">
         <div class={classnames('overflow-hidden')}>{children}</div>
       </div>
     </div>

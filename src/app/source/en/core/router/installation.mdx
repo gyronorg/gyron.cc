@@ -1,0 +1,65 @@
+## Installation
+
+How to install depends on what platform you are using. If you are using modern bundlers, install via package manager `yarn` or `npm`. If you are using browser's `type="module"` feature, you can directly reference CDN resources.
+
+Using package manager:
+
+```bash
+yarn add -D @gyron/router
+
+# or 
+
+npm install --save-dev @gyron/router
+```
+
+Using browser modules:
+
+```html
+<script type="module">
+import { Routes, Route } from 'https://cdn.skypack.dev/@gyron/router'
+</script>
+```
+
+### Using Router
+
+If this is your first time building a Gyron.js app, you can check out [Create a new Gyron app](/docs/tutorial#create-a-new-gyron-app)
+
+After installation, use import syntax to import components like Routes, Route in places where Router is needed. Example:
+
+```jsx
+import { FC } from 'gyron'
+
+import { Router, Route, Routes } from '@gyron/router'
+
+const App = FC(() => {
+  return (
+    <Router router={/* router */}>
+      <Routes>
+        <Route path="" strict element={<div>Home</div>}></Route>
+        <Route path="about" element={<div>About</div>}></Route>
+      </Routes>
+    </Router>
+  )
+})
+```
+
+**Using in script tag**
+
+```html
+<script type="module">
+import { h } from 'https://cdn.skypack.dev/gyron'
+
+import { Routes, Route } from 'https://cdn.skypack.dev/@gyron/router'
+
+function App() {
+  return h(Routes, null, [
+    h(Route, { path: '', strict: true, element: h('div', 'Home') }),
+    h(Route, { path: 'about', element: h('div', 'About') }),
+  ]) 
+}
+</script>
+```
+
+This is equivalent to the example above.
+
+If you want to use JSX syntax in browser, check out [JSX](/core/jsx/getting-started).

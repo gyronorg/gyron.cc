@@ -3,8 +3,17 @@ import { Link, useRouter } from '@gyron/router'
 import { DarkToggle } from '@/components/dark'
 import { CloseIcon, GithubIcon, LogoIcon, MenuIcon } from '@/components/icons'
 import { Nav } from './nav'
-import { DOCS_NAV, CORE_NAV, BLOG_NAV } from '@/pages'
+import {
+  DOCS_NAV,
+  CORE_NAV,
+  BLOG_NAV,
+  CORE_NAV_EN,
+  BLOG_NAV_EN,
+  DOCS_NAV_EN,
+} from '@/pages'
 import { isUesLightTheme } from '@/hooks/light'
+import { Lang, TogglerTranslate } from './translate'
+import { $t, resolveTranslate } from '@/langs'
 import pkg from '../../../package.json'
 import classnames from 'classnames'
 import docsearch from '@docsearch/js'
@@ -21,11 +30,18 @@ const Portal = FC(({ children, isSSR }) => {
   return children
 })
 
-export const Header = FC(() => {
+export const Header = FC<{ lang: Lang }>(({ lang }) => {
   const router = useRouter()
   const expand = useValue(false)
   const menus = useMemo(() => {
     const path = router.path
+    if (path.startsWith('/en-US')) {
+      return path.startsWith('/en-US/core')
+        ? CORE_NAV_EN
+        : path.startsWith('/en-US/blog')
+        ? BLOG_NAV_EN
+        : DOCS_NAV_EN
+    }
     return path.startsWith('/core')
       ? CORE_NAV
       : path.startsWith('/blog')
@@ -64,12 +80,12 @@ export const Header = FC(() => {
           'flex items-center justify-between sm-down:max-w-none dark:text-slate-200',
           {
             'text-slate-200': isUesLightTheme(router.path),
-            'border-none': router.path === '/' || router.path === '/explorer',
+            'border-none': ['/', '/en-US', '/explorer', '/en-US/explorer'].includes(router.path),
           }
         )}
       >
         <Link
-          to="/"
+          to={resolveTranslate('/', lang)}
           activeClassName="nav-active-link"
           className={classnames(
             'hidden md:block overflow-hidden w-0 h-0 md:w-auto md:h-auto items-center',
@@ -143,23 +159,35 @@ export const Header = FC(() => {
         >
           <ul class="font-bold text-sm md:text-base flex sm-down:space-y-6 space-x-5 md:space-x-6 items-center">
             <li>
-              <Link to="/docs/tutorial" activeClassName="nav-active-link">
-                文档
+              <Link
+                to={resolveTranslate('/docs/tutorial', lang)}
+                activeClassName="nav-active-link"
+              >
+                {$t('JSXText_151_74_153_14', lang)}
               </Link>
             </li>
             <li>
-              <Link to="/core" activeClassName="nav-active-link">
-                核心
+              <Link
+                to={resolveTranslate('/core', lang)}
+                activeClassName="nav-active-link"
+              >
+                {$t('JSXText_156_65_158_14', lang)}
               </Link>
             </li>
             <li>
-              <Link to="/blog/readme" activeClassName="nav-active-link">
-                博客
+              <Link
+                to={resolveTranslate('/blog/readme', lang)}
+                activeClassName="nav-active-link"
+              >
+                {$t('JSXText_161_72_163_14', lang)}
               </Link>
             </li>
             <li>
-              <Link to="/explorer" activeClassName="nav-active-link">
-                协同编辑
+              <Link
+                to={resolveTranslate('/explorer', lang)}
+                activeClassName="nav-active-link"
+              >
+                {$t('JSXText_166_69_168_14', lang)}
               </Link>
             </li>
           </ul>
@@ -168,11 +196,12 @@ export const Header = FC(() => {
             <a
               href="https://github.com/gyronorg/core"
               target="_blank"
-              title="暂未开源"
+              title={$t('JSXAttribute_176_14_176_26', lang)}
             >
               <span class="hidden">Github</span>
               <GithubIcon />
             </a>
+            <TogglerTranslate />
           </div>
           <div
             class={classnames('w-15 sm:w-[199px] doc-light-search', {

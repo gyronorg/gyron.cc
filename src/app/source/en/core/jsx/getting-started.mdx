@@ -1,0 +1,248 @@
+## JSX Introduction
+
+JSX is a JavaScript syntax extension. Due to its good features and low learning cost, Gyron.js does not invent its own syntax but adapts existing JSX syntax sugar.
+
+There are two JSX-related libraries in the core - they convert JSX syntax into runtime code, only difference is the runtime platform or plugin.
+
+## babel-plugin-jsx
+
+babel-plugin-jsx is a Babel plugin that transforms JSX into Gyron.js method calls. Like other type libraries, it uses Babel's visitor API to convert JSXElement and other JSX tokens into executable `h()` functions.
+
+babel-plugin-jsx can also generate `hot update` helper code in dev environments by using `{ hmr: true }` config. With this config, you can see `__hmr_id` declared on component functions in source panel - a hash generated from file path and function name.
+Then implement hot update logic in hot update APIs provided by different platforms. Currently only integrated with Vite, same process for other platforms. 
+
+### Install
+
+Install via package manager `yarn`:
+
+```bash
+yarn add -D @gyron/babel-plugin-jsx
+```
+
+### Usage
+
+- Works with any Babel integration, e.g. in `babel-loader` for Webpack:
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(j|t)sx$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            plugins: [
+              [
+                '@babel/plugin-transform-typescript',
+                {
+                  isTSX: true,
+                },
+              ],
+              [
+                '@gyron/babel-plugin-jsx',
+                {
+                  setup: true,
+                },
+              ],
+            ],
+          },
+        },
+      },
+    ],
+  },
+}
+```
+
+- Or directly use `babelWebpack` exported by `@gyron/babel-plugin-jsx` for transformation:
+
+Default export `babelWebpack` in config file:
+
+```js filename=gyron.config.js
+module.exports = require('./index').babelWebpack
+```
+
+Then in Webpack:
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(j|t)sx$/,
+        use: [
+          {
+            loader: './gyron.config.js',
+            options: {
+              setup: true,
+            },
+          },
+        ],
+      },
+    ],
+  },
+}
+```
+
+Can also use ESM syntax transform JSX in `node > 14`:
+
+```js filename=babel.config.mjs 
+import babelJsx from '@gyron/babel-plugin-jsx'
+
+export default {
+  plugins: [babelJsx], 
+}
+```
+
+### Options
+
+babel-plugin-jsx accepts options to generate more suitable code:
+
+- `hmr` - Generate hot update helper code.
+- `ssr` - Generate SSR hydrate helper code. Auto inject component props on `createSSRContext`.
+- `setup` - Auto convert [stateless](/docs/component#stateless-and-stateful-components) to [stateful](/docs/component#stateless-and-stateful-components) components.
+
+### Hot Update
+
+babel-plugin-jsx auto finds Gyron components and attaches `runtime helper` code on component functions to support hot update. Just using it doesn't work, still need to know how to `rerender`. Typically we identify `comment` nodes in code and insert `rerender helper` code to update. See `vite-plugin-jsx` implementation for details.
+
+Gyron auto finds component dependencies and updates them in dev environments. 
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(() => {
+  return <div>App</div>  
+})
+// ↓ ↓ ↓ ↓ ↓
+const App = FC(() => {
+  return h('div', null, ['App'])
+})
+App.__hmr_id = 'xxaanncc'
+```
+
+### Plugins
+
+We provide out-of-box plugins for the following platforms for easy integration:
+
+Both plugins are in `babel-plugin-jsx` package, exported differently. Both accept options to control transform.
+
+- #### esbuild
+
+[esbuild](https://esbuild.github.io/) is an extremely fast bundler, 10-100x faster than alternatives.
+
+```js
+import esbuild from 'esbuild'
+import { babelESBuildJsx } from '@gyron/babel-plugin-jsx'
+
+esbuild.build({
+  // ...
+  plugins: [
+    babelESBuildJsx({
+      hmr: true,
+      setup: true,
+    }),
+  ],
+})
+```
+
+- #### vite
+
+[vite](https://vitejs.dev/) is next generation frontend tooling with lightning fast dev server.
+
+```js line=7
+import { defineConfig } from 'vite'
+import { babelViteJsx } from '@gyron/babel-plugin-jsx'
+
+export default () => {
+  return defineConfig({  
+    plugins: [
+      babelViteJsx({
+        hmr: true,
+        setup: true, 
+      }),
+    ],
+  })
+}
+```
+
+### Transforms
+
+To maintain intuitive coding habits, `babel-plugin-jsx` generates some helper code that needs to be enabled via options, off by default. If unexpected errors occur, try disabling helpers and check.
+
+Gyron components are stateful or stateless, only difference is function return value. Often stateless isn't needed but used for intuitive coding. The `setup` option enables: 
+
+```tsx
+import { FC } from 'gyron'
+
+const HelloWorld = FC<{ msg: string }>(({ msg }) => {
+  function onClick() {
+    if (msg === '') {
+      console.log('gyron.js')
+    }
+  }
+
+  return <div onClick={onClick}>{msg}</div>
+})
+// ↓ ↓ ↓ ↓ ↓
+import { onBeforeUpdate as _onBeforeUpdate } from 'gyron'
+import { FC } from 'gyron'
+
+const HelloWorld = FC<{ msg: string }>(({ msg }) => {
+  // Auxiliary update of deconstructed props
+  _onBeforeUpdate((_, props) => { 
+    var _props = props
+    msg = _props.msg
+  })
+
+  function onClick() {
+    if (msg === '') {
+      console.log('gyron.js') 
+    }
+  }
+
+  return ({ msg }) => <div onClick={onClick}>{msg}</div>
+})
+```
+
+## jsx-runtime
+
+jsx-runtime supports modern jsx factories, usually for babel-plugin-transform-react-jsx plugin.
+
+Install via `yarn`:
+
+```bash 
+yarn add -D @gyron/jsx-runtime
+```
+
+**Usage**
+
+Note `pragma` config and related imports if specified. 
+
+```jsx
+/** @jsx h */
+import { h } from '@gyron/jsx-runtime'
+
+// Then JSX can be used
+const App = () => {
+  return <div>Hello World</div> 
+}
+```
+
+A simple `@gyron/jsx-runtime` + Vite example:
+
+> Note Vite doesn't load jsx-runtime initially so first load shows blank page. Just refresh and it works. Or upgrade to Vite v3.
+
+```js line=6,7,8
+import { defineConfig } from 'vite'
+
+export default ({ mode }) => {
+  return defineConfig({
+    esbuild: {
+      jsxInject: `import { h, Fragment } from '@gyron/jsx-runtime'`,
+      jsxFactory: 'h',
+      jsxFragment: 'Fragment', 
+    },
+  })
+}
+```

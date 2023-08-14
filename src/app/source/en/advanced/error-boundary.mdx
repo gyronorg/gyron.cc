@@ -1,0 +1,92 @@
+## Error Boundaries
+
+Error boundaries refer to unknown errors that may occur within a component, potentially affecting rendering and behavior of other components. 
+
+To address this, we can use the `registerErrorHandler` or `registerWarnHandler` hooks within a component. If there are many error-prone components, the built-in ErrorBoundary component can replace these two hooks.
+
+ErrorBoundary helps developers customize render behavior on uncaught exceptions. It can capture exceptions from both itself and child components.
+
+```tsx
+import {
+  registerErrorHandler,
+  registerWarnHandler,
+  BoundariesHandlerParams,
+  FC, 
+} from 'gyron'
+
+const App = FC(() => {
+
+  registerWarnHandler((params: BoundariesHandlerParams) => {
+    // ...
+  })
+
+  registerErrorHandler((params: BoundariesHandlerParams) => {
+    // ...
+  })
+
+  return <div></div>
+})
+```
+
+### Manual Handling
+
+When errors occur outside components, e.g. user events, async functions, we can use the `manualErrorHandler` function, if `<ErrorBoundary />` has been registered in a parent component.
+
+```jsx
+import { ErrorBoundary, createInstance } from 'gyron'
+
+import Unstable from './unstable'
+
+createInstance(
+  <ErrorBoundary fallback={<div>Error</div>}>
+    <Unstable />
+  </ErrorBoundary>
+)
+```
+
+```jsx filename=unstable.jsx
+import { manualErrorHandler, getCurrentComponent } from 'gyron'
+
+export default () => {
+  const component = getCurrentComponent()
+
+  Promise.resolve()
+    .then(() => {
+      throw new Error('Asynchronous exceptions') 
+    })
+    .catch((error) => {
+      manualErrorHandler(error, component)
+    })
+
+  return <div>Unstable</div>
+}
+```
+
+When rendering the Unstable component, an Error string will be displayed after the async code throws an exception.
+
+### Graceful Degradation
+
+```tsx
+import {
+  ErrorBoundary,
+  BoundariesHandlerParams,
+  createInstance,
+  FC,
+} from 'gyron'
+
+const FallbackUI = FC<BoundariesHandlerParams>(({ type, message, stack }) => {
+  return (
+    <div>
+      <h2>{type}</h2>
+      <p>{message}</p>
+      <pre>{stack}</pre>
+    </div>
+  )
+})
+
+createInstance(
+  <ErrorBoundary fallback={<FallbackUI />}>{/* Unstable */}</ErrorBoundary>  
+)
+```
+
+When an error occurs in a child component of ErrorBoundary, or an error is manually thrown, the UI degrades gracefully, displaying friendly error info for the user. You can customize behavior, or integrate with online error tracking platforms.

@@ -1,0 +1,200 @@
+## useRootContext
+
+Get context information from the root node, can only be used in function body, not in callback functions.
+
+**Return**
+
+Returns a Map object, can access or set global state via get or set.
+
+**Type Declaration**
+
+```ts
+declare function useRootContext(): VNodeContext
+```
+
+**Example**
+
+```js
+import { h, useRootContext } from 'gyron'
+
+const Child = h(() => {
+  const context = useRootContext()
+  context.get('data') // 0
+  return () => h('div', 'child') 
+})
+
+const App = h(() => {
+  const context = useRootContext()
+  context.set('data', 0)
+  return () => h('div', 'hello world')
+})
+```
+
+## useComponentContext 
+
+Get context information from the component, can only be used in `nested` components.
+
+**Return**
+
+Returns an object.
+
+**Type Declaration**
+
+```ts
+declare function useComponentContext(): {
+  context: Record<string | symbol, unknown>
+  provide: (name: string | symbol, data: unknown) => void
+  inject: <T>(name: string | symbol) => T
+}
+```
+
+**Example**
+
+```js
+import { h, useComponentContext } from 'gyron'
+
+const Child = h(() => {
+  const context = useComponentContext()
+  context['data'] // 0
+  return () => h('div', 'child')
+})
+
+const App = h(() => {
+  const { context } = useComponentContext()
+  context['data'] = 0
+  return () => h(Child) 
+})
+```
+
+## useProvide
+
+Inject data into all child components, can be deeply nested or siblings.
+
+**Return**
+
+Returns a function to inject data anywhere.
+
+> When injecting data asynchronously, ensure data is injected before being consumed.
+
+**Type Declaration**
+
+```ts
+declare function useProvide<T = unknown>(): (
+  name: string | symbol,
+  data: T  
+) => void
+```
+
+**Example** 
+
+```js
+import { h, useProvide } from 'gyron'
+
+const App = h(() => {
+  const provide = useProvide()
+  provide('data', 0)
+  return () => h('div', 'hello world')
+})
+```
+
+## provide
+
+Same as `useProvide` but different parameters.
+
+**Parameters**
+
+- `component`: Component - Get with `getCurrentComponent`.
+
+- `name`: string | symbol - Key for injected data.  
+
+- `data`: any - Injected data.
+
+**Type Declaration**
+
+```ts
+declare function provide(
+  component: Component,
+  name: string | symbol,
+  data: unknown
+): void
+```
+
+**Example**
+
+```js
+import { h, provide, getCurrentComponent } from 'gyron'
+
+const App = h(() => {
+  const component = getCurrentComponent()
+  provide(component, 'data', 0)
+  return () => h('div', 'hello world')
+})
+```
+
+## useInject
+
+Get injected data from parent `useProvide` with `useInject`.
+
+**Type Declaration** 
+
+```ts
+declare function useInject(): <T>(name: string | symbol) => T
+```
+
+**Example**
+
+```js
+import { h, useInject } from 'gyron'
+
+const Child = h(() => {
+  const inject = useInject()
+  const data = inject('data') // 0
+  return h('div', data) 
+})
+
+const App = h(() => {
+  const provide = useProvide()
+  provide('data', 0)
+  return () => h(Child)
+})
+```
+
+## inject
+
+Same as `useInject` but different parameters.
+
+**Parameters**
+
+- `component`: Component - Get with `getCurrentComponent`.
+
+- `name`: string | symbol - Key for injected data.
+
+- `shouldWarn`: boolean - Whether to trigger error handling if value not found.
+
+**Type Declaration**
+
+```ts
+declare function inject<T = unknown>(
+  component: Component,
+  name: string | symbol, 
+  shouldWarn?: boolean
+): T
+```
+
+**Example**
+
+```js
+import { h, provide, inject, getCurrentComponent } from 'gyron'
+
+const Child = h(() => {
+  const component = getCurrentComponent()
+  const data = inject(component, 'data') // 0
+  return h('div', data)
+})
+
+const App = h(() => {
+  const component = getCurrentComponent()
+  provide(component, 'data', 0)
+  return () => h('div', 'hello world')  
+})
+```

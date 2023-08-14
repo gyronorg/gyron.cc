@@ -9,6 +9,16 @@ import {
   CoreDoxApi,
   CoreJSXGettingStarted,
   CoreJSXFaq,
+  CoreIndexEn,
+  CoreRouterApiEn,
+  CoreRouterInstallationEn,
+  CoreRouterQuickStartedEn,
+  CoreRouterConceptsEn,
+  CoreDoxInstallationEn,
+  CoreDoxQuickStartedEn,
+  CoreDoxApiEn,
+  CoreJSXGettingStartedEn,
+  CoreJSXFaqEn,
 } from '@/source'
 import { wrapAsyncMdxContent } from '@/utils/mdx'
 import { ContentMenu, Menu } from '@/interface/menu'
@@ -19,6 +29,15 @@ export const CORE_INDEX: ContentMenu = {
   meta: {
     page: 'core/index',
     title: '核心 介绍',
+  },
+}
+
+export const CORE_INDEX_EN: ContentMenu = {
+  anchor: CoreIndexEn,
+  component: wrapAsyncMdxContent(CoreIndexEn),
+  meta: {
+    page: 'core/index',
+    title: 'Core Introduction',
   },
 }
 
@@ -142,4 +161,127 @@ export const CORE_NAV: Menu = [
   },
 ]
 
+export const CORE_NAV_EN: Menu = [
+  {
+    name: 'Router',
+    path: '/en-US',
+    children: [
+      {
+        path: '/en-US/core/router/installation',
+        name: 'Installation',
+        anchor: CoreRouterInstallationEn,
+        component: wrapAsyncMdxContent(CoreRouterInstallationEn),
+        meta: {
+          group: 'Router',
+          page: 'core/router/installation',
+          title: 'Router Installation',
+        },
+      },
+      {
+        path: '/en-US/core/router/quick-started',
+        name: 'Quick Start',
+        anchor: CoreRouterQuickStartedEn,
+        component: wrapAsyncMdxContent(CoreRouterQuickStartedEn),
+        meta: {
+          group: 'Router',
+          page: 'core/router/quick-started',
+          title: 'Router Quick Start',
+        },
+      },
+      {
+        path: '/en-US/core/router/core-concepts',
+        name: 'Core Concepts',
+        anchor: CoreRouterConceptsEn,
+        component: wrapAsyncMdxContent(CoreRouterConceptsEn),
+        meta: {
+          group: 'Router',
+          page: 'core/router/concepts',
+          title: 'Router Core Concepts',
+        },
+      },
+      {
+        path: '/en-US/core/router/api',
+        name: 'API',
+        anchor: CoreRouterApiEn,
+        component: wrapAsyncMdxContent(CoreRouterApiEn),
+        meta: {
+          group: 'Router',
+          page: 'core/router/api',
+          title: 'Router API',
+        },
+      },
+    ],
+  },
+  {
+    name: 'Redux',
+    path: '/en-US',
+    children: [
+      {
+        path: '/en-US/core/redux/installation',
+        name: 'Installation',
+        anchor: CoreDoxInstallationEn,
+        component: wrapAsyncMdxContent(CoreDoxInstallationEn),
+        meta: {
+          group: 'Redux',
+          page: 'core/redux/installation',
+          title: 'Redux Installation',
+        },
+      },
+      {
+        path: '/en-US/core/redux/quick-started',
+        name: 'Quick Start',
+        anchor: CoreDoxQuickStartedEn,
+        component: wrapAsyncMdxContent(CoreDoxQuickStartedEn),
+        meta: {
+          group: 'Redux',
+          page: 'core/redux/quick-started',
+          title: 'Redux Quick Start',
+        },
+      },
+      {
+        path: '/en-US/core/redux/api',
+        name: 'API',
+        anchor: CoreDoxApiEn,
+        component: wrapAsyncMdxContent(CoreDoxApiEn),
+        meta: {
+          group: 'Redux',
+          page: 'core/redux/api',
+          title: 'Redux API',
+        },
+      },
+    ],
+  },
+  {
+    name: 'JSX',
+    path: '/en-US',
+    children: [
+      {
+        path: '/en-US/core/jsx/getting-started',
+        name: 'Introduction',
+        anchor: CoreJSXGettingStartedEn,
+        component: wrapAsyncMdxContent(CoreJSXGettingStartedEn),
+        meta: {
+          group: 'JSX',
+          page: 'core/redux/getting-started',
+          title: 'JSX Introduction',
+        },
+      },
+      {
+        path: '/en-US/core/jsx/faq',
+        name: 'Differences',
+        anchor: CoreJSXFaqEn,
+        component: wrapAsyncMdxContent(CoreJSXFaqEn),
+        meta: {
+          group: 'JSX',
+          page: 'core/redux/faq',
+          title: 'JSX Differences',
+        },
+      },
+    ],
+  },
+]
+
 export const CORE_ROUTE_MENUS = CORE_NAV.map((Menu) => Menu.children).flat()
+export const CORE_ROUTE_MENUS_EN = CORE_NAV_EN.map(
+  (Menu) => Menu.children
+).flat()

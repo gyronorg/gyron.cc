@@ -1,0 +1,131 @@
+## Forms
+
+When building admin dashboards, you will frequently encounter form inputs. Form data binding and default submission in Gyron.js behave differently.
+
+In HTML forms, submitted data is provided by DOM element attributes and values. In Gyron.js, you need to customize data binding for more flexible control over data changes.
+
+### Basic Example
+
+Let's compare two different use cases and their pros and cons.
+
+```HTML
+<form>
+  <label>
+    Name: 
+    <input type="text" name="name" />
+  </label>
+  
+  <input type="submit" value="Submit" />
+</form>
+```
+
+This is concise and intuitive - user just inputs then clicks submit. However, it is hard to modify the input value. To address this, Gyron.js provides custom data binding for better control over data changes. We need to handle binding ourselves, but can manipulate data more flexibly.
+
+```jsx line=9
+import { useReactive, FC } from 'gyron'
+
+const Form = FC(() => {
+
+  const state = useReactive({
+    name: '',
+  })
+
+  const handleSubmit = (e) => {
+    // Custom submit logic  
+    e.preventDefault()
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Name:
+        <input 
+          type="text"
+          name="name"
+          value={state.name}
+          onChange={(e) => (state.name = e.target.value)} 
+        />
+      </label>
+      
+      <input type="submit" value="Submit" />
+    </form>
+  )
+})
+```
+
+### Controlled Components
+
+Note that some control values are not value, e.g. `<input type="checkbox" checked />` uses checked, not value. 
+
+Select is a special case - its value is determined by option checked status. This is handled internally, so just focus on value.
+
+```jsx
+import { useValue, FC } from 'gyron'
+
+const App = FC(() => {
+
+  const selected = useValue(['bar'])
+
+  const handleChange = (e) => {
+    const value = Array.from(e.target.selectedOptions).map(
+      (select) => select.value
+    )
+    
+    selected.value = value
+  }
+
+  return (
+    <select multiple={true} value={selected.value} onChange={handleChange}>
+      <option value="foo">foo</option>
+      <option value="bar">bar</option>
+    </select>
+  ) 
+})
+```
+
+The above handles a simple multiple select, updating binding on change via selectedOptions. Select state also updates when binding changes.
+
+Use onInput or `onCompositionstart/onCompositionend` events to manage input state or combined state.
+
+**Note: Use update if binding value hasn't changed**
+
+```jsx line=8 
+import { useValue, FC } from 'gyron'
+
+const App = FC(({ component }) => {
+
+  const code = useValue('')
+
+  const handleInput = (e) => {
+    code.value = e.target.value.toLocaleUpperCase()  
+    component.update()
+  }
+
+  return <input value={code.value} onInput={handleInput} />
+
+})
+```
+
+### Input
+
+`input` events differ from native events in some cases for consistent behavior across input types.
+
+The `change` event behaves like other controls - called immediately on content change, unlike native which triggers on blur after change. 
+
+```jsx
+import { FC } from 'gyron'
+
+const App = FC(() => {
+
+  function handleInput() {}
+
+  return (
+    <div>
+      <input onChange={handleInput} />
+      {/* Consistent behavior */}
+      <input onInput={handleInput} />
+    </div>
+  )
+
+})
+```

@@ -45,6 +45,12 @@ const normalDescription =
   '组件 以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。' +
   '小巧 核心代码仅9kb(gzip)左右，但是功能却十分完善。不仅支持SPA模式，还支持SSR模式，只需要做少许改动就可以让组件支持SSR。'
 
+const normalDescriptionEn =
+  'A simple zero-dependency responsive framework that uses jsx syntactic sugar to describe the UI. ' +
+  'Simple - Just basic JavaScript and jsx syntax knowledge is required to build a fully interactive application. Scaffolding can also be used to quickly bootstrap local apps.' +
+  'Components - Using functions as the basic component elements allows flexible page organization and tracks data changes. Caching and other advanced options can optimize performance in large projects.' +
+  'Tiny size - The core code is around 9kb (gzipped) but the functionality is quite complete. Not only does it support SPA, but also SSR with minor modifications to make components universal.'
+
 async function render(vnode, url, clientMeta) {
   const router = createMemoryRouter({
     isSSR: true,
@@ -66,7 +72,7 @@ async function render(vnode, url, clientMeta) {
   const description =
     window.document.querySelector('article')?.textContent ||
     window.document.querySelector('#_description')?.textContent ||
-    normalDescription
+    (url.startsWith('/en-US') ? normalDescriptionEn : normalDescription)
 
   return fs
     .readFileSync(path.join(process.cwd(), 'public/index.html'), {
@@ -76,6 +82,7 @@ async function render(vnode, url, clientMeta) {
       'Gyron.js 文档',
       `Gyron.js | ${router.extra.currentRoute.meta?.title || '文档'}`
     )
+    .replace('{%lang%}', url?.startsWith('/en') ? 'en' : 'zh' || 'zh')
     .replace('<!--ssr-outlet-->', html)
     .replace(
       '<!--client-entry-css-->',
@@ -112,7 +119,11 @@ buildClient(false, tempPath).then((appMeta) => {
       }
     )
     for (const url of routes) {
-      const html = await render(h(App), url, appMeta)
+      const html = await render(
+        h(App, { lang: url.startsWith('/en-US') ? 'en-US' : 'zh-CN' }),
+        url,
+        appMeta
+      )
       const urls = url.slice(1).split('/')
       const name = urls.pop()
       if (urls.length) {

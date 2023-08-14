@@ -1,0 +1,55 @@
+import { Explorer } from '@/pages'
+
+## Hello World
+
+This page shows how to use Gyron.js JSX syntax to create a Hello World node, and the final content of the node.
+
+```jsx
+const App = <h1>Hello World</h1>
+
+// ↓ ↓ ↓ ↓ ↓ 
+
+import { jsx } from '@gyron/jsx-runtime'
+
+const App = jsx('h1', {
+  children: 'Hello World', 
+})
+```
+
+The above conversion process relies on capabilities of other platforms like babel. Here [JSX](/core/jsx/getting-started) you can see specifics of the code transformation. 
+
+If you need to know how to initialize a project, you can come here [(Initialize)](/docs/tutorial#create-a-new-gyron-app) to read more.
+
+Below is an online editing experience that supports features like local real-time editing and preview. Just click the Run button and it will render the code we wrote.
+
+import sourceTSX from '@/demo/helloworld/index.tsx.txt'
+import sourceLESS from '@/demo/helloworld/index.less.txt'
+
+<Explorer
+  hasPadding={false}
+  height={400}
+  sources={[
+    {
+      code: sourceTSX,
+      type: 'typescript',
+      name: 'index.tsx',
+      editTitle: false,
+      editContent: true,
+      remove: false,
+    },
+    {
+      code: sourceLESS,
+      type: 'less',
+      name: 'index.less',
+      editTitle: true,
+      editContent: true,
+      remove: true,
+    },
+  ]}
+/>
+
+Extended Reading:
+
+- The code involves generating HMR auxiliary code during conversion using `babel-plugin-jsx`. If you are interested, you can go to [babel-plugin-jsx](/core/jsx/getting-started#babel-plugin-jsx) to learn more.
+
+- JSX syntax can also be used without the babel-plugin-jsx plugin. See [https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime](https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime) for details.

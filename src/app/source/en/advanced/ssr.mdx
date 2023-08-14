@@ -1,0 +1,141 @@
+## Server-Side Rendering (SSR)
+
+Server-side rendering can improve search engine rankings, attract users, reduce data transfer, allow pages to reach users earlier, and decrease time to interactivity.
+
+### What is SSR?
+
+With conventional CSR (Client Side Rendering), the browser only requests HTML, CSS, JS when loading the page. User data is loaded and rendered via AJAX after JS loads. Most search engines won't wait for JS, but crawl based on HTML semantics for ranking and display.
+
+With SSR, HTML is rendered on the server, so search engines can see page content and rank our pages in results, improving competitiveness and influence.
+
+### Writing Universal Components
+
+When writing universal components in Gyron, just check the `isSSR` prop which is a boolean - true means current environment is server, false means client.
+
+A simple example:
+
+```jsx line=4
+const App = ({ isSSR }) => {
+  // ...
+  if (!isSSR) {
+    document.title = 'Welcome'
+  }
+}
+```
+
+The highlighted part won't execute during server render because isSSR is true. When this component loads on client where isSSR is false, the page title will change to "Welcome".
+
+### How does the client respond to user actions after server rendering?
+
+There is a premise - the VNode data before rendering does not change, i.e. VNode is the same on client and server. The client can load hydrate code to make the static HTML reactive.
+
+Let's create a simple example. Directory structure:
+
+```
+|- src
+|- -- index.html
+|- -- server
+|- ----- index.js
+|- -- client
+|- ----- index.js
+|- -- app
+|- ----- index.js
+```
+
+The server folder contains server render code, usually a Node server like Express. The client folder contains hydrate code to make server rendered static resources reactive.
+
+```jsx filename=app/index.js
+import { useValue, FC } from 'gyron'
+
+const App = FC(() => {
+  const count = useValue(0)
+  return <div onClick={() => count.value++}>Counter {count.value}</div>
+})
+
+export default App
+```
+
+app/index.js exports an app instance for server and client.
+
+```jsx filename=server/index.js
+import { renderToString } from '@gyron/dom-server'
+import express from 'express'
+import App from '../app/index'
+import template from '../index.html'
+
+const app = express()
+
+app.get('*', async (req, res) => {
+  const html = await renderToString(<App />)
+  res.send(template.replace('<!--ssr-outlet-->', html))
+})
+
+app.listen(3000, () => {
+  console.log('listen to http://localhost:3000')
+})
+```
+
+We listen on port 3000 locally, all requests go to the \* route. Create a SSRInstance app, return HTML after server render.
+
+At this point server render is mostly done, but you'll notice the Counter doesn't increment on click because the hydrate code in client/index.js hasn't loaded yet.
+
+```jsx filename=client/index.js
+import { createInstance } from 'gyron'
+
+import App from '../app/index'
+
+createInstance(<App />).render('#app')
+```
+
+Let's improve server/index.js to allow loading client/index.js on client.
+
+```jsx filename=server/index.js
+import path from 'path'
+// ...
+app.use('/js', express.static(path.join(__dirname, 'client')))
+// ...
+```
+
+```html filename=index.html line=10
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Gyron</title>
+  </head>
+  <body>
+    <div id="app"><!--ssr-outlet--></div>
+    <script async type="module" src="/js/index.js"></script>
+  </body>
+</html>
+```
+
+Finally index.html loads the hydrate code as highlighted to make client reactive.
+
+### Scaffolding SSR Projects
+
+Here's a quick setup guide - download the code from [https://github.com/gyronorg/docs](https://github.com/gyronorg/docs), modify app/app.ts and only keep client, server, app/index.ts code.
+
+After updating downloaded code, run `yarn start` to start the project.
+
+Visit [http://localhost:3000](http://localhost:3000), click the Counter 0 to make it 1.
+
+Scaffolding doesn't support SSR project creation yet, will add as optional config later.
+
+## Common Issues
+
+### Duplicate nodes when hydrating
+
+Check if there are leading/trailing newlines in the rendered HTML node, which will be parsed as text nodes leading to inconsistencies and duplicate client render.
+
+A simple example:
+
+```html
+<div id="app"><!--ssr-outlet--></div>
+
+<!-- Wrong -->
+<div id="app">
+  <!--ssr-outlet-->
+</div>
+```

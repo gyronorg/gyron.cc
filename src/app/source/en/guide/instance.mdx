@@ -1,0 +1,67 @@
+## Application Instance  
+
+Like most software development, we have a program entry point that can create an application instance via the `createInstance` method.
+
+Then mount it to the real `DOM` node via the `render` method of the instance. There can be multiple application instances on one page. For example, Gyron's rendering capabilities or components can be used in cells to reuse code.
+
+## Basic Usage
+
+The following code shows the simplest usage of `createInstance`. We created a div element, set the content of the div element, and mounted it to the DOM node named `root`.
+
+```typescript
+import { createInstance, h } from 'gyron'
+
+createInstance(h('div', 'Gyron.js')).render('#root') 
+```
+
+### Root Node
+
+`Gyron.js` allows multiple root nodes. If there are multiple nodes, a Fragment Node will be created automatically.
+
+```typescript
+import { createInstance, createFragment } from 'gyron'
+
+createInstance(createFragment(['hello ', 'Gyron.js'])).render('#root')
+
+// <div id="root">hello Gyron.js</div>
+```
+
+### Plugins
+
+Our plugin system is very simple. You don't even need to use the `createPlugin` method we provided. You can create a context environment yourself and access the plugin instance through custom methods.
+
+Later we will bind the plugin instance and components together for faster problem locating when encountering errors. It also allows plugins to intervene in component rendering to achieve functionality similar to "directives".
+
+```typescript
+import { createInstance, createPlugin, usePlugin } from 'gyron'
+
+const Type = Symbol('')
+
+const customPluginData = /* createRouter */ null  
+
+const plugin = usePlugin()
+
+plugin.set(Type, customPluginData)
+```
+
+Then in the component you can get customPluginData through the usePlugin method.
+
+```jsx line=4
+import { usePlugin, FC } from 'gyron'
+
+const App = FC(() => {
+  const context = usePlugin()
+  context.get(Type)
+  return /*...*/
+})
+```
+
+### Lifecycle
+
+The application has its own lifecycle. Users can use lifecycle hooks in their applications to manage their components more reasonably. 
+
+The lifecycle concept is already very common in the market, but it may not be necessary for building a simple application. Don't worry about mastering it for now. When building a complex application, the advantages of lifecycle hooks are demonstrated. For example, the `onBeforeUpdate` method can be used when optimizing page rendering. It accepts a callback function and must return a Boolean value. If it returns a `Falsy`, the rendering program will prevent updates of the current component and its child components.
+
+Each lifecycle hook can be registered multiple times. `Gyron.js` will call them in registration order, except for `onBeforeUpdate`, which only allows registering once in a component.
+
+![Lifecycle Diagram](/assets/image/lifecycle-md.png)

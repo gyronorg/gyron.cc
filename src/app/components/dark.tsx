@@ -3,6 +3,7 @@ import { DarkIcon, LightIcon, SystemIcon } from './icons'
 import { onDestroyed } from 'gyron'
 import { EVENT_TYPES, useEvent } from '@/hooks/event'
 import classnames from 'classnames'
+import { Popover } from './popover'
 
 const themeIcons = {
   light: LightIcon,
@@ -45,12 +46,6 @@ export const DarkToggle = FC(({ isSSR }) => {
   const theme = useValue<Theme>(
     (isSSR ? 'system' : localStorage.theme) || 'system'
   )
-  const visible = useValue(false)
-
-  const handlePopTheme = (e: Event) => {
-    e.stopPropagation()
-    visible.value = !visible.value
-  }
 
   const event = useEvent(EVENT_TYPES.dark)
 
@@ -107,13 +102,6 @@ export const DarkToggle = FC(({ isSSR }) => {
         trigger()
       }
     }
-    const changeVisible = () => {
-      visible.value = false
-    }
-    window.addEventListener('click', changeVisible)
-    onDestroyed(() => {
-      window.removeEventListener('click', changeVisible)
-    })
   }
 
   return () => {
@@ -133,34 +121,30 @@ export const DarkToggle = FC(({ isSSR }) => {
         : themeIcons[theme.value]
 
     return (
-      <div class="relative select-none" onClick={handlePopTheme}>
+      <Popover
+        content={
+          <>
+            {themes.map((item) => {
+              return (
+                <li
+                  onClick={() => handleChosesTheme(item.origin as Theme)}
+                  class={classnames(
+                    'py-2 px-2 flex items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-600/30',
+                    {
+                      'text-sky-500': item.origin === theme.value && !isSSR,
+                    }
+                  )}
+                >
+                  <item.Icon />
+                  <span class="ml-2">{item.name}</span>
+                </li>
+              )
+            })}
+          </>
+        }
+      >
         <ActiveIcon />
-        <ul
-          class={classnames(
-            'absolute top-[48px] z-50 left-1/2 -translate-x-1/2 bg-white rounded-lg ring-1 ring-slate-900/10 shadow-lg overflow-hidden w-36 py-1 text-sm text-slate-700 dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-300',
-            {
-              hidden: !visible.value,
-            }
-          )}
-        >
-          {themes.map((item) => {
-            return (
-              <li
-                onClick={() => handleChosesTheme(item.origin as Theme)}
-                class={classnames(
-                  'py-2 px-2 flex items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-600/30',
-                  {
-                    'text-sky-500': item.origin === theme.value && !isSSR,
-                  }
-                )}
-              >
-                <item.Icon />
-                <span class="ml-2">{item.name}</span>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+      </Popover>
     )
   }
 })

@@ -11,8 +11,9 @@ import { omit } from '@gyron/shared'
 import { Link } from '@gyron/router'
 import { AnchorIcon, CopyIcon } from './icons'
 import { EVENT_TYPES, useEvent } from '@/hooks/event'
-import classnames from 'classnames'
 import { isDarkTheme } from './dark'
+import { $t } from '@/langs'
+import classnames from 'classnames'
 
 export const A = FC<{ href: string }>(({ href, children }) => {
   if (/(\/\/|@)/.test(href)) {
@@ -170,10 +171,11 @@ const Pre = FC(({ children, isSSR }) => {
       )}
     >
       {meta && meta.filename && (
-        <span class="absolute -top-[24px] bg-white dark:bg-[#00000080] text-slate-900 dark:text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
+        <span class="absolute -top-[24px] bg-white dark:bg-[#1e293b] text-slate-900 dark:text-white text-xs px-2 pb-2 pt-1 rounded rounded-bl-none">
           {meta.filename}
         </span>
       )}
+
       <div
         aria-label="Copy"
         class={classnames(
@@ -189,6 +191,7 @@ const Pre = FC(({ children, isSSR }) => {
             'translate-y-[1px] translate-x-[1px]': copyState.mouse,
           })}
         />
+
         <div
           class={classnames(
             'opacity-0 bg-neutral-800 text-neutral-100 w-16 text-xs p-1 text-center left-1/2 -translate-x-1/2 absolute mt-2 rounded',
@@ -199,8 +202,8 @@ const Pre = FC(({ children, isSSR }) => {
         >
           {copyState.copying
             ? copyState.status
-              ? '拷贝成功'
-              : '拷贝失败'
+              ? $t('StringLiteral_202_16_202_22')
+              : $t('StringLiteral_203_16_203_22')
             : ''}
         </div>
       </div>

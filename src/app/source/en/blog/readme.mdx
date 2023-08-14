@@ -1,0 +1,293 @@
+## Reactivity
+
+`Gyron.js` is a zero-dependency reactive framework. Like most reactive solutions in the community, `Gyron.js` also utilizes the capabilities provided by `Proxy` to perform dependency collection and updates. In theory, this set of reactive logic is supported in environments that support `Proxy`, with only the rendering part needing changes (integration). Here we want to thank Vue for implementing the reactive dependency update solution which we basically referenced to create our own API.
+
+The core of reactivity is the effect structure. Basically all the APIs provided are implemented on top of effect, so let's first introduce the effect data structure.
+
+Let's first take a look at what effect looks like:
+
+```ts
+export type Dep = Set<Effect>
+
+export type EffectScheduler = (...args: any[]) => any
+
+export type Noop = () => void
+
+export interface Effect {
+  // A equals self effect
+  // B equals other effect
+  // deps is a Set structure of Effect, used to store A's dependent B
+  // When A is no longer used, need to clear all B's that depend on A
+  deps: Dep[]
+  // Force execution of dependent B in edge cases
+  allowEffect: boolean
+  // Collect dependent functions on first execution
+  scheduler: EffectScheduler | null
+  // Manually set dependencies
+  wrapper: Noop
+  // Function to execute when update needed
+  run: Noop
+  // Clear dependent B's when no longer used
+  stop: Noop
+}
+```
+
+There are many properties in effect, I've also annotated each property's usage in the comments. Each property has its own application scenario, for example deps is used to unload component dependencies after unmounting the component, avoiding abnormal component updates after data changes with component already unmounted. The core of reactivity can actually be divided into two parts, the first being dependency collection, and the second being reactive updates. Let's take a look at the diagram below.
+
+![reactivity.png](/assets/image/reactivity.png)
+
+The above diagram illustrates the dependency relationships between two different data. The first block (top left) indicates that `variable proxy 2` depends on `variable proxy 1`. When accessing `variable proxy 1` in `variable proxy 2`, it will trigger the automatic collection task of `variable proxy 1`. When the value of `variable proxy 1` updates, it will trigger the task of updating `variable proxy 2`, which is the run or scheduler. So how do we associate these two variables together? We introduced a [WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap) data **effectTracks**, using the variable as a key, then finding dependencies from this module variable when changing `variable proxy 1`, and updating accordingly, which is the right part of the graph. With this, both dependency collection and update have been completed. Next, how to map this to components?
+
+The above introduces how two reactive variables complete the whole reactivity workflow. Now can we change the variables to components? The answer is **yes**. What are components? In `Gyron.js` components are just functions, functions wrapped by inner functions. So how does component dependency collection work on first render? Before explaining component dependency collection, let's first talk about another module variable `activeEffect`. This variable is mainly used to save the component's effect object during initial render, then track reactive data and get the component's effect object saved in the **effectTracks** module variable mentioned earlier. When reactive data changes, trigger the update method (run) of the component effect to update the component. It's worth noting that all updates are asynchronous by default, and support interruptable continuation mode, details to be introduced later.
+
+So in essence reactivity is not very complex, how it's implemented is just the tip of the iceberg, the key thoughts can be applied in your business logic to minimize nasty code for colleagues.
+
+## Task Scheduling
+
+Above we explained how `Gyron.js` achieves reactive updates. Next let's discuss how multiple components updating simultaneously should be handled. What if component updates block user interactions? How to get post-update [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) in components? These are common issues encountered in day-to-day development, and can be optimized when writing business logic, but may not be elegant and lead to unreadable code, for example:
+
+Get updated DOM:
+
+```
+// Get updated D<DOM>
+Tasks: [update component A, update component B, [update component C, [update component D]]]
+Wait for tasks A, B, C, D to finish
+Get updated DOM for component D
+```
+
+To improve dev efficiency and user experience, developers can choose to update components in certain modes. What modes are available? Two kinds - default mode where all components update asynchronously in a queue; and queued tasks can be controlled externally in the second mode. Let's explain the two modes separately.
+
+First mode, use the `FC` method exposed by `Gyron.js` to define components, then use JSX normally to describe UI. Get the updated DOM via exposed `nextRender` when components update. This is a common implementation, similar to `nextTick` in Vue. Let's focus on the second update mode.
+
+**Delayed update**: The first few steps are the same, there is an async queue, but components with `priority` property in **delayed update** mode will interrupt subsequent queued tasks based on component update time or user actions. When the browser tells us there is idle time to continue, resume unfinished tasks. This mode can be improved further - set a cooldown time, discard duplicate tasks in the cooldown window (differentiate by task ID), reducing browser overhead since these tasks will definitely be overwritten next cycle. We plan to implement this, but not now.
+
+The second mode is made possible entirely thanks to browser APIs, improving user experience.
+
+The ideas behind the second mode can also be applied in large editing and doc collaboration scenarios to improve UX. This is the conclusion after studying React's task scheduling.
+
+So when someone says reading these source code is useless, you can confidently tell them what you've learned from it. (But don't blindly read, study and reference based on specific problems)
+
+## Intuitive
+
+If you're a React user, you'll find the mental overhead of state in function components unintuitive and off-putting to beginners. So what is intuitive code? My component content updates reactively when dependencies update, which is the core of reactivity. Writing a simple reactive component in `Gyron.js` is so easy:
+
+```tsx
+import { FC, useValue } from 'gyron'
+
+interface HelloProps {
+  initialCount: number
+}
+
+const Hello = FC<HelloProps>(({ initialCount = 0 }) => {
+  const count = useValue(initialCount)
+  const onClick = () => count.value++
+
+  // Render JSX
+  return <div onClick={onClick}>{count.value}</div>
+})
+```
+
+The above defines a Hello component, accepting a number initialCount parameter. The functionality is simple - click to increment the number. How would we implement the same in React or Vue?
+
+Let's use Vue (with setup syntax):
+
+```html
+<script lang="ts" setup>
+  import { ref } from 'vue'
+
+  const props = withDefaults(
+    defineProps<{
+      initialCount: number
+    }>(),
+    {
+      initialCount: 0,
+    }
+  )
+
+  const count = ref(props.initialCount)
+  function onClick() {
+    count.value++
+  }
+</script>
+
+<template>
+  <div @click="onClick">{{ count }}</div>
+</template>
+```
+
+And in React:
+
+```tsx
+import { useState, useCallback } from 'react'
+
+export const Hello = ({ initialCount = 0 }) => {
+  const [count, setCount] = useState(initialCount)
+
+  const onClick = useCallback(() => {
+    setCount(count + 1)
+  }, [count, setCount])
+
+  console.log('refresh') // Logs every click
+
+  return <div onClick={onClick}>{count}</div>
+}
+```
+
+So in summary, the above are Hello components implemented in different frameworks. This isn't to say other frameworks are inferior, but I feel they have some deficiencies in expressiveness. Vue 2 requires understanding this with no way to stabilize it because it can be modified anywhere without tracking; Vue 3 needs grasping setup-template relationship and typing requires defineXXX APIs. In React, must understand update mechanism e.g. when internal state is expected value, complex components often test coding skills.
+
+How does `Gyron.js` solve these problems? This is entirely thanks to the power of babel - no compile build knowledge needed yet able to modify source code and rebuild. See babel plugin docs for details: [https://babeljs.io/docs/plugins/](https://babeljs.io/docs/plugins/)
+
+Let's use the simple Hello component example above to explain what happens behind the scenes in `Gyron.js`.
+
+First, our component is wrapped by the FC function, which acts like an identifier - a `BinaryExpression` node in AST. The function body return value is `JSX.Element`. With this rule, we can locate the component itself in babel and modify it. To solve duplicate rendering, we need to wrap the `JSX.Element` return value in a function before returning. The transformation is:
+
+```tsx
+const Hello = FC(({ numbers }) => {
+  return <div>{numbers}</div>
+})
+// ↓ ↓ ↓ ↓ ↓
+const Hello = FC(({ numbers }) => {
+  return ({ numbers }) => <div>{numbers}</div>
+})
+```
+
+> Terminology:
+> Component function: The JSX component we know  
+> Render function: The converted JSX function, to mark render vs logic. Similar to setup vs render in Vue3.
+
+This is the simplest transform, but introduces other issues. First, the element content in `JSX.Element` is component params, but numbers is from outer function on next render. To address this, the first param of outer function is passed to render function, so latest state is accessed in render.
+
+Another issue - I can't ensure latest props in component function when accessing props state, this is where `Gyron.js` provided `onBeforeUpdate` comes in. It's called before component update, we need to put all props defined in component function here, and update user defined props based on new props. More complex real case: `({a, ...b}) => {}`, single out prop a, rest to b.
+
+A simple example:
+
+```tsx
+const Hello = FC(({ numbers }) => {
+  function transform() {
+    return numbers
+  }
+  return <div>{transform()}</div>
+})
+// ↓ ↓ ↓ ↓ ↓
+import { onBeforeUpdate as _onBeforeUpdate } from 'gyron'
+const Hello = FC(({ numbers }) => {
+  _onBeforeUpdate((_, props) => {
+    var _props = props
+    numbers = _props.numbers
+  })
+  function transform() {
+    return numbers
+  }
+  return <div>{transform()}</div>
+})
+```
+
+The transformed component calls `_onBeforeUpdate`, which updates component function scope props.
+
+> In summary: To enable intuitive code, `Gyron.js` does a lot behind the scenes. This is also a real use case of babel.
+
+## Extremely Fast HMR
+
+HMR (Hot Module Replacement) refers to hot module updates, this functionality is provided by build tools, we just need to follow their APIs to update components.
+
+```js
+if (module.hot) {
+  module.hot.accept('./hello.jsx', function (Comp1) {
+    rerender('HashId', Comp1)
+  })
+}
+```
+
+Our plugin automatically inserts the above, no need to import manually. (Currently only integrated with vite, planned support for webpack etc in the future)
+
+Let's briefly understand what happens: we still use babel to generate component name and content hash as comment nodes in modules. Then get all module components via build tools, and reregister components on hot events.
+
+Okay, covered build tool capabilities. Let's focus on how `Gyron.js` rerenders. We get component Hash and function from build tools, then call `rerender` to rerender. Where does `rerender` get its data? All data is collected on first instance initialization into a `Map<string, Set<Component>>` structure. Then call component update method to update.
+
+## SEO Friendly
+
+This doesn't relate much to `Gyron.js` itself, but hard to achieve without its capabilities. `Gyron.js` provides SSR (Server Side Render) mode, aka server side rendering. The basics: server renders instance to string and returns to browser, then client `hydrate` makes static text reactive.
+
+The above is simple usage, overall flow:
+
+![ssr.png](/assets/image/ssr.png)
+
+To make components more universal, we inject a variable into all component props telling devs the current rendering mode. Cannot use client APIs during server render, and vice versa.
+
+```tsx
+const App = ({ isSSR }) => {
+  // ...
+  if (!isSSR) {
+    document.title = 'Welcome'
+  }
+}
+```
+
+```tsx
+import { strict as assert } from 'node:assert'
+const App = ({ isSSR }) => {
+  // ...
+  if (isSSR) {
+    assert.deepEqual([[[1, 2, 3]], 4, 5], [[[1, 2, '3']], 4, 5])
+  }
+}
+```
+
+This is SSR. There is also an approach between SSR and client render that outputs completely static resources ready for deployment on any machine or hosting like [app.netlify.com](https://app.netlify.com), [github.com](https://github.com/) etc. Won't elaborate on SSR usage, see [https://gyron.cc/docs/ssr](https://gyron.cc/docs/ssr) for details.
+
+## WYSIWYG
+
+This section introduces the online editor in official docs, we consume fewer resources compared to integrating other platforms, with full capabilities.
+
+After much tweaking, we finally have a simple online editor with real-time preview, syntax error checking, syntax highlighting, smart jump etc.
+
+Currently supports jsx, tsx, less, and loading online resources e.g. `import { h } from 'https://cdn.jsdelivr.net/npm/gyron'`. No data is stored remotely, only locally, so no sandboxing or XSS protection. Online editor goals: online use, edit source code, local module imports, real-time preview, multiple editors without interference.
+
+Currently supports local and server compile. Local is slower so online editor uses server. Visit [https://gyron.cc/explorer](https://gyron.cc/explorer) to try it out.
+
+For local compile, need to implement a virtual file system so build tools can access local resources. Easy to do this in esbuild - just write a plugin with resolve and load hooks to output local files to esbuild.
+
+```ts
+const buildModuleRuntime = {
+  name: 'buildModuleRuntime',
+  setup(build) {
+    build.onResolve({ filter: /\.\// }, (args) => {
+      return {
+        path: args.path,
+        namespace: 'localModule',
+      }
+    })
+    build.onLoad({ filter: /\.\//, namespace: 'localModule' }, async (args) => {
+      // Implementation at https://github.com/gyronorg/core/blob/main/packages/babel-plugin-jsx/src/browser.ts
+      const source = findSourceCode(config.sources, args.path)
+
+      if (source) {
+        const filename = getFileName(args, source.loader)
+        const result = await transformWithBabel(
+          source.code,
+          filename,
+          main,
+          true
+        )
+        return {
+          contents: result.code,
+        }
+      }
+      return {
+        contents: '',
+        loader: 'text',
+        warnings: [
+          {
+            pluginName: 'buildModuleRuntime',
+            text: `Module "${args.path}" is not defined in the local editor`,
+          },
+        ],
+      }
+    })
+  },
+}
+```
+
+Then outputs a module file, just insert into script to run.
+
+When referencing multiple editors in page, remember to delete module file when not in use. Can namespace module to control resources at runtime.

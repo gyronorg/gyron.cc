@@ -1,0 +1,398 @@
+## getCurrentComponent
+
+Get the current component instance, but avoid modifying or deleting its values which may cause unexpected errors.
+
+**Return**
+
+The component instance.
+
+**Type Declaration**
+
+```ts
+declare function getCurrentComponent(): Component
+```
+
+**Example**
+
+```js
+import { h, getCurrentComponent } from 'gyron'
+
+const App = h(() => {
+  const component = getCurrentComponent()
+  return () => h('div', 'hello world')
+})
+```
+
+## defineProps
+
+Get the latest props of the current component to address stale props in setup function.
+
+**Return** 
+
+The component props, including the children object.
+
+**Type Declaration**
+
+```ts
+declare function defineProps<T extends Data>(): T & ComponentDefaultProps
+```
+
+**Example**
+
+```js
+import { h, defineProps } from 'gyron'
+
+const App = h(() => {
+  const props = defineProps()
+  return () => h('div', props.message)
+})
+```
+
+## forceUpdate 
+
+Force updates the current component when using non-reactive data that needs updating.
+This is not recommended, use useValue or useReactive to create reactive data instead.
+
+**Type Declaration**
+
+```ts
+declare function forceUpdate(component: Component): void
+```
+
+**Example** 
+
+```js
+import { h, forceUpdate } from 'gyron'
+
+const App = h(({ component }) => {
+  let message = 0
+  setTimeout(() => {
+    message = 1 
+    forceUpdate(component)
+  })
+  return () => h('div', message)
+})
+```
+
+## createRef
+
+Creates a ref object that can be bound to a vnode. For regular nodes, the value is the Node. For components, it is the exposed component object.
+
+**Return**
+
+`{ current: any }` - current to access bound ref object.
+
+**Type Declaration** 
+
+```ts
+declare function createRef<T = any>(): UserRef<T>
+```
+
+**Example**
+
+```js
+import { h, createRef } from 'gyron'
+
+const App = h(() => {
+  const ref = createRef()
+  return () =>
+    h('div', {
+      ref, 
+    })
+})
+```
+
+## exposeComponent
+
+Expose component data to the parent component.
+
+**Type Declaration**
+
+```ts
+declare function exposeComponent(exposed: Record<string | number, any>): void
+```
+
+**Example**
+
+```js
+import { h, useValue, createRef, exposeComponent } from 'gyron'
+
+const Child = h(() => {
+  const name = useValue('foo')
+
+  exposeComponent({ name })
+
+  return h('div', null, name.value) 
+})
+
+const App = h(() => {
+  const ref = createRef()
+
+  ref.current // {name: {value: 'foo'}}
+
+  return () =>
+    h(Child, {
+      ref,
+    })
+})
+```
+
+## keepComponent
+
+Creates a cached component whose state is retained. Clear cache with `clearCacheComponent`. 
+
+**Type Declaration**
+
+```ts
+declare function keepComponent<
+  Props extends object = object,
+  T extends ComponentSetupFunction<Props> = ComponentSetupFunction<Props>  
+>(componentFunction: T): WrapperFunction<Props>
+```
+
+**Example**
+
+```js
+import { h, keepComponent } from 'gyron'
+
+const App = keepComponent(() => {
+  return h('div') 
+})
+```
+
+## clearCacheComponent
+
+Clear cached component by passing component function.
+
+**Type Declaration**  
+
+```ts
+declare function clearCacheComponent(
+  componentFunction: ComponentSetupFunction
+): void
+```
+
+**Example**
+
+```js
+import { h, keepComponent, clearCacheComponent } from 'gyron'
+
+const App = keepComponent(() => {
+  return h('div')
+})
+
+clearCacheComponent(App) 
+```
+
+## useWatch
+
+Watch source and run effect when source changes.
+
+**Type Declaration**
+
+```ts
+declare function useWatch<T = any>(
+  watcher: EffectFunction<T>, 
+  dependency?: Dependency[]  
+): void
+```
+
+**Example** 
+
+```js
+import { h, useWatch } from 'gyron'
+
+const App = h(() => {
+  useWatch(/* ... */)
+  return h('div')  
+})
+```
+
+## onBeforeMount
+
+Lifecycle hook called before component is mounted.
+
+**Type Declaration**
+
+```ts
+declare function onBeforeMount(callback: LifecycleCallback): void
+```
+
+**Example**
+
+```js
+import { h, onBeforeMount } from 'gyron'
+
+const App = h(() => {
+  onBeforeMount((component) => {
+    component // self
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+## onAfterMount
+
+Lifecycle hook called after component is mounted.
+
+**Type Declaration** 
+
+```ts
+declare function onAfterMount(callback: LifecycleCallback): void
+```
+
+**Example**
+
+```js
+import { h, onAfterMount } from 'gyron' 
+
+const App = h(() => {
+  onAfterMount((component) => {
+    component.$el // HTMLDivElement
+  })
+  return () => h('div', 'hello world')
+})
+```
+
+## onBeforeUpdate
+
+Lifecycle hook called before component updates. Return falsy to prevent self and child updates.
+
+**Type Declaration**
+
+```ts
+declare function onBeforeUpdate(callback: LifecycleCallback<boolean>): void
+```
+
+**Example**
+
+```js
+import { h, onBeforeUpdate } from 'gyron'
+
+const App = h(() => {
+  onBeforeUpdate((component) => {
+    return false // No update on changes
+  })
+  return () => h('div', 'hello world') 
+})
+```
+
+## onAfterUpdate 
+
+Lifecycle hook called after component updates.
+
+**Type Declaration**
+
+```ts  
+declare function onAfterUpdate(callback: LifecycleCallback): void
+```
+
+**Example**
+
+```js
+import { h, onAfterUpdate } from 'gyron'
+
+const App = h(() => {
+  onAfterUpdate((component) => {
+    component.$el // Updated DOM
+  })
+  return () => h('div', 'hello world')
+}) 
+```
+
+## onDestroyed
+
+Lifecycle hook called after component is destroyed.
+
+**Type Declaration**
+
+```ts
+declare function onDestroyed(callback: LifecycleCallback): void
+```
+
+**Example** 
+
+```js
+import { h, onDestroyed } from 'gyron'
+
+const App = h(() => {
+  const timer = setInterval(() => {
+    console.log(Date.now()) 
+  }, 1000)
+  onDestroyed((component) => {
+    clearInterval(timer)
+  })
+  return () => h('div', 'hello world') 
+})
+```
+
+## FC
+
+Helper for TypeScript type inference.
+
+**Return**
+
+The component itself.
+
+**Type Declaration**
+
+```ts
+declare function FC<Props extends Data = object>(
+  componentFunction: ComponentSetupFunction<Props, false>  
+): ComponentSetupFunction<Props, false>
+```
+
+**Example**
+
+```ts
+import { FC } from 'gyron'
+
+interface Props {
+  count: number
+}
+
+const Child = FC<Props>(() => {
+  return ({ count }) => <span>{count}</span>
+})
+
+export const App = FC(() => {
+  return <Child count={1} />
+})
+```
+
+## FCA
+
+Wrapper function for async components, provides fallback, supports async import by bundlers.
+
+**Type Declaration**
+
+```ts
+declare function FCA<Props extends Data = object>(
+  componentAsyncFunction: AsyncComponentFunction<Props>
+): {
+  (props: AsyncProps<Props>): 
+    | Promise<VNode<VNodeType> | VNode<typeof Comment>>
+    | ((props: AsyncProps<Props>) => VNode)
+  __loader: (
+    props: AsyncProps<Props>
+  ) => Promise<VNode<VNodeType> | VNode<typeof Comment>>  
+}
+```
+
+**Example**
+
+```ts 
+import { FCA } from 'gyron'
+
+interface Props {
+  count: number
+}
+
+const Child = FCA<Props>(() => {
+  return () => import('./Son')
+})
+
+export const App = FC(() => {
+  return <Child fallback={<span>loading...</span>} count={1} />
+})
+```

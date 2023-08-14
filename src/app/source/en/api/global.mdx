@@ -1,0 +1,73 @@
+## h
+
+Create a VNode node, returns a plain object. Can run directly in browser, mainly for writing apps in non-compiled environments.
+
+**Parameters**
+
+- `type`: VNodeType - Node type to create, can be tag name or function.
+
+- `props`: string | VNodeProps - Can be string or object, string is treated as `children`.
+
+- `children`: Children | Children[] - Child nodes, can be VNode or string.
+
+**Return**
+
+A VNode node.
+
+**Type Declaration**
+
+```ts
+declare function h(
+  type: VNodeType,
+  props?: string | VNodeProps,
+  children?: Children | Children[]  
+): VNode
+```
+
+**Example**
+
+```js
+import { h } from 'gyron'
+
+const App = h(() => {
+  return h('div', 'hello world') 
+})
+```
+
+## nextRender
+
+Wait for data to finish rendering, get updated DOM in next tick.
+
+**Parameters**
+
+- `fn`: Noop - Callback triggered after render.
+
+**Return**
+
+A Promise.
+
+**Type Declaration**
+
+```ts
+declare function nextRender(fn?: Noop): Promise<unknown>
+```
+
+**Example**
+
+```js
+import { h, useValue, nextRender, createRef, onAfterMount } from 'gyron'
+
+const App = h(() => {
+  const count = useValue(0)
+  const ref = createRef()
+
+  onAfterMount(() => {
+    count.value++
+    nextRender().then(() => {
+      console.log(ref.current.innerText) // 1
+    })
+    console.log(ref.current.innerText) // 0
+  })
+  return () => h('div', { ref }, count.value)
+})
+```

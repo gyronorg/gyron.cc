@@ -79,6 +79,6 @@ const App = FC(({ orders }) => {
 })
 ```
 
-`options` 参数就是传递给 `addEventListener` 函数的第三个参数，行为和 [addEventListener](https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener) 完全一致。
+`options` 参数就是传递给 `addEventListener` 函数的第三个参数，行为和 [addEventListener](https://developer.mozilla.org/zh-CN-CN/docs/Web/API/EventTarget/addEventListener) 完全一致。
 
 > 所以，特殊要注意的地方也一样，同一个监听器注册在不同时期需要分开销毁，也就是说注册在捕获阶段的事件要销毁必须要传递 `capture` ，反之亦然。

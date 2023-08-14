@@ -470,7 +470,7 @@ const App = FC(() => {
 
 当路由发生变更之后触发，可以在`nextRender`之后拿到真实的 DOM 数据。
 
-```jsx line=9
+```jsx line=8
 import { createRef, nextRender, FC } from 'gyron'
 import { onAfterRouteEach } from '@gyron/router'
 
@@ -558,7 +558,7 @@ const App = FC(() => {
 
 还可以将"正则路由"搭配`useParams`方法获取到路由信息。
 
-```jsx filename=index.jsx line=7
+```jsx filename=index.jsx line=8
 import { FC } from 'gyron'
 
 const App = FC(() => {
@@ -574,7 +574,7 @@ const App = FC(() => {
 })
 ```
 
-```jsx filename=user-detail.jsx line=6
+```jsx filename=user-detail.jsx line=5
 import { FC } from 'gyron'
 import { useParams } from '@gyron/router'
 

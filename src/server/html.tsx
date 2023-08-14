@@ -4,6 +4,7 @@ import { Router, createMemoryRouter } from '@gyron/router'
 import { nextRender } from 'gyron'
 import { renderToString } from '@gyron/dom-server'
 import template from '../../public/index.html'
+import { Lang } from '@/components/translate'
 
 const router = createMemoryRouter({
   isSSR: true,
@@ -11,10 +12,11 @@ const router = createMemoryRouter({
 
 export const withHTML: RequestHandler = async (req, res, next) => {
   const { theme } = req.cookies
+  const lang = req.url.startsWith('/' + Lang.EN) ? Lang.EN : Lang.ZH
 
   const root = (
     <Router router={router}>
-      <App />
+      <App lang={lang} />
     </Router>
   )
 
@@ -28,6 +30,7 @@ export const withHTML: RequestHandler = async (req, res, next) => {
   try {
     res.send(
       template
+        .replace('{%lang%}', lang)
         .replace('data-server-theme', `class="${theme || ''}"`)
         .replace(
           'Gyron.js 文档',
