@@ -7,7 +7,7 @@
 <item>
      <link>https://gyron.cc/</link>
      <title>Gyron.js | 文档</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description>Gyron.js 的在线编辑器。在这里可以直接编辑预览 Gyron.js 的项目</description>
      <ror:updatePeriod></ror:updatePeriod>
      <ror:sortOrder>0</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
@@ -15,87 +15,13 @@
 <item>
      <link>https://gyron.cc/docs/tutorial</link>
      <title>Gyron.js | 入门指南 介绍</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core</link>
-     <title>Gyron.js | 核心 介绍</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/router/installation</link>
-     <title>Gyron.js | Router 安装</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/router/quick-started</link>
-     <title>Gyron.js | Router 快速使用</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/router/core-concepts</link>
-     <title>Gyron.js | Router 核心理念</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/router/api</link>
-     <title>Gyron.js | Router API</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/redux/installation</link>
-     <title>Gyron.js | Redux 安装</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/redux/quick-started</link>
-     <title>Gyron.js | Redux 快速使用</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/redux/api</link>
-     <title>Gyron.js | Redux API</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/jsx/getting-started</link>
-     <title>Gyron.js | JSX 介绍</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
-     <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>1</ror:sortOrder>
-     <ror:resourceOf>sitemap</ror:resourceOf>
-</item>
-<item>
-     <link>https://gyron.cc/core/jsx/faq</link>
-     <title>Gyron.js | JSX 区别</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 Gyron
+
+Gyron.js已经正式发布，您可以用于生产环境。后续我们将会推出官方的 UI 组件和更多的实际应用场景，尽情期待吧！
+
+Gyron.js是一款灵活的响应式前端框架，压缩后可减少到 9KB ，相比于其它框架，体积上面它有更大的优势。
+Gyron.js运行时的基准测试结果可以前往js-framework-benchmark。
+Gyron.js的 0.0.16 版本之前的基准测试结果不太理想，在 0.0.16 版本中已经优化了很</description>
      <ror:updatePeriod></ror:updatePeriod>
      <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
@@ -103,7 +29,15 @@
 <item>
      <link>https://gyron.cc/docs/installation</link>
      <title>Gyron.js | 入门指南 安装</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 安装
+
+注意：当前文档所描述的 API 可能和版本不一致，请以安装的类型文件为准。
+
+Gyron.js是一款精简版的响应式框架，类似于 Vue 和 React。基于成熟的社区环境，集成了适配Gyron.js的路由管理器和状态管理器
+Gyron.js提供 SSR 支持，此文档就是使用Gyron.js的 SSR 功能开发的上层应用。
+安装方式
+在不同的场景可以使用不同的安装方式，他们可以更好的配合我们的项目。
+</description>
      <ror:updatePeriod></ror:updatePeriod>
      <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
@@ -111,151 +45,1162 @@
 <item>
      <link>https://gyron.cc/docs/instance</link>
      <title>Gyron.js | 入门指南 应用实例</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 应用实例
+和大多数软件开发一样，我们有一个程序入口，可以通过createInstance方法创建一个应用实例。
+然后通过实例的render方法挂载到真实的DOM节点中。在一个页面中可以存在多个应用实例，比如可以在单元格中使用 Gyron 的渲染能力或者组件来复用代码。
+基本用法
+下面代码是createInstance最简单的用法，我们创建了一个 div 元素，设置了 div 元素的内容，并且挂载�</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/hello-world</link>
      <title>Gyron.js | 入门指南 最小示范</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 Hello World
+此页面是展示如何使用 Gyron.js JSX 语法创建一个 Hello World 节点，以及最终节点的内容。
+const App = &amp;lt;h1&amp;gt;Hello World&amp;lt;/h1&amp;gt;
+// ↓ ↓ ↓ ↓ ↓
+import { jsx } from &amp;#39;@gyron/jsx-runtime&amp;#39;
+const App = jsx(&amp;#39;h1&amp;#39;, {
+  children: &amp;#39;Hello World&amp;#39;,
+})
+
+上述的转换过程是通过其它平台的能力，比如 babel。在这里JSX可以看到代码转换的具体信息。
+如果你需要知道项目如何初始化�</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/reactive</link>
      <title>Gyron.js | 入门指南 数据响应</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 数据响应
+Gyron.js 的一大特点就是响应式更新，在修改数据后可以自动更新依赖数据的视图。为了解决在一个任务时的多次更新，Gyron 的更新使用了 Promise，也就是说，你修改了数据多次，视图只会在 microtask queue 更新一次。
+那什么是 microtask，为什么需要 microtask？
+网络上有相关的介绍文章，
+你可以前往 https://html.spec.whatwg.org/multipage/webappapis.html#task-queue一探究竟。
+�</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/component</link>
      <title>Gyron.js | 入门指南 组件</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 组件
+组件是构建页面元素的重要部分，它允许您创建可重用的元素和模块，与 web component 类似，可以做的事情有很多，这部分值得你的探索。
+函数
+函数是一个 javascript 的重要功能，函数可以是一组用来控制任务执行和中断的逻辑块。
+将函数用作组件是一个非常贴近开发者思维的作法，它不仅简单，还便于代码复用。
+下面介绍一个简单的例子。
+import { FC } from &amp;#39;</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/conditional-rendering</link>
      <title>Gyron.js | 入门指南 条件渲染</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 条件渲染
+条件渲染和 javascript 里的 if else 一样，你可以创建不同组件用来不同状态下的 UI 展示。
+基本例子
+比如，我们可以根据用户登陆状态展示不同的组件。
+import { FC } from &amp;#39;gyron&amp;#39;
+
+const Guest = FC(() =&amp;gt; {
+  return &amp;lt;div&amp;gt;Please sign up&amp;lt;/div&amp;gt;
+})
+const User = FC(() =&amp;gt; {
+  return &amp;lt;div&amp;gt;Welcome&amp;lt;/div&amp;gt;
+})
+const Home = FC(({ isLogin }) =&amp;gt; {
+  return isLogin ? &amp;lt;User /&amp;gt; : &amp;lt;Guest /&amp;g</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/list-rendering</link>
      <title>Gyron.js | 入门指南 列表渲染</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 列表渲染
+当我们有一个场景需要展示一个订单列表，用户可以选择过滤掉某些订单便于快速操作，我们可以通过内联 map 和 filter 来完成这个功能。
+import { FC } from &amp;#39;gyron&amp;#39;
+
+const App = FC(({ orders }) =&amp;gt; {
+  return (
+    &amp;lt;ul&amp;gt;
+      {orders
+        .filter((order) =&amp;gt; order.price &amp;gt; 2000)
+        .map((order) =&amp;gt; (
+          &amp;lt;li&amp;gt;{order.name}&amp;lt;/li&amp;gt;
+        ))}
+    &amp;lt;/ul&amp;gt;
+  )
+})
+
+我们通过 f</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/event-bind</link>
      <title>Gyron.js | 入门指南 事件处理</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 事件处理
+Gyron.js 和 javascript 事件处理保持一致，只是在写法上面会有一点区别。
+在传统模式中 onclick 只能绑定一次，而在 Gyron.js 中使用的 addEventListener 将方法绑定到元素身上，并且根据先后顺序依次触发。
+传统模式的写法
+&amp;lt;button onclick=&amp;quot;myClick()&amp;quot;&amp;gt;click me&amp;lt;/button&amp;gt;
+
+在 Gyron.js 中有所不同，用 on 开头的属性名称都被转为 javascript 事件。
+const button = &amp;lt;button</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/built-attr</link>
+     <title>Gyron.js | 入门指南 内置属性</title>
+     <description> 页面导航栏 内置属性
+这篇文档将介绍 Gyron 中有哪些内置属性，这些属性有什么作用，用户应该怎么去使用。有些内置属性是为了优化渲染速度，有些内置属性是为了快捷渲染。
+ref
+ref 可以应用在组件或者元素节点上。具体用法可以参考Ref 的用法。
+用在组件上时 ref 是组件暴露的对象，用在元素节点上时 ref 是真实的元素。
+import { createRef, onAfterMount, exposeComponent, FC } from &amp;#39;gyr</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/context</link>
      <title>Gyron.js | 高级指引 上下文</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 Context
+上下文也是 Gyron 中的一个重要部分，很多功能都是依靠上下文进行实现。比如 Router 库提供的 userRouter，还比如 Redux 库提供的 useStore 都是通过上下文信息实现的。
+Provide &amp;amp; Inject
+有的时候我们可能不关心组件中间发生了什么，而是需要知道上上层组件的内容，表单的数据管理就是一个很好的例子。
+表单数据传递往往会遇到层级问题，中间可能会穿插多个 lay</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/form</link>
      <title>Gyron.js | 高级指引 表单</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 表单
+当你在制作后台管理系统时，就会接触到很多表单输入选项。Gyron.js 的表单数据绑定和默认表单数据提交是不同的行为。
+在 HTML 表单中，提交数据由 DOM 元素属性和值提供。在 Gyron.js 中，需要自定义数据的绑定以更灵活地掌控自己的数据变化。
+基本例子
+我们用两种不同用法对比他们的优缺点。
+&amp;lt;form&amp;gt;
+  &amp;lt;label&amp;gt;
+    名字:
+    &amp;lt;input type=&amp;quot;text&amp;quot; name=&amp;qu</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/async-component</link>
      <title>Gyron.js | 高级指引 异步组件</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 异步组件
+有的时候我们的组件是等待某些动作完成之后才进行渲染。尤其是在 SSR 的渲染过程中，通过用户的数据进行预渲染的时候，还有就是通过现代打包工具进行代码分割的时候，异步组件就可以发挥重要的功能。
+FCA
+FCA 是内置的异步组件包装器，通过 FCA 函数就可以在内部使用异步语法，比如：
+import { FCA } from &amp;#39;gyron&amp;#39;
+
+const App = FCA(() =&amp;gt; {
+  return getUserInfo</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/docs/transition</link>
+     <title>Gyron.js | 高级指引 动画组件</title>
+     <description> 页面导航栏 Transition
+过渡可以给一个元素在不同状态之间切换的时候定义不同的过渡效果，比如你可以使用 opacity 定义一个渐入渐出的效果。
+而在我们的框架中，你只需要使用我们提供的Transition组件即可快速到达。
+index.tsximport { Transition, FC } from &amp;#39;gyron&amp;#39;
+
+const App = FC(() =&amp;gt; {
+  const visible = useValue(true)
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;button onClick={(visible.value = !visible.value)}&amp;gt;toggle&amp;l</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/ssr</link>
      <title>Gyron.js | 高级指引 服务端渲染</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description>&amp;quot;IE=edge&amp;quot; /&amp;gt;
+    &amp;lt;title&amp;gt;Gyron&amp;lt;/title&amp;gt;
+  &amp;lt;/head&amp;gt;
+  &amp;lt;body&amp;gt;
+    &amp;lt;div id=&amp;quot;app&amp;quot;&amp;gt;&amp;lt;!--ssr-outlet--&amp;gt;&amp;lt;/div&amp;gt;
+    &amp;lt;script async type=&amp;quot;module&amp;quot; src=&amp;quot;/js/index.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+  &amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+
+最终 index.html 内容如上，在高亮那一行就是加载了 hydrate 代码，让客户端变得可响应。
+SSR 项目搭建
+这里介绍一个快速搭建的办法，访问 https://github.com/gyronorg/doc</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/error-boundary</link>
      <title>Gyron.js | 高级指引 错误边界</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 错误边界
+错误边界是指可能在组件内发生的未知错误，有可能会影响其它组件的渲染和行为，为了解决这一个问题，
+我们可以在组件内使用registerErrorHandler或者registerWarnHandler勾子，如果可能发生异常的组件比较多，这时候可以使用 ErrorBoundary 内置组件替代这两个勾子的功能。
+ErrorBoundary 是帮助开发者在发生未捕获的异常时自定义渲染行为，它不仅可以捕获自身代�</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/global-api</link>
      <title>Gyron.js | API 全局API</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 h
+创建一个 VNode 节点，返回值为一个普通的对象。可以直接运行在浏览器，主要用来在非编译环境下编写应用。
+参数
+
+type: VNodeType - 要创建的节点类型，可以是标签名或者一个函数。
+props: string | VNodeProps - 可以是字符串或者对象，如果是字符串则会当作children。
+children: Children | Children[] - 子节点。可以是 VNode 节点或者字符串。
+
+返回值
+一个 VNode 节点。
+类型声明
+decl</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/instance-api</link>
      <title>Gyron.js | API 应用</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 createInstance
+创建应用，并通过应用上的render方法渲染成实际的 DOM 节点。
+参数
+
+root: VNode - 一个 VNode 节点，可以通过 h 函数创建。
+isHydrate: boolean - 用于服务端渲染参数，为 Truthy 则代表使用“水合”方法让界面变得可响应。
+
+返回值
+一个应用对象，也是 javascript 中的 plain object。
+类型声明
+interface Instance {
+  container: Element | null
+  render: (containerOrSelector: string | HTMLElement) </description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/reactivity-api</link>
      <title>Gyron.js | API 响应式</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 useReactive
+让 object 对象变得可响应。
+参数
+
+target: object - 需要被响应的数据。
+readonly: boolean - 是否为只读数据。
+
+返回值
+一个被代理过的对象，内部使用的 Proxy 进行代理。
+类型声明
+declare function useReactive&amp;lt;T extends object&amp;gt;(target: T, readonly?: boolean): T
+
+示例
+import { useReactive } from &amp;#39;gyron&amp;#39;
+
+const original = {
+  x: 0,
+  y: 0,
+}
+const observed = useReactive(original)
+original !== observed // true</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/component-api</link>
      <title>Gyron.js | API 组件</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 getCurrentComponent
+获取当前组件对象，但是请勿随意更改或者删除其中的值，可能会发生预期之外的错误。
+返回值
+返回组件对象。
+类型声明
+declare function getCurrentComponent(): Component
+
+示例
+import { h, getCurrentComponent } from &amp;#39;gyron&amp;#39;
+
+const App = h(() =&amp;gt; {
+  const component = getCurrentComponent()
+  return () =&amp;gt; h(&amp;#39;div&amp;#39;, &amp;#39;hello world&amp;#39;)
+})
+
+defineProps
+获取当前组件的 props，是为了解决</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/context-api</link>
      <title>Gyron.js | API 上下文</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 useRootContext
+获取根节点中的 context 信息，只能在函数体中使用，不可以在回调函数中使用。
+返回值
+返回一个 Map 对象，可以通过 get 或者 set 访问或者设置全局状态。
+类型声明
+declare function useRootContext(): VNodeContext
+
+示例
+import { h, useRootContext } from &amp;#39;gyron&amp;#39;
+
+const Child = h(() =&amp;gt; {
+  const context = useRootContext()
+  context.get(&amp;#39;data&amp;#39;) // 0
+  return () =&amp;gt; h(&amp;#39;div&amp;#39;, &amp;#39;child&amp;#</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/vnode-api</link>
      <title>Gyron.js | API 节点</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 createVNode
+创建一个 VNode 节点，返回值为一个普通的对象。可以直接运行在浏览器，主要用来在非编译环境下编写应用。
+
+它与h函数不同，他并不会合并自动合并 props 和 children。
+
+参数
+
+tag: 任意类型，可以传递 string tag 或者 component。
+props: VNodeProps - 节点属性，如果 tag 是函数则会作为函数的参数。
+children: Children | Children[] - 子节点。可以是 VNode 节点或者字符串。
+
+�</description>
      <ror:updatePeriod></ror:updatePeriod>
-     <ror:sortOrder>2</ror:sortOrder>
+     <ror:sortOrder>1</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
 </item>
 <item>
      <link>https://gyron.cc/docs/handler-api</link>
      <title>Gyron.js | API 错误边界</title>
-     <description>Gyron.js is a minimalist version of the zero-dependency responsive framework</description>
+     <description> 页面导航栏 registerErrorHandler
+在组件中注册自己的错误异常处理。
+参数
+
+handler: Function - 回调函数，组件渲染或者更新发生错误后会触发回调。
+
+类型声明
+declare function registerErrorHandler(handler: BoundariesHandler): void
+
+示例
+import { registerErrorHandler, h } from &amp;#39;gyron&amp;#39;
+
+const App = h(() =&amp;gt; {
+  registerErrorHandler(({ message }) =&amp;gt; {
+    message // Uncaught exceptions
+  })
+  throw new Error(&amp;#39;Uncaught exceptions&amp;#39;)
+})</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core</link>
+     <title>Gyron.js | 核心 介绍</title>
+     <description> 页面导航栏 核心
+Gyron.js 作者开发了一些方便开发者搭建前端环境的工具，比如常用路由管理器和全剧状态管理器。如果你想把某些社区资源适配到 Gyron.js 中，可以联系我们以获取帮助。
+
+Discord: https://discord.gg/fETVZtD
+Email: linkorgs@163.com
+
+Router
+Router 是帮助用户构建界面的 JavaScript 库并且拥有强大的 Api，它足够小巧但是功能足够完善，可以使用不同方式声明路由，并且在不同渲染�</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/blog/readme</link>
+     <title>Gyron.js | 理念和原理</title>
+     <description> 页面导航栏 响应式
+Gyron.js是一款零依赖的响应式框架，和社区中大多数响应式方案一样，Gyron.js也是利用Proxy提供的能力进行的依赖收集和更新，理论上来说只要支持Proxy能力的环境都支持这套响应式的逻辑，只是需要修改（接入）对应的渲染部分。这里也要感谢 Vue 实现的响应式依赖更新方案，我们基本上参考着这套方案实现了自己的 API。
+响应式核心部分就是 effect 结构，基</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/explorer</link>
+     <title>Gyron.js | 在线/协同 Gyron.js编辑器</title>
+     <description>简单零依赖的响应式框架(Simple zero-dependency responsive framework that uses jsx syntactic sugar to describe the UI)简单 只需要了解JavaScript基本语法和jsx语法糖就可以完全构建一个可交互的应用程序。使用脚手架还可以快速开始本地应用。组件 以函数作为组件的基础元素，就可以灵活的组织页面，并且可以追踪数据变化。还可以使用更多选项让组件可缓存，在大型项目中收益更明显。小巧 核心</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/installation</link>
+     <title>Gyron.js | Router 安装</title>
+     <description> 页面导航栏 安装
+如何安装取决于你使用的什么平台。如果你使用了现代的打包工具，请使用包管理器 yarn 或者 npm 进行安装，如果你使用了浏览器的 type=&amp;quot;module&amp;quot; 功能那么可以直接引用 CDN 资源。
+使用包管理的方式：
+yarn add -D @gyron/router
+# or
+npm install --save-dev @gyron/router
+
+使用浏览器模块化的方式：
+&amp;lt;script type=&amp;quot;module&amp;quot;&amp;gt;
+  import { Routes, Route } from &amp;#39;https://cdn.skypack.dev</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/quick-started</link>
+     <title>Gyron.js | Router 快速使用</title>
+     <description> 页面导航栏 快速使用
+阅读完上一篇文档后知道如何安装 Router，这篇文档将告诉你如何快速搭建各个不同应用场景的代码。
+声明式路由
+在开始写代码之前需要知道路由的一些基本知识。Routes 是路由的承载，只有在 Routes 下声明 Route 才会被路由规则匹配，如果需要使用 Layout 等场景可以使用 Outlet 组件。
+import { createInstance } from &amp;#39;gyron&amp;#39;
+import { createBrowserRouter, Router, Route, Routes</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/core-concepts</link>
+     <title>Gyron.js | Router 核心理念</title>
+     <description> 页面导航栏 核心理念
+
+此文档主要讨论的是 Router 背后的理念，以及实现原理，初次接触可能会比较晦涩难懂，但是当你很熟练使用之后再来阅读会有一种茅塞顿开的感觉。如果你只想知道如何使用可以前往快速使用
+
+Router 的诞生是作者参考了社区优秀的开源案例，再结合 Gyron.js 框架的特性开发完成的一款路由管理器。
+现在看到的 Router 其实是第二个主要版本，第一个版本使�</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/router/api</link>
+     <title>Gyron.js | Router API</title>
+     <description> 页面导航栏 
+此文档中描述的类型需要使用 npm 下载之后查看，在这里只描述出参数的种类和返回值。如果你有时间和精力欢迎加入我们完善文档。
+
+createRouter
+创建一个 Router，然后通过&amp;lt;Router router={/* ... */}&amp;gt;方式使用。
+返回值
+返回Plugin&amp;lt;RouterBase&amp;gt;类型对象。
+类型声明
+declare function createRouter(option: Partial&amp;lt;RouterOption&amp;gt;): Plugin&amp;lt;RouterBase&amp;gt;
+
+示例
+import { createBrowserHistory } from &amp;</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/redux/installation</link>
+     <title>Gyron.js | Redux 安装</title>
+     <description> 页面导航栏 安装
+如何安装取决于你使用的什么平台。如果你使用了现代的打包工具，请使用包管理器 yarn 或者 npm 进行安装，如果你使用了浏览器的 type=&amp;quot;module&amp;quot; 功能那么可以直接引用 CDN 资源。
+使用包管理的方式：
+yarn add -D @gyron/redux
+# or
+npm install --save-dev @gyron/redux
+
+使用浏览器模块化的方式：
+&amp;lt;script type=&amp;quot;module&amp;quot;&amp;gt;
+  import { createStore } from &amp;#39;https://cdn.skypack.dev/@gy</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/redux/quick-started</link>
+     <title>Gyron.js | Redux 快速使用</title>
+     <description> 页面导航栏 快速使用
+
+在开始使用之前我们需要了解redux状态库相关知识，我们的redux完全基于redux，如果你还不清楚redux相关知识，那就需要前往https://redux.js.org/进行学习。
+
+Redux是redux的Gyron.js状态库，在不破坏 immutable 的同时，让其数据更改变得可响应。
+在内部使用了一个响应式变量作为 state 的副本，只需要在修改时同步 state 到这个响应式变量上。这个响应式变量无法在外�</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/redux/api</link>
+     <title>Gyron.js | Redux API</title>
+     <description> 页面导航栏 
+此文档中描述的类型需要使用 npm 下载之后查看，在这里只描述出参数的种类和返回值。如果你有时间和精力欢迎加入我们完善文档。
+
+createStore
+创建一个 store plugin，接受参数和 redux 的configureStore一样，支持reducer、middleware、devTools、preloadedState、enhancers。
+类型声明
+declare function createStore&amp;lt;
+  S extends object,
+  A extends Action = AnyAction,
+  M extends Middlewares&amp;lt;S&amp;gt; = [ThunkMiddlew</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/jsx/getting-started</link>
+     <title>Gyron.js | JSX 介绍</title>
+     <description> 页面导航栏 JSX 介绍
+jsx 是 javascript 的语法扩展，因为其特性足够好并且学习成本低，Gyron.js 不再自己创造自己的语法，而是适配现有的 jsx 语法糖。
+核心库中有两个关于 jsx 的库，他们的作用都是把 jsx 语法转换成运行时的代码，只是运行在不同平台或者插件上而已。
+babel-plugin-jsx
+babel-plugin-jsx 是将 jsx 语法转换成 Gyron.js 方法的 babel 插件，他和其它类型库一样，都是使用 babel �</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/core/jsx/faq</link>
+     <title>Gyron.js | JSX 区别</title>
+     <description> 页面导航栏 常见问题
+jsx-runtime 和 babel-plugin-jsx 有什么区别？
+jsx-runtime 是为了适配支持 pragma 配置的编译器，所有转换都使用标准的 jsx 语法进行转换。而 babel-plugin-jsx 是 gyron 官方的 babel 插件，会比 jsx-runtime 运行时多一些功能。
+为什么状态不更新？
+请检查对应的打包配置是否设置了 setup 参数。请将其设置为 true，然后再次尝试。介绍(JSX)Copyright © 2023 Link
+                  Produced </description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/tutorial</link>
+     <title>Gyron.js | Getting Started Introduction</title>
+     <description>Page Navigation BarGyron
+
+Gyron.js has been officially released. You can use it in production environments. We will release official UI components and more practical application scenarios in the future. Stay tuned!
+
+Gyron.js is a flexible reactive frontend framework that can be reduced to 9KB when compressed. Compared to other frameworks, it has greater advantages in terms of size.
+Benchmark test results of Gyron.js runtime can be found at js-framework-benchmark.
+The benchmark test results befor</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/installation</link>
+     <title>Gyron.js | Getting Started Installation</title>
+     <description>Page Navigation BarInstallation
+
+Note: The APIs described in this document may be inconsistent with the version. Please refer to the installed type files.
+
+Gyron.js is a lightweight reactive framework, similar to Vue and React. Based on the mature community environment, it integrates a routing manager and state manager adapted to Gyron.js.
+Gyron.js provides SSR support. This document is developed with the SSR capability of Gyron.js.
+Installation Methods
+Different installation methods can be used</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/instance</link>
+     <title>Gyron.js | Getting Started Application Instance</title>
+     <description>Page Navigation BarApplication Instance
+Like most software development, we have a program entry point that can create an application instance via the createInstance method.
+Then mount it to the real DOM node via the render method of the instance. There can be multiple application instances on one page. For example, Gyron&amp;#39;s rendering capabilities or components can be used in cells to reuse code.
+Basic Usage
+The following code shows the simplest usage of createInstance. We created a div elemen</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/hello-world</link>
+     <title>Gyron.js | Getting Started Minimal Demo</title>
+     <description>Page Navigation BarHello World
+This page shows how to use Gyron.js JSX syntax to create a Hello World node, and the final content of the node.
+const App = &amp;lt;h1&amp;gt;Hello World&amp;lt;/h1&amp;gt;
+
+// ↓ ↓ ↓ ↓ ↓ 
+
+import { jsx } from &amp;#39;@gyron/jsx-runtime&amp;#39;
+
+const App = jsx(&amp;#39;h1&amp;#39;, {
+  children: &amp;#39;Hello World&amp;#39;, 
+})
+
+The above conversion process relies on capabilities of other platforms like babel. Here JSX you can see specifics of the code transformation.
+If you need to know ho</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/reactive</link>
+     <title>Gyron.js | Getting Started Data Reactivity</title>
+     <description>Page Navigation BarData Reactivity
+A major feature of Gyron.js is reactive updates. Views that depend on data are automatically updated when the data is modified. To solve multiple updates in one task, Gyron&amp;#39;s updates use Promise - meaning if you modify the data multiple times, the view will only update once in the microtask queue.
+What is a microtask and why do we need microtask?
+There are related introductory articles online. You can check out https://html.spec.whatwg.org/multipage/webappa</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/component</link>
+     <title>Gyron.js | Getting Started Components</title>
+     <description>Page Navigation BarComponents
+Components are an important part of building page elements. They allow you to create reusable elements and modules, similar to web components, with many possibilities worth exploring.
+Functions
+Functions are an important feature of JavaScript. Functions can be logic blocks used to control task execution and interruption.
+Using functions as components is a very developer-friendly approach. It is not only simple, but also facilitates code reuse.
+Here is a simple examp</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/conditional-rendering</link>
+     <title>Gyron.js | Getting Started Conditional Rendering</title>
+     <description>Page Navigation BarConditional Rendering
+Conditional rendering is the same as if-else in JavaScript. You can create different components for different UI displays based on state.
+Basic Example
+For example, we can display different components based on the user&amp;#39;s login status.
+import { FC } from &amp;#39;gyron&amp;#39;
+
+const Guest = FC(() =&amp;gt; {
+  return &amp;lt;div&amp;gt;Please sign up&amp;lt;/div&amp;gt; 
+})
+
+const User = FC(() =&amp;gt; {
+  return &amp;lt;div&amp;gt;Welcome&amp;lt;/div&amp;gt;
+})
+
+const Home = FC(({ isLogin }) =&amp;g</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/list-rendering</link>
+     <title>Gyron.js | Getting Started List Rendering</title>
+     <description>Page Navigation BarList Rendering
+When we have a scenario that needs to display an order list, where users can filter out some orders for quick operation, we can accomplish this via inline map and filter.
+import { FC } from &amp;#39;gyron&amp;#39;
+
+const App = FC(({ orders }) =&amp;gt; {
+  return (
+    &amp;lt;ul&amp;gt;
+      {orders
+        .filter((order) =&amp;gt; order.price &amp;gt; 2000)
+        .map((order) =&amp;gt; (
+          &amp;lt;li&amp;gt;{order.name}&amp;lt;/li&amp;gt;
+        ))}
+    &amp;lt;/ul&amp;gt;
+  )
+})
+
+We first filter out o</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/event-bind</link>
+     <title>Gyron.js | Getting Started Event Handling</title>
+     <description>Page Navigation BarEvent Handling
+Event handling in Gyron.js is consistent with JavaScript, just with some differences in syntax.
+In traditional mode, onclick can only be bound once, while in Gyron.js, using addEventListener binds the method to the element, and triggers in sequence according to the order.
+Traditional syntax:
+&amp;lt;button onclick=&amp;quot;myClick()&amp;quot;&amp;gt;click me&amp;lt;/button&amp;gt;
+
+It&amp;#39;s a bit different in Gyron.js. Property names starting with on are all converted to JavaScript ev</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/built-attr</link>
+     <title>Gyron.js | Getting Started Built-in Properties</title>
+     <description>Page Navigation BarBuilt-in Properties
+This document will introduce the built-in properties in Gyron, what these properties do, and how users should use them. Some built-in properties are for optimizing rendering speed, while others are for convenient rendering.
+ref
+ref can be applied on components or element nodes. For specific usage, see The Usage of Ref.
+When used on components, ref is the exposed object of the component. When used on element nodes, ref is the real element.
+import { createRef</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/context</link>
+     <title>Gyron.js | Advanced Guide Context</title>
+     <description>Page Navigation BarContext
+Context is also an important part of Gyron, many features rely on it. For example, the userRouter provided by the Router library, and the useStore provided by the Redux library, are both implemented via context.
+Provide &amp;amp; Inject
+Sometimes we don&amp;#39;t care what happens in intermediate components, but need to know content from upper components. Form data management is a good example.
+Passing form data often encounters hierarchy issues. Intermediate layout components</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/form</link>
+     <title>Gyron.js | Advanced Guide Form</title>
+     <description>Page Navigation BarForms
+When building admin dashboards, you will frequently encounter form inputs. Form data binding and default submission in Gyron.js behave differently.
+In HTML forms, submitted data is provided by DOM element attributes and values. In Gyron.js, you need to customize data binding for more flexible control over data changes.
+Basic Example
+Let&amp;#39;s compare two different use cases and their pros and cons.
+&amp;lt;form&amp;gt;
+  &amp;lt;label&amp;gt;
+    Name: 
+    &amp;lt;input type=&amp;quot;text&amp;quo</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/async-component</link>
+     <title>Gyron.js | Advanced Guide Async Components</title>
+     <description>Page Navigation BarAsynchronous Components
+Sometimes our components only render after certain actions complete. Especially during SSR rendering with pre-rendering based on user data, and code splitting with modern bundlers, asynchronous components can play an important role.
+FCA
+FCA is the built-in asynchronous component wrapper, enabling async syntax internally via the FCA function, e.g.:
+import { FCA } from &amp;#39;gyron&amp;#39;
+
+const App = FCA(() =&amp;gt; {
+  return getUserInfo().then((data) =&amp;gt; &amp;l</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/transition</link>
+     <title>Gyron.js | Advanced Guide Transition Components</title>
+     <description>Page Navigation BarTransition
+Transitions allow you to define different transition effects when an element changes between different states. For example, you can use opacity to create a fade in/out effect.
+In our framework, you just need to use the built-in Transition component to achieve this quickly.
+index.tsximport { Transition, FC } from &amp;#39;gyron&amp;#39;
+
+const App = FC(() =&amp;gt; {
+
+  const visible = useValue(true)
+
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;button onClick={(visible.value = !visible</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/ssr</link>
+     <title>Gyron.js | Advanced Guide Server-side Rendering</title>
+     <description>&amp;quot;IE=edge&amp;quot; /&amp;gt;
+    &amp;lt;title&amp;gt;Gyron&amp;lt;/title&amp;gt;
+  &amp;lt;/head&amp;gt;
+  &amp;lt;body&amp;gt;
+    &amp;lt;div id=&amp;quot;app&amp;quot;&amp;gt;&amp;lt;!--ssr-outlet--&amp;gt;&amp;lt;/div&amp;gt;
+    &amp;lt;script async type=&amp;quot;module&amp;quot; src=&amp;quot;/js/index.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+  &amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+
+Finally index.html loads the hydrate code as highlighted to make client reactive.
+Scaffolding SSR Projects
+Here&amp;#39;s a quick setup guide - download the code from https://github.com/gyronorg/docs, modify app/app.</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/error-boundary</link>
+     <title>Gyron.js | Advanced Guide Error Boundaries</title>
+     <description>Page Navigation BarError Boundaries
+Error boundaries refer to unknown errors that may occur within a component, potentially affecting rendering and behavior of other components.
+To address this, we can use the registerErrorHandler or registerWarnHandler hooks within a component. If there are many error-prone components, the built-in ErrorBoundary component can replace these two hooks.
+ErrorBoundary helps developers customize render behavior on uncaught exceptions. It can capture exceptions from </description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/global-api</link>
+     <title>Gyron.js | API Global API</title>
+     <description>Page Navigation Barh
+Create a VNode node, returns a plain object. Can run directly in browser, mainly for writing apps in non-compiled environments.
+Parameters
+
+
+type: VNodeType - Node type to create, can be tag name or function.
+
+
+props: string | VNodeProps - Can be string or object, string is treated as children.
+
+
+children: Children | Children[] - Child nodes, can be VNode or string.
+
+
+Return
+A VNode node.
+Type Declaration
+declare function h(
+  type: VNodeType,
+  props?: string | VNodeProps,
+</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/instance-api</link>
+     <title>Gyron.js | API Application</title>
+     <description>Page Navigation BarcreateInstance
+Create app instance, render to actual DOM nodes via render method.
+Parameters
+
+
+root: VNode - A VNode created with h function.
+
+
+isHydrate: boolean - For SSR, truthy means using &amp;quot;hydration&amp;quot; to make reactive.
+
+
+Return
+An app object, plain JS object.
+Type Declaration
+interface Instance {
+  container: Element | null
+  render: (containerOrSelector: string | HTMLElement) =&amp;gt; Instance
+  destroy: () =&amp;gt; Instance
+  readonly plugins: Set&amp;lt;Plugin&amp;gt;
+  get</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/reactivity-api</link>
+     <title>Gyron.js | API Reactivity</title>
+     <description>Page Navigation BaruseReactive
+Make an object reactive.
+Parameters
+
+target: object - Data to make reactive.
+readonly: boolean - Whether data is read only.
+
+Return
+Proxied object, uses Proxy internally.
+Type Declaration
+declare function useReactive&amp;lt;T extends object&amp;gt;(target: T, readonly?: boolean): T
+
+Example
+import { useReactive } from &amp;#39;gyron&amp;#39;
+
+const original = {
+  x: 0,
+  y: 0,
+}
+const observed = useReactive(original)
+original !== observed // true
+
+isResponsive
+Check if object is r</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/component-api</link>
+     <title>Gyron.js | API Components</title>
+     <description>Page Navigation BargetCurrentComponent
+Get the current component instance, but avoid modifying or deleting its values which may cause unexpected errors.
+Return
+The component instance.
+Type Declaration
+declare function getCurrentComponent(): Component
+
+Example
+import { h, getCurrentComponent } from &amp;#39;gyron&amp;#39;
+
+const App = h(() =&amp;gt; {
+  const component = getCurrentComponent()
+  return () =&amp;gt; h(&amp;#39;div&amp;#39;, &amp;#39;hello world&amp;#39;)
+})
+
+defineProps
+Get the latest props of the current compone</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/context-api</link>
+     <title>Gyron.js | API Context</title>
+     <description>Page Navigation BaruseRootContext
+Get context information from the root node, can only be used in function body, not in callback functions.
+Return
+Returns a Map object, can access or set global state via get or set.
+Type Declaration
+declare function useRootContext(): VNodeContext
+
+Example
+import { h, useRootContext } from &amp;#39;gyron&amp;#39;
+
+const Child = h(() =&amp;gt; {
+  const context = useRootContext()
+  context.get(&amp;#39;data&amp;#39;) // 0
+  return () =&amp;gt; h(&amp;#39;div&amp;#39;, &amp;#39;child&amp;#39;) 
+})
+
+const</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/vnode-api</link>
+     <title>Gyron.js | API VNode</title>
+     <description>Page Navigation BarcreateVNode
+Create a VNode, returns a plain object. Can run directly in browser, mainly for writing apps without compile.
+
+Differs from h in that it does not auto merge props and children.
+
+Parameters
+
+tag: any, can be string tag or component.
+props: VNodeProps - Node properties, passed as args if tag is function.
+children: Children | Children[] - Child nodes, can be VNode or string.
+
+Type Declaration
+declare function createVNode(
+  tag: unknown,
+  props?: Partial&amp;lt;VNodeProp</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/docs/handler-api</link>
+     <title>Gyron.js | API Error Boundaries</title>
+     <description>Page Navigation BarregisterErrorHandler
+Register custom error handling in component.
+Parameters
+
+handler: Function - Callback triggered on render/update errors.
+
+Type Declaration
+declare function registerErrorHandler(handler: BoundariesHandler): void
+
+Example
+import { registerErrorHandler, h } from &amp;#39;gyron&amp;#39;
+
+const App = h(() =&amp;gt; {
+
+  registerErrorHandler(({ message }) =&amp;gt; {
+    message // Uncaught exceptions
+  })
+
+  throw new Error(&amp;#39;Uncaught exceptions&amp;#39;)
+  
+})
+
+registerWarnHan</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/router/installation</link>
+     <title>Gyron.js | Router Installation</title>
+     <description>Page Navigation BarInstallation
+How to install depends on what platform you are using. If you are using modern bundlers, install via package manager yarn or npm. If you are using browser&amp;#39;s type=&amp;quot;module&amp;quot; feature, you can directly reference CDN resources.
+Using package manager:
+yarn add -D @gyron/router
+
+# or 
+
+npm install --save-dev @gyron/router
+
+Using browser modules:
+&amp;lt;script type=&amp;quot;module&amp;quot;&amp;gt;
+import { Routes, Route } from &amp;#39;https://cdn.skypack.dev/@gyron/router&amp;#3</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/router/quick-started</link>
+     <title>Gyron.js | Router Quick Start</title>
+     <description>Page Navigation BarQuick Start
+After reading the previous document and knowing how to install Router, this document will tell you how to quickly build code for different application scenarios.
+Declarative Routing
+Before writing code, you need to know some basics about routing. Routes is the carrier of routes. Only Routes declared under Routes will be matched by routing rules. If you need to use Layout and other scenarios, you can use the Outlet component.
+import { createInstance } from &amp;#39;gyro</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/router/core-concepts</link>
+     <title>Gyron.js | Router Core Concepts</title>
+     <description>Page Navigation BarHere is my attempt to translate the main contents of this document into English:
+Core Concepts
+
+This document mainly discusses the ideas behind Router and its implementation principles. Reading it for the first time may be abstruse, but when you are very familiar with using it, reading it again will give you an enlightening feeling. If you just want to know how to use it, you can go to Quick Start.
+
+The birth of Router is the author&amp;#39;s reference to the excellent open source</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/router/api</link>
+     <title>Gyron.js | Router API</title>
+     <description>Page Navigation Bar
+The types described in this document require downloading via npm to view. Only parameter types and return values are outlined here. Feel free to contribute to improving the docs if you have time.
+
+createRouter
+Create a Router, then use via &amp;lt;Router router={/* ... */}&amp;gt;.
+Return
+Returns Plugin&amp;lt;RouterBase&amp;gt; type object.
+Type Declaration
+declare function createRouter(option: Partial&amp;lt;RouterOption&amp;gt;): Plugin&amp;lt;RouterBase&amp;gt;
+
+Example
+import { createBrowserHistory } f</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/redux/installation</link>
+     <title>Gyron.js | Redux Installation</title>
+     <description>Page Navigation BarInstallation
+Installation depends on your platform. For modern bundlers, use package manager yarn or npm. For browser type=&amp;quot;module&amp;quot;, reference CDN.
+Using package manager:
+yarn add -D @gyron/redux
+
+# or 
+
+npm install --save-dev @gyron/redux
+
+Using browser modules:
+&amp;lt;script type=&amp;quot;module&amp;quot;&amp;gt;
+  import { createStore } from &amp;#39;https://cdn.skypack.dev/@gyron/redux&amp;#39; 
+&amp;lt;/script&amp;gt;
+
+Using Store
+After installing, create a store and use &amp;lt;Provider&amp;gt; on </description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/redux/quick-started</link>
+     <title>Gyron.js | Redux Quick Start</title>
+     <description>Page Navigation BarQuick Start
+
+Get familiar with redux state management before starting. Our redux is fully based on redux. Go to https://redux.js.org/ to learn if unfamiliar.
+
+Redux is the Gyron.js state management library for redux. Makes state changes reactive without breaking immutability.
+Uses a reactive variable internally as state copy. Just sync state to this on changes. External modifications impossible, only via dispatch, ensuring stability.
+Create Store
+Use createStore to create a st</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/redux/api</link>
+     <title>Gyron.js | Redux API</title>
+     <description>Page Navigation Bar
+The types described in this document require downloading via npm to view. Only parameter types and return values are outlined here. Feel free to contribute to improving the docs if you have time.
+
+createStore
+Create a store plugin, accepts same args as Redux&amp;#39;s configureStore - supports reducer, middleware, devTools, preloadedState, enhancers.
+Type Declaration
+declare function createStore&amp;lt;
+  S extends object,
+  A extends Action = AnyAction,
+  M extends Middlewares&amp;lt;S&amp;</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/jsx/getting-started</link>
+     <title>Gyron.js | JSX Introduction</title>
+     <description>Page Navigation BarJSX Introduction
+JSX is a JavaScript syntax extension. Due to its good features and low learning cost, Gyron.js does not invent its own syntax but adapts existing JSX syntax sugar.
+There are two JSX-related libraries in the core - they convert JSX syntax into runtime code, only difference is the runtime platform or plugin.
+babel-plugin-jsx
+babel-plugin-jsx is a Babel plugin that transforms JSX into Gyron.js method calls. Like other type libraries, it uses Babel&amp;#39;s visitor A</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core/jsx/faq</link>
+     <title>Gyron.js | JSX Differences</title>
+     <description>Page Navigation BarCommon Questions
+What is the difference between jsx-runtime and babel-plugin-jsx?
+jsx-runtime is designed to work with compilers that support pragma configuration, all transforms use standard jsx syntax. babel-plugin-jsx is the official Gyron babel plugin with more features than the jsx-runtime runtime.
+Why isn&amp;#39;t state updating?
+Please check if the setup option is enabled in your bundler config. Set it to true and try again.Introduction(JSX)Copyright © 2023 Link
+         </description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US</link>
+     <title>Gyron.js | Document</title>
+     <description>The online editor of Gyron.js. Here you can directly edit and preview Gyron.js projects.</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/core</link>
+     <title>Gyron.js | Core Introduction</title>
+     <description>Page Navigation BarCore
+The author of Gyron.js has developed some tools to help developers build front-end environments, such as common route managers and global state managers. If you want to adapt some community resources to Gyron.js, please contact us for help.
+
+Discord: https://discord.gg/fETVZtD
+Email: linkorgs@163.com
+
+Router
+Router is a JavaScript library that helps users build interfaces and has powerful APIs. It is small yet fully functional, allows different ways to declare routes, and</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/blog/readme</link>
+     <title>Gyron.js | Philosophy and Principles</title>
+     <description>Page Navigation BarReactivity
+Gyron.js is a zero-dependency reactive framework. Like most reactive solutions in the community, Gyron.js also utilizes the capabilities provided by Proxy to perform dependency collection and updates. In theory, this set of reactive logic is supported in environments that support Proxy, with only the rendering part needing changes (integration). Here we want to thank Vue for implementing the reactive dependency update solution which we basically referenced to create</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>2</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://gyron.cc/en-US/explorer</link>
+     <title>Gyron.js | Online/Cooperative Gyron.js Editor</title>
+     <description>A simple zero-dependency responsive framework that uses jsx syntactic sugar to describe the UI. Simple - Just basic JavaScript and jsx syntax knowledge is required to build a fully interactive application. Scaffolding can also be used to quickly bootstrap local apps.Components - Using functions as the basic component elements allows flexible page organization and tracks data changes. Caching and other advanced options can optimize performance in large projects.Tiny size - The core code is around</description>
      <ror:updatePeriod></ror:updatePeriod>
      <ror:sortOrder>2</ror:sortOrder>
      <ror:resourceOf>sitemap</ror:resourceOf>
