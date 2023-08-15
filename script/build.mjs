@@ -82,7 +82,7 @@ async function render(vnode, url, clientMeta) {
       'Gyron.js 文档',
       `Gyron.js | ${router.extra.currentRoute.meta?.title || '文档'}`
     )
-    .replace('{%lang%}', url?.startsWith('/en') ? 'en' : 'zh' || 'zh')
+    .replace('{%lang%}', url?.startsWith('/en-US') ? 'en-US' : 'zh-CN' || 'zh-CN')
     .replace('<!--ssr-outlet-->', html)
     .replace(
       '<!--client-entry-css-->',
