@@ -4,7 +4,7 @@ This document will introduce the built-in properties in Gyron, what these proper
 
 ### ref
 
-ref can be applied on components or element nodes. For specific usage, see [The Usage of Ref](/docs/component#ref-usage).
+ref can be applied on components or element nodes. For specific usage, see [The Usage of Ref](/en-US/docs/component#Ref).
 
 When used on components, ref is the exposed object of the component. When used on element nodes, ref is the real element.
 
@@ -62,7 +62,7 @@ memo is usually used in loop rendering. Using it makes up for the inadequacy of 
 
 After passing memo, when rendering, it will compare whether the value in memo has changed. If not, it will be skipped directly. If changed, the diff algorithm will be executed for update.
 
-For a more detailed explanation, see [How to Use memo Correctly](/docs/list-rendering#memo-param).
+For a more detailed explanation, see [How to Use memo Correctly](/en-US/docs/list-rendering#memo-param).
 
 ### html
 
@@ -114,4 +114,4 @@ When writing components, the children property should not be explicitly passed. 
 
 isSSR is an attribute used when writing server-side rendering. In many cases, isSSR can be used to distinguish the current environment of the component. If true, it is currently in the server-side rendering environment, where window or document objects cannot be accessed. Otherwise, it is in the browser environment and can use browser environment APIs normally.
 
-For specific examples, see [The Usage of isSSR](/docs/ssr#what-is-ssr).
+For specific examples, see [The Usage of isSSR](/en-US/docs/ssr#what-is-ssr).
