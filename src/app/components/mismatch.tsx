@@ -1,7 +1,7 @@
 import { Link, useRouter } from '@gyron/router'
 import { FC, useMemo } from 'gyron'
 import { Lang } from './translate'
-import { $t } from '@/langs'
+import { $t, resolveTranslate } from '@/langs'
 
 interface MismatchProps {}
 
@@ -18,8 +18,11 @@ export const Mismatch = FC<MismatchProps>(({}) => {
       </h1>
       <h2 class="mt-2 text-lg text-slate-700 dark:text-slate-400 sm:mt-0">
         {$t('JSXText_13_74_15_8', lang.value)}
-
-        <Link to="/" replace className="underline">
+        <Link
+          to={resolveTranslate('/', lang.value)}
+          replace
+          className="underline"
+        >
           {$t('JSXText_15_51_17_8', lang.value)}
         </Link>
       </h2>

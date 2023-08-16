@@ -111,6 +111,11 @@ export const ExposeRoutes = FC(() => {
             </TranslateProvider>
           }
         />
+        <Route
+          path="*"
+          meta={{ title: $t('StringLiteral_158_23_158_34', Lang.EN) }}
+          element={<Mismatch />}
+        ></Route>
       </Route>
       <Route
         path=""
