@@ -139,6 +139,7 @@ buildClient(false, tempPath).then((appMeta) => {
     }
     fs.copySync('public/sitemap', `${tempPath}/sitemap`)
     fs.copySync('public/assets', `${tempPath}/assets`)
+    fs.copySync('public/robots.txt', `${tempPath}/robots.txt`)
     fs.copySync('node_modules/gyron/dist/browser', `${tempPath}/assets/gyron`)
     const files = glob.sync('node_modules/esbuild*')
     for (const file of files) {
