@@ -47,7 +47,6 @@ export const Explorer = FC<ExplorerProps>(
         style={{ height: height + 'px' }}
       >
         <WrapperEditor sources={sources} namespace={namespace} />
-        <DescriptionWithMeta desc={$t('gyron_meta')} />
       </div>
     )
   }
