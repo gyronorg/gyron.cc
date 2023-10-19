@@ -4,6 +4,7 @@ import { withHTML } from './html'
 import { withBuild } from './build'
 import { createEditorSocket } from './yjs'
 import { withDBServer } from './db.server'
+import { withClaude } from './claude'
 import { ROOM_PATH } from './constant'
 import express from 'express'
 import path from 'path'
@@ -61,6 +62,7 @@ function initial() {
   appRouter.post('/api/editor/*', withDBServer)
   appRouter.post('/api/token', withToken)
   appRouter.post('/api/build', withBuild)
+  appRouter.get('/api/claude', withClaude)
 
   appRouter.get('*', withHTML)
 
@@ -94,7 +96,7 @@ if (process.env.PUBLISH_ENV === 'netlify') {
     },
     response: (...args) => {
       console.log('response', args)
-    }
+    },
   })
 } else {
   run()
