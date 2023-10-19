@@ -84,6 +84,7 @@ export async function buildServer(
         navigator: JSON.stringify({}),
         'process.env.CLIENT_ID': JSON.stringify(process.env.CLIENT_ID),
         'process.env.CLIENT_SECRET': JSON.stringify(process.env.CLIENT_SECRET),
+        'process.env.SLACK': JSON.stringify(process.env.SLACK),
         'process.env.NODE_ENV': JSON.stringify(
           dev ? 'development' : 'production'
         ),
@@ -145,6 +146,7 @@ export async function buildClient(watch, tempPath, dev = false) {
         Buffer: 'Buffer',
         'process.env.CLIENT_ID': JSON.stringify(process.env.CLIENT_ID),
         'process.env.CLIENT_SECRET': JSON.stringify(process.env.CLIENT_SECRET),
+        'process.env.SLACK': JSON.stringify(process.env.SLACK),
         'process.env.NODE_ENV': JSON.stringify(
           dev ? 'development' : 'production'
         ),
@@ -181,6 +183,7 @@ export async function buildAPP() {
         navigator: JSON.stringify({}),
         'process.env.CLIENT_ID': JSON.stringify(process.env.CLIENT_ID),
         'process.env.CLIENT_SECRET': JSON.stringify(process.env.CLIENT_SECRET),
+        'process.env.SLACK': JSON.stringify(process.env.SLACK),
         'process.env.NODE_ENV': JSON.stringify('production'),
       },
       plugins: config.plugins.concat(plugin(stdLibBrowser)),
