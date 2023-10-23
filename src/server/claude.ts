@@ -30,21 +30,21 @@ export const withClaude: RequestHandler = async (req, res, next) => {
         })
         const conversation = bot.messages
         if (!conversation) {
-          await sleep(500)
+          await sleep(1000)
         } else if (!conversation.length) {
-          await sleep(500)
+          await sleep(1000)
         } else if (
           Array.isArray(conversation) &&
           conversation.length &&
           conversation[0].text?.includes('Typing')
         ) {
-          await sleep(500)
+          await sleep(1000)
         } else {
           res.send(conversation[0].text)
           return
         }
       }
-      // 500 * 40 = 20000 (20s)
+      // 250 * 40 = 20000 (40s)
       res.send('timeout!')
     } else {
       res.send(result.error)
