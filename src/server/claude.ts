@@ -22,7 +22,7 @@ export const withClaude: RequestHandler = async (req, res, next) => {
       channel: 'U061X507M1S', // who
     })
     if (result.ok) {
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 120; i++) {
         const bot = await web.conversations.history({
           channel: ClaudeChannel,
           oldest: result.ts,
