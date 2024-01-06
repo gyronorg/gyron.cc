@@ -13,6 +13,7 @@ import { useMemo, defineProps, FC } from 'gyron'
 import { ArrowLeftBoldIcon, ArrowRightBoldIcon } from './icons'
 import { ContentMenu, MenuView } from '@/interface/menu'
 import { $t } from '@/langs'
+import { Lang } from './translate'
 
 export type ParentPath =
   | 'docs'
@@ -25,6 +26,7 @@ export type ParentPath =
 export interface MdxContainerProps {
   parentPath: ParentPath
   menu: ContentMenu
+  lang: Lang
 }
 
 const RoutesMap: {
@@ -39,7 +41,7 @@ const RoutesMap: {
 }
 
 export const MdxContainer = FC<MdxContainerProps>(
-  ({ children, menu, parentPath }) => {
+  ({ children, menu, lang, parentPath }) => {
     const router = useRouter()
 
     const state = useMemo(() => {
@@ -129,7 +131,7 @@ export const MdxContainer = FC<MdxContainerProps>(
               </p>
             </div>
             <a
-              href={`https://github.com/gyronorg/docs/tree/master/src/app/source/${menu.meta.page}.mdx`}
+              href={`https://github.com/gyronorg/docs/tree/master/src/app/source/${lang}/${menu.meta.page}.mdx`}
               target="_blank"
               class="hover:text-slate-900 dark:hover:text-slate-400"
             >

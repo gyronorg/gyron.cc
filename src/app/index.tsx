@@ -1,5 +1,5 @@
 import { createBrowserRouter, Route, Router, Routes } from '@gyron/router'
-import { createSSRContext, FC, useBeforeUpdate } from 'gyron'
+import { createSSRContext, FC } from 'gyron'
 import { MdxHelper } from './components/helper'
 import { MdxContainer, ParentPath } from './components/mdx'
 import { Mismatch } from './components/mismatch'
@@ -34,7 +34,7 @@ const Content = FC<{
 }>(({ menu, parentPath, lang }) => {
   return (
     <TranslateProvider lang={lang}>
-      <MdxContainer menu={menu} parentPath={parentPath}>
+      <MdxContainer lang={lang} menu={menu} parentPath={parentPath}>
         <menu.component
           fallback={<Skeleton length={3} />}
           components={MdxHelper}
