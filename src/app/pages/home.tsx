@@ -133,9 +133,6 @@ export const Home = FC<HomeProps>(({}) => {
             </p>
           </div>
         </div>
-        <div class="mt-4">
-          <a href="https://beian.miit.gov.cn/">{$t('JSXText_138_47_138_63')}</a>
-        </div>
       </footer>
     </div>
   )
