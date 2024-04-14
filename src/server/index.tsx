@@ -14,7 +14,7 @@ import bodyParser from 'body-parser'
 import serverless from 'serverless-http'
 import http from 'node:http'
 
-const port = Number(process.env.RTC_PORT) || 3000
+const port = Number(process.env.RTC_PORT) || Number(process.env.PORT) || 3000
 
 function initial() {
   const app = express()
