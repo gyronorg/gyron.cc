@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon",
-    "build": "rimraf dist && node script/build.mjs"
+    "build": "rimraf dist && node script/build.mjs",
+    "start:server": "node dist/server/index.js"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.21.5",
