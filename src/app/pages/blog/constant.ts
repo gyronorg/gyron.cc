@@ -1,4 +1,9 @@
-import { BlogReadme, BlogReadmeEn } from '@/source'
+import {
+  BlogReadme,
+  Architecture,
+  ArchitectureEn,
+  BlogReadmeEn,
+} from '@/source'
 import { wrapAsyncMdxContent } from '@/utils/mdx'
 import { Menu } from '@/interface/menu'
 
@@ -16,6 +21,17 @@ export const BLOG_NAV: Menu = [
           group: 'Readme',
           page: 'blog/readme',
           title: '理念和原理',
+        },
+      },
+      {
+        path: '/blog/architecture',
+        name: 'Gyron.js 架构',
+        anchor: Architecture,
+        component: wrapAsyncMdxContent(Architecture),
+        meta: {
+          group: 'Readme',
+          page: 'blog/architecture-diagram',
+          title: 'Gyron.js 架构',
         },
       },
     ],
@@ -36,6 +52,17 @@ export const BLOG_NAV_EN: Menu = [
           group: 'Readme',
           page: 'blog/readme',
           title: 'Philosophy and Principles',
+        },
+      },
+      {
+        path: '/en-US/blog/architecture',
+        name: 'Gyron.js Architecture',
+        anchor: ArchitectureEn,
+        component: wrapAsyncMdxContent(ArchitectureEn),
+        meta: {
+          group: 'Readme',
+          page: 'blog/architecture-diagram',
+          title: 'Gyron.js Architecture',
         },
       },
     ],

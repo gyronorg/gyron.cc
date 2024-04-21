@@ -40,6 +40,7 @@ const CoreJSXFaq = () => import('./core/jsx/faq.mdx')
 
 // blog
 const BlogReadme = () => import('./blog/readme.mdx')
+const Architecture = () => import('./blog/architecture-diagram.mdx')
 
 export {
   Installation,
@@ -79,5 +80,6 @@ export {
   CoreJSXGettingStarted,
   CoreJSXFaq,
   // blog
-  BlogReadme
+  BlogReadme,
+  Architecture
 }
